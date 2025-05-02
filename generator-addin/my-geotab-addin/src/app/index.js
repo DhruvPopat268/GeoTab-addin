@@ -12,3 +12,6 @@ if(!geotab.addin.prayoshaAddIn){
 }
 
 require('./styles/main.css');
+
+console.log("Test in MyGeoTab platform 1")
+
