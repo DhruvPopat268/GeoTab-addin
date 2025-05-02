@@ -9,8 +9,8 @@ const regeneratorRuntime = require('regenerator-runtime');
 
 if(!geotab.addin.prayoshaAddIn){
     
-    require('./scripts/main');
+    require('./styles/main.css');
     
 }
 
-require('./styles/main.css');
+
