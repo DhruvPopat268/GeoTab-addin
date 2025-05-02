@@ -13,12 +13,25 @@ const transform = function (content, path) {
   const { name } = config;
 
   for (let i = 0; i < len; i++) {
+    
     config.items[i].url = `${name}/` + config.items[i].url;
+    
+    
+    
     config.items[i].icon = `${name}/` + config.items[i].icon;
+    
   }
 
   delete config['dev'];
-  return JSON.stringify(config, null, 2);
+  let response = JSON.stringify(config, null, 2);
+  // Returned string is written to file
+  return response;
+}
+
+const jsFileName = () => {
+  let fileName = '[name]-[contenthash].js'
+  
+  return fileName
 }
 
 module.exports = {
@@ -28,8 +41,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js',
-    publicPath: '/',
+    filename: jsFileName,
+    assetModuleFilename: '[name][ext]',
     clean: true
   },
   devServer: {
@@ -40,69 +53,62 @@ module.exports = {
     open: true,
     hot: true,
     compress: true,
-    historyApiFallback: true,
-    devMiddleware: {
-      writeToDisk: true, // Ensure files are written to disk for inspection
-    }
+    historyApiFallback: true
   },
   devtool: 'source-map',
+  
   module: {
     rules: [
       {
-        test: /\.(scss|css)$/,
+        test: /\.scss/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.css$/i,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-          'sass-loader'
-        ],
+          "css-loader", "postcss-loader",
+        ]
       },
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              '@babel/preset-env',
-              ['@babel/preset-react', {
-                runtime: 'automatic',
-                development: process.env.NODE_ENV === 'development'
-              }]
-            ]
+            
+            presets: ['@babel/preset-env', ["@babel/preset-react", {
+              "runtime": "automatic"
+            }]]
+            
           }
         }
       },
+      
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'images/[name][ext]'
-        }
+        type: 'asset/resource'
       }
     ]
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'styles.css',
+      filename: "styles.css",
+      chunkFilename: "styles.css"
     }),
     new HtmlWebpackPlugin({
       title: 'prayoshaAddIn',
-      filename: 'prayoshaAddIn.html',
+      filename: `prayoshaAddIn.html`,
       template: 'src/app/prayoshaAddIn.html',
-      inject: 'body',
-      scriptLoading: 'defer',
-      meta: {
-        viewport: 'width=device-width, initial-scale=1',
-        description: 'Prayosha Geotab Add-in'
-      }
+      inject: 'body'
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { 
-          from: './src/app/images/icon.svg', 
-          to: 'images/[name][ext]' 
-        },
+        { from: './src/app/images/icon.svg', to: 'images/' },
         {
           from: './src/config.json',
           transform: transform,
@@ -110,8 +116,5 @@ module.exports = {
         },
       ]
     })
-  ],
-  resolve: {
-    extensions: ['.js', '.jsx']
-  }
-};
+  ]
+}
