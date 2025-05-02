@@ -1,0 +1,24 @@
+{
+  "name": "prayosha add-in",
+  "supportEmail": "dhruvpopat268@gmail.com",
+  "version": "0.0.1",
+  "items": [{
+    
+    
+    "url": "prayoshaAddIn.html",
+    "category": "AddIns",
+    "menuName": {
+      "en": "drivers"
+    },
+    
+    "icon": "images/icon.svg"
+  }],
+  
+  
+  "dev": {
+    "root": "prayoshaAddIn",
+    "dist": {
+      "host": "https://generator-add-in-frontend.onrender.com/"
+    }
+  }
+}
