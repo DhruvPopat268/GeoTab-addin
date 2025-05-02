@@ -12,6 +12,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
   return (
     <>
+
       <GeotabContext.Provider value={[context, setContext]}>
         
         <DevicePage />
