@@ -47,7 +47,7 @@ const DevicePage = ({ }) => {
       let res;
 
       if (isEditing) {
-        res = await axios.patch(`${import.meta.env.VITE_BASE_URL}/driver/update`, {
+        res = await axios.patch(`http://localhost:5000/driver/update`, {
           email: editingDriver.email,
           updatedData: data
         });
@@ -56,7 +56,7 @@ const DevicePage = ({ }) => {
           throw new Error("Update failed");
         }
       } else {
-        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/driver/create`, data);
+        res = await axios.post(`http://localhost:5000/driver/create`, data);
 
         if (res.status === 409) {
           alert("User already exists");
@@ -137,7 +137,7 @@ const DevicePage = ({ }) => {
       if (!showDeleteConfirm) return;
       
       // Call backend API to delete by email
-      const res = await axios.delete(`${import.meta.env.VITE_BASE_URL}/driver/delete`, {
+      const res = await axios.delete("http://localhost:5000/driver/delete", {
         data: { email: showDeleteConfirm.email }
       });
   
