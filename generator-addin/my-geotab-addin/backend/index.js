@@ -10,7 +10,7 @@ const driverRoutes = require('./Routes/driverRoute')
 connectToDb();
 
 app.use(cors({
-    origin:'http://localhost:3000'
+    origin:['http://localhost:3000','https://my.geotab.com']
 }))
 
 app.use(express.json())
