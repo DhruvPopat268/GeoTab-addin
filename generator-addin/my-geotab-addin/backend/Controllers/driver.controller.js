@@ -1,52 +1,122 @@
-const driverModel = require ('../models/driverModel')
+const driverModel = require('../models/driverModel')
 
-module.exports.createDriver = async(req,res,next)=>{
+module.exports.createDriver = async (req, res, next) => {
 
-    console.log('hello')
+  const {
+    companyName,
+    automatedLicenseCheck,
+    driverNumber,
+    surname,
+    contactNumber,
+    driverGroups,
+    depotChangeAllowed,
+    driverStatus,
+    licenseNo,
+    email,
+    depotName,
+    firstName
+  } = req.body;
 
-    const {
-        companyName,
-        automatedLicenceCheck,
-        driverNumber,
-        surname,
-        contactNo,
-        driverGroups,  // spelling fixed from driverGoups
-        depotChangeAllowed,
-        driverStatus,
-        driverLicenceNo, // FIXED NAME
-        driverDOB,
-        contactEmail,
-        depotName
-      } = req.body;
-      
+
+
+  try {
+    const isDriverAlreadyExists = await driverModel.findOne({ email })
+
+
+
+    await driverModel.create({
+      companyName,
+      automatedLicenseCheck,
+      driverNumber,
+      surname,
+      contactNumber,
+      driverGroups,
+      depotChangeAllowed,
+      driverStatus,
+      licenseNo,
+      email,
+      depotName,
+      firstName
+    });
+
+
+    return res.status(200).json({ message: "driver created successfully" })
+  }
+  catch (error) {
+    console.log(error)
+    res.status(400).json({ error })
+  }
+
+}
+
+module.exports.updateDriver = async (req, res, next) => {
+  try {
+    const { email, updatedData } = req.body;
 
     console.log(req.body)
 
-    const isDriverAlreadyExists = await driverModel.findOne({contactEmail})
-
-    if (isDriverAlreadyExists) {
-        return res.status(400).json({ message: "driver already exist" })
+    if (!email || !updatedData) {
+      return res.status(400).json({ message: 'Email and updatedData are required.' });
     }
 
-    await driverModel.create({
-        companyName,
-        automatedLicenceCheck,
-        driverNumber,
-        surname,
-        contactNo,
-        driverGroups,
-        depotChangeAllowed,
-        driverStatus,
-        driverLicenceNo,
-        driverDOB,
-        contactEmail,
-        depotName
+    const updatedUser = await driverModel.findOneAndUpdate(
+      { email: email },          // Filter by email
+      { $set: updatedData },     // Update fields
+      { new: true }              // Return the updated document
+    );
+
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      message: 'User updated successfully.',
+      data: updatedUser
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+module.exports.deleteDriver = async (req, res, next) => {
+  
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is required'
+        });
+      }
+
+      const driver = await driverModel.findOneAndDelete({ email });
+
+      if (!driver) {
+        return res.status(404).json({
+          success: false,
+          message: 'Driver not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Driver deleted successfully'
       });
-      
-
-    return res.status(200).json({ message: "driver created successfully" })
-
+    } catch (error) {
+      console.error('Error deleting driver:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error deleting driver',
+        error: error.message
+      });
+    }
 }
+
+
+
 
 
 

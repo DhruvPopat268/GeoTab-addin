@@ -6,7 +6,7 @@ const driverSchema = new mongoose.Schema({
     enum: ['Company A', 'Company B'],
     required: true
   },
-  automatedLicenceCheck: {
+  automatedLicenseCheck: {
     type: String,  // Added missing type
     enum: ['Yes', 'No'],
     required: true
@@ -19,7 +19,7 @@ const driverSchema = new mongoose.Schema({
     type: String,
     required: true  // Added required if needed
   },
-  contactNo: {
+  contactNumber: {
     type: String,  // Changed from Number to String for phone numbers
     required: true,
     validate: {  // Fixed validation (can't have duplicate minlength)
@@ -44,12 +44,12 @@ const driverSchema = new mongoose.Schema({
     enum: ['Active', 'InActive', 'Archive'],  // Fixed capitalization
     required: true
   },
-  driverLicenceNo: {  // Changed from driverLicenceCheck for consistency
+  licenseNo: {  // Changed from driverLicenceCheck for consistency
     type: String,
     required: true
   },
  
-  contactEmail: {
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -66,17 +66,11 @@ const driverSchema = new mongoose.Schema({
     enum: ['Main Depot', 'North Depot'],  // Added actual depots
     required: true
   },
-  fullName: {  // Added computed full name
+  firstName: {  // Added computed full name
     type: String,
     required: true
   }
-}, { timestamps: true });
-
-// Middleware to automatically set fullName
-driverSchema.pre('save', function(next) {
-  this.fullName = `${this.surname} ${this.firstName}`;  // Assuming you add firstName
-  next();
-});
+},);
 
 const Driver = mongoose.model("Driver", driverSchema);
 
