@@ -6,6 +6,14 @@
     "style": "https://geotab-addin-frontend.onrender.com/styles.css",
     "icon": "https://geotab-addin-frontend.onrender.com/favicon.ico",
     "pages": ["vehicles"],
+    "buttons": [
+      {
+        "title": "Open Prayosha Add-In",
+        "action": "openPrayoshaAddIn",
+        "location": "toolbar",
+        "page": "vehicles"
+      }
+    ],
     "title": {
       "en": "Prayosha Add-In"
     }
