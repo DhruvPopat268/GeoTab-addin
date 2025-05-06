@@ -53,7 +53,7 @@ module.exports.updateDriver = async (req, res, next) => {
   try {
     const { email, updatedData } = req.body;
 
-    console.log(req.body)
+    
 
     if (!email || !updatedData) {
       return res.status(400).json({ message: 'Email and updatedData are required.' });

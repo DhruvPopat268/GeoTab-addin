@@ -1,0 +1,13 @@
+{
+    "name": "prayoshaAddIn",
+    "supportEmail": "you@example.com",
+    "version": "1.0",
+    "script": "https://your-app.onrender.com/main.js",
+    "style": "https://your-app.onrender.com/styles.css",
+    "icon": "https://your-app.onrender.com/icon.png",
+    "pages": ["vehicles"],
+    "title": {
+      "en": "Prayosha Add-In"
+    }
+  }
+  
