@@ -33,13 +33,13 @@ app.use(cors({
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', ],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Authorization'] // Important for credentials
 }));
 
 // Handle preflight requests
-app.options('*', cors());
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
