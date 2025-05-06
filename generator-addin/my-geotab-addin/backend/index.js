@@ -9,35 +9,19 @@ const driverRoutes = require('./Routes/driverRoute')
 
 connectToDb();
 
-const allowedOrigins = [
-    'https://geotab-addin-frontend.onrender.com', // Your frontend
-    'https://my.geotab.com', // Production MyGeoTab
-    'https://my.geotab.com.au',
-    'https://my.geotab.ca',
-    'https://my.geotab.eu'
-  ];
-  
-  app.use(cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or Postman)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+
+app.use(cors({
+    origin: '*', // Allows ALL origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
 
 app.use(express.json())
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({ extended: false }))
 
 app.use('/driver', driverRoutes)
 
-app.listen(port,()=>{
+app.listen(port, () => {
     console.log(`server started at ${port}`)
 })
