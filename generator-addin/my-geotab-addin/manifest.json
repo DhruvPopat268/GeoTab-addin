@@ -2,9 +2,9 @@
     "name": "prayoshaAddIn",
     "supportEmail": "you@example.com",
     "version": "1.0",
-    "script": "https://your-app.onrender.com/main.js",
-    "style": "https://your-app.onrender.com/styles.css",
-    "icon": "https://your-app.onrender.com/icon.png",
+    "script": "https://geotab-addin-frontend.onrender.com/bundle-7e6806bd41956f5ceaf7.js",
+    "style": "https://geotab-addin-frontend.onrender.com/styles.css",
+    "icon": "https://geotab-addin-frontend.onrender.com/favicon.ico",
     "pages": ["vehicles"],
     "title": {
       "en": "Prayosha Add-In"
