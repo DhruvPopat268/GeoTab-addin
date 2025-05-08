@@ -9,10 +9,13 @@ const driverRoutes = require('./Routes/driverRoute');
 
 connectToDb();
 
-// 🔥 Put CORS before anything else
-app.use(cors({
-    origin:"*"
-}));
+// // 🔥 Put CORS before anything else
+// app.use(cors({
+//     origin:"*"
+// }));
+
+app.options('*', cors());  // Enable pre-flight for all routes
+
 
 
 
