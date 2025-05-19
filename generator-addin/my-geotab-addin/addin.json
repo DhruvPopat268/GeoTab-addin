@@ -1,0 +1,15 @@
+{
+    "name": "PTC Add-In",
+    "supportEmail": "it@ptctransport.co.uk",
+    "version": "1.0",
+    "items": [
+      {
+        "url": "https://geotab-addin-frontend.onrender.com",
+        "path": "main.html",
+        "menuName": {
+          "en": "PTC Add-In"
+        }
+      }
+    ]
+  }
+  
