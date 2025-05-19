@@ -3,9 +3,7 @@ import Geotab from '../contexts/Geotab';
 import { useForm } from 'react-hook-form';
 import './DevicePage.css';
 import axios from 'axios'
-
-
-
+import { BASE_URL } from '../../../env';
 
 const DevicePage = ({ }) => {
   const [context, setContext] = useContext(Geotab); // Access both context object and setter
@@ -51,7 +49,7 @@ const DevicePage = ({ }) => {
       let res;
 
       if (isEditing) {
-        res = await axios.patch(`${import.meta.env.VITE_BASE_URL}/driver/update`, {
+        res = await axios.patch(`${BASE_URL}/driver/update`, {
           email: editingDriver.email,
           updatedData: data
         });
@@ -60,7 +58,7 @@ const DevicePage = ({ }) => {
           throw new Error("Update failed");
         }
       } else {
-        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/driver/create`, data);
+        res = await axios.post(`${BASE_URL}/driver/create`, data);
 
         if (res.status === 409) {
           alert("User already exists");
@@ -140,8 +138,8 @@ const DevicePage = ({ }) => {
     try {
       if (!showDeleteConfirm) return;
 
-      // Call backend API to delete by email
-      const res = await axios.delete("${import.meta.env.VITE_BASE_URL}/driver/delete", {
+      // Call backend API to delete by emai
+      const res = await axios.delete(`${BASE_URL}/driver/delete`, {
         data: { email: showDeleteConfirm.email }
       });
 
