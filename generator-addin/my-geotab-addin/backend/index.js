@@ -9,29 +9,16 @@ const driverRoutes = require('./Routes/driverRoute');
 
 connectToDb();
 
-<<<<<<< HEAD
-
-// Enhanced CORS configuration
-
-
 app.use(cors({
   origin: [
     'https://my.geotab.com',
     "http://localhost:3000",
-    "https://geotab-addin-frontend.onrender.com"
+    "https://geotab-addin-frontend.onrender.com",
+    "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html"
   ],  // Allow MyGeotab domain to access your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed methods
   allowedHeaders: ['Content-Type'],  // Allowed headers
 }));
-=======
-// // 🔥 Put CORS before anything else
-// app.use(cors({
-//     origin:"*"
-// }));
-
-app.options('*', cors());  // Enable pre-flight for all routes
-
->>>>>>> ad2169eb011dee5f10b903562de379e25612e9da
 
 // Explicit OPTIONS handler for all routes
 app.use(express.json());
