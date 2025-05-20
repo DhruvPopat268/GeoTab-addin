@@ -183,6 +183,7 @@ const DevicePage = ({ }) => {
   };
 
   const handleView = async (driver) => {
+    console.log(driver)
   console.log("License No:", driver.licenseNo);
   try {
     // Make the API call with the driver's license number
