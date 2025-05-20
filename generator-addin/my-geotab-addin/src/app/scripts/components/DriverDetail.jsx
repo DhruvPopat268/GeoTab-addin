@@ -16,28 +16,46 @@ const DriverLicenceSummary = ({ geotabApi }) => {
   const [driverData, setDriverData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [context, setContext] = useContext(Geotab);
 
-  useEffect(() => {
-    const fetchDriverData = async () => {
+
+
+useEffect(() => {
+    const loadDriverData = async () => {
       try {
-        // Get driver data passed from navigation
-        const options = await geotabApi.addin.getCurrentPageOptions();
-        if (options && options.driverData) {
-          setDriverData(options.driverData);
-        } else {
-          throw new Error("No driver data available");
+        // Try to get data from navigation state
+        if (geotabApi?.addin?.getCurrentPageOptions) {
+          const options = await geotabApi.addin.getCurrentPageOptions();
+          if (options?.driverData) {
+            setDriverData(options.driverData);
+            return;
+          }
         }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+
+        // Fallback to context
+        if (context.currentDriver) {
+          setDriverData(context.currentDriver);
+          return;
+        }
+
+        // Fallback to URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const licenseNo = urlParams.get('license');
+        if (licenseNo) {
+          const response = await axios.post(
+            'https://c4u-online.co.uk/add-api/get-driver-details.php',
+            { drivingLicenceNumber: licenseNo }
+          );
+          setDriverData(response.data);
+        }
+      } catch (error) {
+        console.error("Error loading driver data:", error);
       }
     };
 
-    if (geotabApi && geotabApi.addin) {
-      fetchDriverData();
-    }
-  }, [geotabApi]);
+    loadDriverData();
+  }, [geotabApi, context]);
+
 
   if (loading) return <div className="loading">Loading driver details...</div>;
   if (error) return <div className="error">Error: {error}</div>;

@@ -183,9 +183,10 @@ const DevicePage = ({ }) => {
 
 const handleView = async (driver) => {
   try {
-    const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
+    console.log("Starting API call for driver:", driver.licenseNo);
+    
     const response = await axios.post(
-      apiUrl,
+      'https://c4u-online.co.uk/add-api/get-driver-details.php',
       { drivingLicenceNumber: driver.licenseNo },
       {
         headers: {
@@ -194,19 +195,34 @@ const handleView = async (driver) => {
       }
     );
 
-    if (geotabApi && geotabApi.addin) {
+    console.log("API response received:", response.data);
+
+    // Store data in state for navigation
+    context.setContext(prev => ({
+      ...prev,
+      currentDriver: {
+        ...driver,
+        ...response.data
+      }
+    }));
+
+    // Use Geotab navigation
+    if (geotabApi?.addin?.navigateTo) {
+      console.log("Navigating to driverDetail page");
       geotabApi.addin.navigateTo({
-        page: 'driverDetail',
-        options: {
-          driverData: {
-            ...driver,          // Original driver data from your table
-            ...response.data    // API response data
-          }
-        },
+        page: 'driverDetail'
       });
+    } else {
+      console.warn("Geotab navigation not available, using fallback");
+      // Fallback for development
+      window.location.href = `/driverDetail.html?license=${driver.licenseNo}`;
     }
   } catch (error) {
-    console.error("Error fetching driver details:", error);
+    console.error("Error in handleView:", {
+      message: error.message,
+      response: error.response,
+      config: error.config
+    });
     alert("Failed to load driver details. Please try again.");
   }
 };

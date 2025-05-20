@@ -1,8 +1,17 @@
 {
-  "addinId": "com.prayosha.prayoshaaddin",
-  "version": "0.0.1",
-  "name": "Prayosha Add-in",
-  "description": "A myGeotab Add-in built with React.",
-  "url": "https://682ae5233ccbcb1f4f54f20e--shiny-stroopwafel-277a30.netlify.app/"
-  
+  "name": "prayoshaAddIn",
+  "version": "1.0",
+  "pages": [
+    {
+      "name": "main",
+      "url": "index.html"
+    },
+    {
+      "name": "driverDetail",
+      "url": "driverDetail.html",
+      "menuName": {
+        "en": "Driver Details"
+      }
+    }
+  ]
 }
