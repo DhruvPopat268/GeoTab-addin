@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
     <title>prayosha add-in</title>
-</head>
-<body>
-    <div id="prayoshaAddIn-app" >
-        <div id="prayoshaAddIn">
-            <header class="geotabPageHeader">
-                <h1 class="geotabPageName">prayoshaAddIn <span class="subdued">subtitle</span></h1>
-                <div class="pageNameSecondary">
-                    <h3 class="geotabSecondaryTitle">by: <span id="prayoshaAddIn-user"></span></h3>
-                </div>
-                <div class="testing">giugoubo</div>
-                
-            </header>
-        </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <!-- Geotab requires your Add-In div to match the Add-In name and be top-level -->
+    <div id="prayoshaAddIn" class="addon page">
+      <!-- Optional loading spinner or text -->
     </div>
-</body>
+
+    <!-- This script tag must point to your bundled JS -->
+    <script src="main.js"></script>
+  </body>
 </html>
