@@ -193,7 +193,7 @@ const DevicePage = ({ }) => {
     // Check if the API call was successful
     if (response.status === 200) {
       // If you need to do something with the response data
-      console.log("API Response:", response.data);
+      console.log("API Response:", response.data.driver);
       
       // Then navigate to the driver detail page
       if (geotabApi && geotabApi.addin) {
