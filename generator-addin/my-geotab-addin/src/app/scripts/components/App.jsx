@@ -18,8 +18,8 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
       <GeotabContext.Provider value={[context, setContext]}>
         
-        {/* <DriverDetail /> */}
-        <DevicePage/>
+        <DriverDetail />
+        {/* <DevicePage/> */}
         {/* <APITable/> */}
         
       </GeotabContext.Provider>

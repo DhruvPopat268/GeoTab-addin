@@ -165,7 +165,6 @@ const DevicePage = ({ }) => {
     }
   };
 
-
   const applyFilter = () => {
     if (filterStatus === 'All Statuses') {
       setDisplayedDrivers(originalDrivers);
@@ -182,13 +181,11 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-  const handleView = async (driver) => {
-    console.log(driver)
-  console.log("License No:", driver.licenseNo);
+const handleView = async (driver) => {
   try {
-    // Make the API call with the driver's license number
+    const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
     const response = await axios.post(
-      'https://c4u-online.co.uk/add-api/get-driver-details.php',
+      apiUrl,
       { drivingLicenceNumber: driver.licenseNo },
       {
         headers: {
@@ -197,38 +194,20 @@ const DevicePage = ({ }) => {
       }
     );
 
-    console.log("Full API Response:", response); // Log the entire response
-    
-    // Check if the API call was successful
-    if (response.status === 200) {
-      // The driver data is in response.data, not response.data.driver
-      const driverData = response.data;
-      console.log("Driver Data:", driverData);
-      
-      // Then navigate to the driver detail page
-      if (geotabApi && geotabApi.addin) {
-        geotabApi.addin.navigateTo({
-          page: 'driverDetail',
-          options: {
-            driverData: {
-              ...driver,
-              ...driverData // Spread the API response data directly
-            }
-          },
-        });
-      } else {
-        console.error("Geotab Add-in context is not available.");
-        alert("Could not navigate to driver details.");
-      }
-    } else {
-      throw new Error(response.data?.message || "Failed to fetch driver details");
+    if (geotabApi && geotabApi.addin) {
+      geotabApi.addin.navigateTo({
+        page: 'driverDetail',
+        options: {
+          driverData: {
+            ...driver,          // Original driver data from your table
+            ...response.data    // API response data
+          }
+        },
+      });
     }
   } catch (error) {
-    console.error("Error in handleView:", error);
-    if (error.response) {
-      console.error("Error response data:", error.response.data);
-    }
-    alert(`Error: ${error.response?.data?.message || error.message}`);
+    console.error("Error fetching driver details:", error);
+    alert("Failed to load driver details. Please try again.");
   }
 };
 

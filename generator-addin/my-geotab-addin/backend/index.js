@@ -14,7 +14,8 @@ app.use(cors({
     'https://my.geotab.com',
     "http://localhost:3000",
     "https://geotab-addin-frontend.onrender.com",
-    "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html"
+    "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html",
+    "https://c4u-online.co.uk/add-api/get-driver-details.php"
   ],  // Allow MyGeotab domain to access your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed methods
   allowedHeaders: ['Content-Type'],  // Allowed headers
