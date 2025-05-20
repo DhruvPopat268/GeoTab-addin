@@ -183,18 +183,7 @@ const DevicePage = ({ }) => {
   };
 
   const handleView = (driver) => {
-    console.log("geotabApi in handleView:", geotabApi); // Check if addin exists here
-    if (geotabApi && geotabApi.addin) {
-      geotabApi.addin.navigateTo({
-        page: 'driverDetail',
-        options: {
-          driverData: driver,
-        },
-      });
-    } else {
-      console.error("Geotab Add-in context is not available.");
-      alert("Could not navigate to driver details.");
-    }
+    console.log(driver)
   };
 
   return (
