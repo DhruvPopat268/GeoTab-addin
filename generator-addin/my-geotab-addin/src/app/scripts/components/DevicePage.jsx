@@ -182,8 +182,41 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-  const handleView = (driver) => {
-    console.log(driver)
+  const handleView = async(driver) => {
+    console.log(driver.licenseNo)
+    try {
+    // Make the API call with the driver's license number
+    const response = await axios.post(`https://c4u-online.co.uk/add-api/get-driver-details.php`, {
+      drivingLicenceNumber: driver.licenseNo // Passing licenseNo as drivingLicenceNumber
+    });
+
+    // Check if the API call was successful
+    if (response.status === 200) {
+      // If you need to do something with the response data
+      console.log("API Response:", response.data);
+      
+      // Then navigate to the driver detail page
+      if (geotabApi && geotabApi.addin) {
+        geotabApi.addin.navigateTo({
+          page: 'driverDetail',
+          options: {
+            driverData: {
+              ...driver,
+              apiData: response.data // Include API response if needed
+            }
+          },
+        });
+      } else {
+        console.error("Geotab Add-in context is not available.");
+        alert("Could not navigate to driver details.");
+      }
+    } else {
+      throw new Error(response.data?.message || "Failed to fetch driver details");
+    }
+  } catch (error) {
+    console.error("Error in handleView:", error);
+    alert(`Error: ${error.response?.data?.message || error.message}`);
+  }
   };
 
   return (
