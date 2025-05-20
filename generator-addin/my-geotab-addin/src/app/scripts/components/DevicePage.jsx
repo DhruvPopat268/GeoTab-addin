@@ -182,18 +182,27 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-  const handleView = async(driver) => {
-    console.log(driver.licenseNo)
-    try {
+  const handleView = async (driver) => {
+  console.log("License No:", driver.licenseNo);
+  try {
     // Make the API call with the driver's license number
-    const response = await axios.post(`https://c4u-online.co.uk/add-api/get-driver-details.php`, {
-      drivingLicenceNumber: driver.licenseNo // Passing licenseNo as drivingLicenceNumber
-    });
+    const response = await axios.post(
+      'https://c4u-online.co.uk/add-api/get-driver-details.php',
+      { drivingLicenceNumber: driver.licenseNo },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
+    console.log("Full API Response:", response); // Log the entire response
+    
     // Check if the API call was successful
     if (response.status === 200) {
-      // If you need to do something with the response data
-      console.log("API Response:", response.data.driver);
+      // The driver data is in response.data, not response.data.driver
+      const driverData = response.data;
+      console.log("Driver Data:", driverData);
       
       // Then navigate to the driver detail page
       if (geotabApi && geotabApi.addin) {
@@ -202,7 +211,7 @@ const DevicePage = ({ }) => {
           options: {
             driverData: {
               ...driver,
-              apiData: response.data // Include API response if needed
+              ...driverData // Spread the API response data directly
             }
           },
         });
@@ -215,9 +224,12 @@ const DevicePage = ({ }) => {
     }
   } catch (error) {
     console.error("Error in handleView:", error);
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+    }
     alert(`Error: ${error.response?.data?.message || error.message}`);
   }
-  };
+};
 
   return (
     <div className="root">
