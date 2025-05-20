@@ -183,7 +183,11 @@ const DevicePage = ({ }) => {
 
 const handleView = async (driver) => {
   try {
+    // Make sure the URL is properly formed
     const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
+    
+    console.log('Making request to:', apiUrl); // Debug log
+    
     const response = await axios.post(
       apiUrl,
       { drivingLicenceNumber: driver.licenseNo },
@@ -194,20 +198,36 @@ const handleView = async (driver) => {
       }
     );
 
+    console.log('API Response:', response.data); // Debug log
+
     if (geotabApi && geotabApi.addin) {
       geotabApi.addin.navigateTo({
         page: 'driverDetail',
         options: {
           driverData: {
-            ...driver,          // Original driver data from your table
-            ...response.data    // API response data
+            ...driver,
+            ...response.data
           }
         },
       });
     }
   } catch (error) {
-    console.error("Error fetching driver details:", error);
-    alert("Failed to load driver details. Please try again.");
+    console.error('Full error object:', error); // More detailed error logging
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      console.error('Error response data:', error.response.data);
+      console.error('Error status:', error.response.status);
+      console.error('Error headers:', error.response.headers);
+      alert(`API Error: ${error.response.data?.message || error.response.statusText}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('No response received:', error.request);
+      alert('No response from server - please check your connection');
+    } else {
+      // Something happened in setting up the request
+      console.error('Request setup error:', error.message);
+      alert(`Request error: ${error.message}`);
+    }
   }
 };
 
