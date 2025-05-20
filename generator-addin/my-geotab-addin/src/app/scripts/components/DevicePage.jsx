@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import './DevicePage.css';
 import axios from 'axios'
 import { BASE_URL } from '../../../env';
+import { useNavigate } from 'react-router-dom';
 
 const DevicePage = ({ }) => {
   const [context, setContext] = useContext(Geotab); // Access both context object and setter
@@ -35,6 +36,8 @@ const DevicePage = ({ }) => {
 
   // Watch company selection for dependent fields
   const selectedCompany = watch('companyName');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("original drivers are", originalDrivers)
@@ -182,33 +185,36 @@ const DevicePage = ({ }) => {
   };
 
 const handleView = async (driver) => {
-  try {
-    const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
-    const response = await axios.post(
-      apiUrl,
-      { drivingLicenceNumber: driver.licenseNo },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
 
-    if (geotabApi && geotabApi.addin) {
-      geotabApi.addin.navigateTo({
-        page: 'driverDetail',
-        options: {
-          driverData: {
-            ...driver,          // Original driver data from your table
-            ...response.data    // API response data
-          }
-        },
-      });
-    }
-  } catch (error) {
-    console.error("Error fetching driver details:", error);
-    alert("Failed to load driver details. Please try again.");
-  }
+  navigate('/page-two')
+
+  // try {
+  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
+  //   const response = await axios.post(
+  //     apiUrl,
+  //     { drivingLicenceNumber: driver.licenseNo },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }
+  //   );
+
+  //   if (geotabApi && geotabApi.addin) {
+  //     geotabApi.addin.navigateTo({
+  //       page: 'driverDetail',
+  //       options: {
+  //         driverData: {
+  //           ...driver,          // Original driver data from your table
+  //           ...response.data    // API response data
+  //         }
+  //       },
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.error("Error fetching driver details:", error);
+  //   alert("Failed to load driver details. Please try again.");
+  // }
 };
 
   return (
