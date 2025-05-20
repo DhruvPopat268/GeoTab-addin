@@ -11,17 +11,7 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
   const appName = 'prayoshaAddIn';
   const addinId = 'aWE5ZmY0YmQtNTBiZC1iMzh';
 
-  api.pages.driverDetail = {
-    initialize: function(freshApi, freshState, initializeCallback) {
-      const elDetail = document.getElementById('driverDetail');
-      const root = createRoot(elDetail);
-      root.render(<DriverLicenceSummary geotabApi={freshApi} />);
-      initializeCallback();
-    },
-    focus: function(freshApi, freshState) {
-      // Handle focus if needed
-    }
-  };
+  
     
     // the root container
     var elAddin = document.getElementById(appName);
