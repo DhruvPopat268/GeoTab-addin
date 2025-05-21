@@ -20,9 +20,10 @@ const App = ({ geotabApi, geotabState, appName }) => {
       <GeotabContext.Provider value={[context, setContext]}>
 
         {/* <DriverDetail /> */}
+        <DevicePage/>
         <Router>
           <Routes>
-            <Route path="/#" element={<DevicePage />} />
+            {/* <Route path="/#" element={<DevicePage />} /> */}
             <Route path="/page-two" element={<DriverDetail />} />
           </Routes>
         </Router>
