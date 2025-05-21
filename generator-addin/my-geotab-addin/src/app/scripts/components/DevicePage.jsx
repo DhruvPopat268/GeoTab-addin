@@ -12,6 +12,8 @@ const DevicePage = ({ }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   // const { logger } = context;
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -36,8 +38,6 @@ const DevicePage = ({ }) => {
 
   // Watch company selection for dependent fields
   const selectedCompany = watch('companyName');
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("original drivers are", originalDrivers)
@@ -185,36 +185,7 @@ const DevicePage = ({ }) => {
   };
 
 const handleView = async (driver) => {
-
   navigate('/page-two')
-
-  // try {
-  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
-  //   const response = await axios.post(
-  //     apiUrl,
-  //     { drivingLicenceNumber: driver.licenseNo },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   );
-
-  //   if (geotabApi && geotabApi.addin) {
-  //     geotabApi.addin.navigateTo({
-  //       page: 'driverDetail',
-  //       options: {
-  //         driverData: {
-  //           ...driver,          // Original driver data from your table
-  //           ...response.data    // API response data
-  //         }
-  //       },
-  //     });
-  //   }
-  // } catch (error) {
-  //   console.error("Error fetching driver details:", error);
-  //   alert("Failed to load driver details. Please try again.");
-  // }
 };
 
   return (
