@@ -50,8 +50,8 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
         freshState.currentSession = session;
 
         // Render your App or placeholder
-        // reactRoot.render(<App geotabApi={freshApi} geotabState={freshState} appName={appName} addinId={addinId} />);
-        reactRoot.render(<div style={{ color: 'black' }}>Hello World!</div>);
+        reactRoot.render(<App geotabApi={freshApi} geotabState={freshState} appName={appName} addinId={addinId} />);
+        // reactRoot.render(<div style={{ color: 'black' }}>Hello World!</div>);
 
         console.log("✅ Focus called");
       });
