@@ -14,6 +14,9 @@ const App = ({ geotabApi, geotabState, appName }) => {
   const logger = Logger(appName);
   const [context, setContext] = useState({ geotabApi, geotabState, logger });
 
+  console.log("App loaded");
+
+
   return (
     <>
 

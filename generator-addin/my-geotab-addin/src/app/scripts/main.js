@@ -11,17 +11,17 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
   const appName = 'prayoshaAddIn';
   const addinId = 'aWE5ZmY0YmQtNTBiZC1iMzh';
 
-  
-    
-    // the root container
-    var elAddin = document.getElementById(appName);
-  
 
-  
+
+  // the root container
+  var elAddin = document.getElementById(appName);
+
+
+
   let reactRoot;
-  
+
   return {
-    
+
     /**
      * initialize() is called only once when the Add-In is first loaded. Use this function to initialize the
      * Add-In's state such as default values or make API requests (MyGeotab or external) to ensure interface
@@ -37,11 +37,11 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
       if (freshState.translate) {
         freshState.translate(elAddin || '');
       }
-      
-        reactRoot = createRoot(elAddin);
-      
+
+      reactRoot = createRoot(elAddin);
+
       // MUST call initializeCallback when done any setup
-        initializeCallback();
+      initializeCallback();
     },
 
     /**
@@ -56,13 +56,19 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
      * @param {object} freshState - The page state object allows access to URL, page navigation and global group filter.
     */
     focus: function (freshApi, freshState) {
-      
-        elAddin.className = elAddin.className.replace('hidden', '').trim();
-        freshApi.getSession(session => {
-          freshState.currentSession = session
-          reactRoot.render(<App geotabApi={freshApi} geotabState={freshState} appName={appName} addinId={addinId} />);
-        })
-      
+
+      elAddin.className = elAddin.className.replace('hidden', '').trim();
+      freshApi.getSession(session => {
+        freshState.currentSession = session
+        // reactRoot.render(<App geotabApi={freshApi} geotabState={freshState} appName={appName} addinId={addinId} />);
+        reactRoot.render(<div style={{ color: 'black' }}>Hello World!</div>);
+        console.log("Focus called");
+        console.log("elAddin:", elAddin);
+        console.log("freshApi:", freshApi);
+
+
+      })
+
       // show main content
     },
 
@@ -75,7 +81,7 @@ geotab.addin.prayoshaAddIn = function (api, state, meta) {
      * @param {object} freshState - The page state object allows access to URL, page navigation and global group filter.
     */
     blur: function () {
-      
+
     }
   };
 };
