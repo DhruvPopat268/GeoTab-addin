@@ -51,10 +51,11 @@ module.exports = (env) => {
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: jsFileName,
+      filename: 'main.js', // ✅ static filename
       assetModuleFilename: '[name][ext]',
       clean: true
     },
+
     devServer: {
       static: {
         directory: path.resolve(__dirname, 'dist')
