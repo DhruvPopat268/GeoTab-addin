@@ -22,7 +22,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
         {/* <DriverDetail /> */}
         <Router>
           <Routes>
-            <Route path="/" element={<DevicePage />} />
+            <Route path="/#" element={<DevicePage />} />
             <Route path="/page-two" element={<DriverDetail />} />
           </Routes>
         </Router>
