@@ -168,7 +168,41 @@ const DevicePage = ({ }) => {
 
   const handleView = async (driver) => {
     navigate('/page-two');
-  };
+
+      // navigate('/page-two', {
+  //     state: {
+  //       driverData: {
+  //         ...driver,          // Original driver data from your table
+  //         ...response.data    // API response data
+  //       }
+  //     }
+  //   });
+  // try {
+  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
+  //   const response = await axios.post(
+  //     apiUrl,
+  //     { drivingLicenceNumber: driver.licenseNo },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }
+  //   );
+    
+  //   console.log(response.data);
+    
+  //   // Navigate using React Router and pass data via state
+    
+    
+  // } catch (error) {
+  //   console.error("Error fetching driver details:", error);
+  //   alert("Failed to load driver details. Please try again.");
+  // }
+};
+
+  
+
+  
 
   if (loading) {
     return (
