@@ -6,12 +6,14 @@ import axios from 'axios'
 import { BASE_URL } from '../../../env';
 import { useNavigate } from 'react-router-dom';
 
+
+
+
 const DevicePage = ({ }) => {
   const [context, setContext] = useContext(Geotab); // Access both context object and setter
   const { geotabApi, geotabState, logger } = context;
   const [showCreateForm, setShowCreateForm] = useState(false);
   // const { logger } = context;
-
   const navigate = useNavigate();
 
   const {
@@ -185,7 +187,38 @@ const DevicePage = ({ }) => {
   };
 
 const handleView = async (driver) => {
+
+
   navigate('/page-two')
+  // navigate('/page-two', {
+  //     state: {
+  //       driverData: {
+  //         ...driver,          // Original driver data from your table
+  //         ...response.data    // API response data
+  //       }
+  //     }
+  //   });
+  // try {
+  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
+  //   const response = await axios.post(
+  //     apiUrl,
+  //     { drivingLicenceNumber: driver.licenseNo },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }
+  //   );
+    
+  //   console.log(response.data);
+    
+  //   // Navigate using React Router and pass data via state
+    
+    
+  // } catch (error) {
+  //   console.error("Error fetching driver details:", error);
+  //   alert("Failed to load driver details. Please try again.");
+  // }
 };
 
   return (
