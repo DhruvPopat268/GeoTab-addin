@@ -6,14 +6,10 @@ import axios from 'axios'
 import { BASE_URL } from '../../../env';
 import { useNavigate } from 'react-router-dom';
 
-
-
-
 const DevicePage = ({ }) => {
-  const [context, setContext] = useContext(Geotab); // Access both context object and setter
+  const [context, setContext] = useContext(Geotab);
   const { geotabApi, geotabState, logger } = context;
   const [showCreateForm, setShowCreateForm] = useState(false);
-  // const { logger } = context;
   const navigate = useNavigate();
 
   const {
@@ -37,15 +33,37 @@ const DevicePage = ({ }) => {
   const [editingDriver, setEditingDriver] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [filterStatus, setFilterStatus] = useState('All Statuses');
+  const [loading, setLoading] = useState(true);
 
   // Watch company selection for dependent fields
   const selectedCompany = watch('companyName');
 
+  // Fetch all drivers on component mount
   useEffect(() => {
-    console.log("original drivers are", originalDrivers)
-    console.log("displayed drivers are", displayedDrivers)
+    fetchAllDrivers();
+  }, []);
 
+  useEffect(() => {
+    console.log("original drivers are", originalDrivers);
+    console.log("displayed drivers are", displayedDrivers);
   }, [originalDrivers]);
+
+  const fetchAllDrivers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BASE_URL}/driver/getAllDrivers`);
+      
+      if (response.status === 200 && response.data.data) {
+        setOriginalDrivers(response.data.data);
+        setDisplayedDrivers(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+      alert(`Error fetching drivers: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onsubmit = async (data) => {
     const isEditing = Boolean(editingDriver);
@@ -71,44 +89,13 @@ const DevicePage = ({ }) => {
         }
       }
 
-      // Update UI
-      const updatedDrivers = isEditing
-        ? originalDrivers.map(driver =>
-          driver.id === editingDriver.id
-            ? {
-              ...data,
-              id: editingDriver.id,
-              fullName: `${data.firstName} ${data.surname}`,
-              dob: new Date(data.dob).toLocaleDateString('en-GB')
-            }
-            : driver
-        )
-        : [
-          ...originalDrivers,
-          {
-            id: Date.now(),
-            ...data,
-            fullName: `${data.firstName} ${data.surname}`,
-            dob: new Date(data.dob).toLocaleDateString('en-GB')
-          }
-        ];
+      // Refresh the data from server instead of manually updating state
+      await fetchAllDrivers();
 
-      setOriginalDrivers(updatedDrivers);
-      setDisplayedDrivers(updatedDrivers);
-
-      // Make sure these are AFTER async operations
+      // Reset form
       reset();
       setEditingDriver(null);
       setShowCreateForm(false);
-
-      // reset(); // keep this first
-      // setEditingDriver(null);
-
-      // Add this temporary debug line:
-      // setTimeout(() => {
-      //   setShowCreateForm(false);
-
-      // }, 1000);
 
       // Confirm visually
       alert(isEditing ? "Driver updated successfully" : "Driver created successfully");
@@ -119,9 +106,7 @@ const DevicePage = ({ }) => {
     }
   };
 
-
   const handleEdit = (driver) => {
-
     setEditingDriver(driver);
     Object.entries(driver).forEach(([key, value]) => {
       if (key !== 'id' && key !== 'fullName') {
@@ -136,14 +121,13 @@ const DevicePage = ({ }) => {
   };
 
   const cancelDelete = () => {
-    setShowDeleteConfirm(null); // This closes the confirmation modal
+    setShowDeleteConfirm(null);
   };
 
   const confirmDelete = async () => {
     try {
       if (!showDeleteConfirm) return;
 
-      // Call backend API to delete by emai
       const res = await axios.delete(`${BASE_URL}/driver/delete`, {
         data: { email: showDeleteConfirm.email }
       });
@@ -152,12 +136,8 @@ const DevicePage = ({ }) => {
         throw new Error(res.data.message || "Delete failed");
       }
 
-      // Update UI state
-      const updatedDrivers = originalDrivers.filter(
-        d => d.email !== showDeleteConfirm.email
-      );
-      setOriginalDrivers(updatedDrivers);
-      setDisplayedDrivers(updatedDrivers);
+      // Refresh the data from server
+      await fetchAllDrivers();
 
       // Close modal and show success
       setShowDeleteConfirm(null);
@@ -186,39 +166,19 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-const handleView = async (driver) => {
+  const handleView = async (driver) => {
+    navigate('/page-two');
+  };
 
-  navigate('/page-two')
-  // navigate('/page-two', {
-  //     state: {
-  //       driverData: {
-  //         ...driver,          // Original driver data from your table
-  //         ...response.data    // API response data
-  //       }
-  //     }
-  //   });
-  // try {
-  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
-  //   const response = await axios.post(
-  //     apiUrl,
-  //     { drivingLicenceNumber: driver.licenseNo },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   );
-    
-  //   console.log(response.data);
-    
-  //   // Navigate using React Router and pass data via state
-    
-    
-  // } catch (error) {
-  //   console.error("Error fetching driver details:", error);
-  //   alert("Failed to load driver details. Please try again.");
-  // }
-};
+  if (loading) {
+    return (
+      <div className="root">
+        <div className="loading-container">
+          <p>Loading drivers...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="root">
@@ -268,7 +228,7 @@ const handleView = async (driver) => {
         {showCreateForm && (
           <div className="form-popup-overlay">
             <div className="form-popup-content">
-              <h2>Create New Driver</h2>
+              <h2>{editingDriver ? "Edit Driver" : "Create New Driver"}</h2>
               <button
                 className="close-btn"
                 onClick={() => setShowCreateForm(false)}
@@ -447,7 +407,6 @@ const handleView = async (driver) => {
                   <button type="submit" className="submit-btn">
                     {editingDriver ? "Update" : "Create Driver"}
                   </button>
-
                 </div>
               </form>
             </div>
@@ -477,7 +436,7 @@ const handleView = async (driver) => {
                 <td className="action-buttons">
                   <button
                     className="table-action-btn view"
-                    onClick={() => handleView(driver)} // Add your view handler
+                    onClick={() => handleView(driver)}
                   >
                     View
                   </button>
@@ -517,6 +476,7 @@ const handleView = async (driver) => {
           </tbody>
         </table>
       </div>
+
       {showDeleteConfirm && (
         <div className="delete-confirm-modal">
           <div className="delete-confirm-content">
