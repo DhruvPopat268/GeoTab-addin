@@ -188,7 +188,6 @@ const DevicePage = ({ }) => {
 
 const handleView = async (driver) => {
 
-
   navigate('/page-two')
   // navigate('/page-two', {
   //     state: {

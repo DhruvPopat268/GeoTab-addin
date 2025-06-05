@@ -17,7 +17,10 @@ const App = ({ geotabApi, geotabState, appName }) => {
       <GeotabContext.Provider value={[context, setContext]}>
         <Router>
           <Routes>
+
             <Route path="/" element={<DevicePage />} />
+            <Route path="/addin-addin-prayoshaAddIn" element={<DevicePage />} />
+
             <Route path="/driverDetail" element={<DriverDetail />} />
             <Route path="/page-two" element={<DriverDetail />} />
           </Routes>
