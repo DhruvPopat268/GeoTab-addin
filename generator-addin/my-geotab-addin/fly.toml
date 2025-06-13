@@ -1,0 +1,20 @@
+app = "MyGeoTab-addin"
+primary_region = "lhr"  # London region
+
+[build]
+
+[http_service]
+  internal_port = 7000  # Your backend port
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = '256mb'  # Free tier limit
+  cpu_kind = 'shared'
+  cpus = 1
+
+[env]
+  PORT = "3000"
+  NODE_ENV = "production"
