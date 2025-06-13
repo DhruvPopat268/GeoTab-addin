@@ -166,53 +166,44 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-  const handleView = async (driver) => {
-    navigate('/page-two');
-
-      // navigate('/page-two', {
-  //     state: {
-  //       driverData: {
-  //         ...driver,          // Original driver data from your table
-  //         ...response.data    // API response data
-  //       }
-  //     }
-  //   });
-  // try {
-  //   const apiUrl = 'https://c4u-online.co.uk/add-api/get-driver-details.php';
-  //   const response = await axios.post(
-  //     apiUrl,
-  //     { drivingLicenceNumber: driver.licenseNo },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     }
-  //   );
+const handleView = async (driver) => {
+  try {
+    console.log("Fetching token....")
+    const response = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token')
+    console.log(response.data?.token)
+    const token = response.data?.token
     
-  //   console.log(response.data);
+    if (!token) {
+      console.error("Token not received")
+      return
+    }
     
-  //   // Navigate using React Router and pass data via state
+    console.log("Fetching driver details....")
+    const driverDetailsResponse = await axios.post(
+      'https://erp.c4u-online.co.uk/api/third-party/driver-details',
+      {
+        drivingLicenceNumber: driver.licenseNo
+      },
+      {
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+          'X-XSRF-TOKEN': token,
+          'Accept': 'application/json'
+        }
+      }
+    )
     
+    console.log("Driver details:", driverDetailsResponse.data)
+    return driverDetailsResponse.data
     
-  // } catch (error) {
-  //   console.error("Error fetching driver details:", error);
-  //   alert("Failed to load driver details. Please try again.");
-  // }
-};
-
-  
-
-  
-
-  if (loading) {
-    return (
-      <div className="root">
-        <div className="loading-container">
-          <p>Loading drivers...</p>
-        </div>
-      </div>
-    );
+  } catch (err) {
+    console.error("Error in handleView:", err.response?.data || err.message)
+    throw err
   }
+}
+
+ 
 
   return (
     <div className="root">
