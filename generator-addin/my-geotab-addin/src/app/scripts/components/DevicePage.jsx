@@ -166,44 +166,62 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
+const axios = require('axios');
+
 const handleView = async (driver) => {
   try {
-    console.log("Fetching token....")
-    const response = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token')
-    console.log(response.data?.token)
-    const token = response.data?.token
-    
-    if (!token) {
-      console.error("Token not received")
-      return
-    }
-    
-    console.log("Fetching driver details....")
-    const driverDetailsResponse = await axios.post(
-      'https://erp.c4u-online.co.uk/api/third-party/driver-details',
+    console.log("Authenticating with DVLA...");
+
+    // Step 1: Generate token
+    const authResponse = await axios.post(
+      'https://driver-vehicle-licensing.api.gov.uk/thirdparty-access/v1/authenticate',
       {
-        drivingLicenceNumber: driver.licenseNo
+        userName: "paramounttransportconsultantsltd",
+        password: "PTc@2026"
       },
       {
         headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'X-XSRF-TOKEN': token,
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         }
       }
-    )
-    
-    console.log("Driver details:", driverDetailsResponse.data)
-    return driverDetailsResponse.data
-    
-  } catch (err) {
-    console.error("Error in handleView:", err.response?.data || err.message)
-    throw err
-  }
-}
+    );
 
- 
+    const token = authResponse.data?.token;
+
+    if (!token) {
+      console.error("Failed to obtain authentication token");
+      return;
+    }
+
+    console.log("Token received:", token);
+
+    // Step 2: Fetch driver details
+    console.log("Fetching driver details...");
+    const driverDetailsResponse = await axios.post(
+      'https://driver-vehicle-licensing.api.gov.uk/full-driver-enquiry/v1/driving-licences/retrieve',
+      {
+        drivingLicenceNumber: driver.licenseNo,
+        includeCPC: true,
+        includeTacho: true,
+        acceptPartialResponse: "true"
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Bearer token format
+          'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1'
+        }
+      }
+    );
+
+    console.log("Driver details received:", driverDetailsResponse.data);
+    return driverDetailsResponse.data;
+
+  } catch (err) {
+    console.error("Error in handleView:", err.response?.data || err.message);
+    throw err;
+  }
+};
 
   return (
     <div className="root">
