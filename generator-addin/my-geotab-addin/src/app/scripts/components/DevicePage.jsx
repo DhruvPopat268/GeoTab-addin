@@ -172,49 +172,74 @@ const DevicePage = ({ }) => {
   };
 
   // Updated handleView function to use serverless API
-  const handleView = async (driver) => {
-    if (!driver.licenseNo) {
-      alert("License number is required to view driver details");
-      return;
+ const handleView = async (driver) => {
+  if (!driver.licenseNo) {
+    alert("License number is required to view driver details");
+    return;
+  }
+
+  setViewLoading(driver.id);
+  
+  try {
+    console.log("Authenticating with DVLA API...");
+
+    // Step 1: Authenticate and get token
+    const authResponse = await fetch('https://driver-vehicle-licensing.api.gov.uk/thirdparty-access/v1/authenticate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userName: "paramounttransportconsultantsltd",
+        password: "PTc@2024"
+      })
+    });
+
+    if (!authResponse.ok) {
+      throw new Error(`Authentication failed: ${authResponse.status} ${authResponse.statusText}`);
     }
 
-    setViewLoading(driver.id);
-    
-    try {
-      console.log("Fetching driver details from DVLA...");
+    const authResult = await authResponse.json();
+    const token = authResult.token; // Adjust this based on the actual response structure
 
-      // Call your serverless function instead of direct DVLA API
-      const response = await fetch('/api/driver-details', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          licenseNo: driver.licenseNo
-        })
-      });
+    console.log("Authentication successful, fetching driver details...");
 
-      const result = await response.json();
+    // Step 2: Use token to fetch driver details
+    const driverResponse = await fetch('https://driver-vehicle-licensing.api.gov.uk/full-driver-enquiry/v1/driving-licences/retrieve', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
+        'Authorization': `Bearer ${token}` // Adjust format if needed (might be just token without Bearer)
+      },
+      body: JSON.stringify({
+        drivingLicenceNumber: driver.licenseNo,
+        includeCPC: true,
+        includeTacho: true,
+        acceptPartialResponse: "true"
+      })
+    });
 
-      if (result.success) {
-        console.log("Driver details received:", result.data);
-        setDriverDetails({
-          driver: driver,
-          dvlaData: result.data
-        });
-        setShowDriverDetails(true);
-      } else {
-        console.error("Error:", result.error);
-        alert(`Error fetching driver details: ${result.error}`);
-      }
-
-    } catch (err) {
-      console.error("Error in handleView:", err);
-      alert(`Error fetching driver details: ${err.message}`);
-    } finally {
-      setViewLoading(null);
+    if (!driverResponse.ok) {
+      throw new Error(`Driver details fetch failed: ${driverResponse.status} ${driverResponse.statusText}`);
     }
-  };
+
+    const driverData = await driverResponse.json();
+
+    console.log("Driver details received:", driverData);
+    setDriverDetails({
+      driver: driver,
+      dvlaData: driverData
+    });
+    setShowDriverDetails(true);
+
+  } catch (err) {
+    console.error("Error in handleView:", err);
+    alert(`Error fetching driver details: ${err.message}`);
+  } finally {
+    setViewLoading(null);
+  }
+};
 
   return (
     <div className="root">
