@@ -1,0 +1,8 @@
+{
+  "regions": ["lhr1"],
+  "functions": {
+    "app/api/**": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

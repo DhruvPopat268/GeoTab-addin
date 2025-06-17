@@ -34,6 +34,11 @@ const DevicePage = ({ }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [filterStatus, setFilterStatus] = useState('All Statuses');
   const [loading, setLoading] = useState(true);
+  
+  // New state for DVLA view functionality
+  const [viewLoading, setViewLoading] = useState(null);
+  const [driverDetails, setDriverDetails] = useState(null);
+  const [showDriverDetails, setShowDriverDetails] = useState(false);
 
   // Watch company selection for dependent fields
   const selectedCompany = watch('companyName');
@@ -166,62 +171,50 @@ const DevicePage = ({ }) => {
     setDisplayedDrivers(originalDrivers);
   };
 
-const axios = require('axios');
-
-const handleView = async (driver) => {
-  try {
-    console.log("Authenticating with DVLA...");
-
-    // Step 1: Generate token
-    const authResponse = await axios.post(
-      'https://driver-vehicle-licensing.api.gov.uk/thirdparty-access/v1/authenticate',
-      {
-        userName: "paramounttransportconsultantsltd",
-        password: "PTc@2026"
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    const token = authResponse.data?.token;
-
-    if (!token) {
-      console.error("Failed to obtain authentication token");
+  // Updated handleView function to use serverless API
+  const handleView = async (driver) => {
+    if (!driver.licenseNo) {
+      alert("License number is required to view driver details");
       return;
     }
 
-    console.log("Token received:", token);
+    setViewLoading(driver.id);
+    
+    try {
+      console.log("Fetching driver details from DVLA...");
 
-    // Step 2: Fetch driver details
-    console.log("Fetching driver details...");
-    const driverDetailsResponse = await axios.post(
-      'https://driver-vehicle-licensing.api.gov.uk/full-driver-enquiry/v1/driving-licences/retrieve',
-      {
-        drivingLicenceNumber: driver.licenseNo,
-        includeCPC: true,
-        includeTacho: true,
-        acceptPartialResponse: "true"
-      },
-      {
+      // Call your serverless function instead of direct DVLA API
+      const response = await fetch('/api/driver-details', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Bearer token format
-          'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1'
-        }
+        },
+        body: JSON.stringify({
+          licenseNo: driver.licenseNo
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log("Driver details received:", result.data);
+        setDriverDetails({
+          driver: driver,
+          dvlaData: result.data
+        });
+        setShowDriverDetails(true);
+      } else {
+        console.error("Error:", result.error);
+        alert(`Error fetching driver details: ${result.error}`);
       }
-    );
 
-    console.log("Driver details received:", driverDetailsResponse.data);
-    return driverDetailsResponse.data;
-
-  } catch (err) {
-    console.error("Error in handleView:", err.response?.data || err.message);
-    throw err;
-  }
-};
+    } catch (err) {
+      console.error("Error in handleView:", err);
+      alert(`Error fetching driver details: ${err.message}`);
+    } finally {
+      setViewLoading(null);
+    }
+  };
 
   return (
     <div className="root">
@@ -480,8 +473,9 @@ const handleView = async (driver) => {
                   <button
                     className="table-action-btn view"
                     onClick={() => handleView(driver)}
+                    disabled={viewLoading === driver.id}
                   >
-                    View
+                    {viewLoading === driver.id ? 'Loading...' : 'View'}
                   </button>
                   <button
                     className="table-action-btn"
@@ -519,6 +513,58 @@ const handleView = async (driver) => {
           </tbody>
         </table>
       </div>
+
+      {/* Driver Details Modal */}
+      {showDriverDetails && driverDetails && (
+        <div className="form-popup-overlay">
+          <div className="form-popup-content driver-details-modal">
+            <h2>Driver Details - {driverDetails.driver.fullName}</h2>
+            <button
+              className="close-btn"
+              onClick={() => {
+                setShowDriverDetails(false);
+                setDriverDetails(null);
+              }}
+            >
+              ×
+            </button>
+
+            <div className="driver-details-content">
+              <div className="details-section">
+                <h3>Local Driver Information</h3>
+                <div className="details-grid">
+                  <div><strong>Name:</strong> {driverDetails.driver.fullName}</div>
+                  <div><strong>License No:</strong> {driverDetails.driver.licenseNo}</div>
+                  <div><strong>Email:</strong> {driverDetails.driver.email}</div>
+                  <div><strong>Contact:</strong> {driverDetails.driver.contactNumber}</div>
+                  <div><strong>Company:</strong> {driverDetails.driver.companyName}</div>
+                  <div><strong>Status:</strong> {driverDetails.driver.driverStatus}</div>
+                </div>
+              </div>
+
+              <div className="details-section">
+                <h3>DVLA Information</h3>
+                <div className="dvla-details">
+                  <pre>{JSON.stringify(driverDetails.dvlaData, null, 2)}</pre>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDriverDetails(false);
+                  setDriverDetails(null);
+                }}
+                className="cancel-btn"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirm && (
         <div className="delete-confirm-modal">
