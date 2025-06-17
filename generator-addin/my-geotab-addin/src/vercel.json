@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/prayoshaAddIn.html"
+      "destination": "/app/prayoshaAddIn.html"
     }
   ],
   "headers": [
