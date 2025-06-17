@@ -172,7 +172,7 @@ const DevicePage = ({ }) => {
   };
 
   // Updated handleView function to use serverless API
- const handleView = async (driver) => {
+const handleView = async (driver) => {
   if (!driver.licenseNo) {
     alert("License number is required to view driver details");
     return;
@@ -181,61 +181,39 @@ const DevicePage = ({ }) => {
   setViewLoading(driver.id);
   
   try {
-    console.log("Authenticating with DVLA API...");
+    console.log("Authenticating with API...");
 
-    // Step 1: Authenticate and get token
-    const authResponse = await fetch('https://driver-vehicle-licensing.api.gov.uk/thirdparty-access/v1/authenticate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userName: "paramounttransportconsultantsltd",
-        password: "PTc@2024"
-      })
-    });
+    // Step 1: GET request to authenticate and get token (no headers needed)
+    const authResponse = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token');
 
-    if (!authResponse.ok) {
-      throw new Error(`Authentication failed: ${authResponse.status} ${authResponse.statusText}`);
-    }
-
-    const authResult = await authResponse.json();
-    const token = authResult.token; // Adjust this based on the actual response structure
+    const token = authResponse.data.token;
 
     console.log("Authentication successful, fetching driver details...");
 
-    // Step 2: Use token to fetch driver details
-    const driverResponse = await fetch('https://driver-vehicle-licensing.api.gov.uk/full-driver-enquiry/v1/driving-licences/retrieve', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
-        'Authorization': `Bearer ${token}` // Adjust format if needed (might be just token without Bearer)
+    // Step 2: POST request to fetch driver details with token
+    const driverResponse = await axios.post(
+      'https://erp.c4u-online.co.uk/api/third-party/driver-details',
+      {
+        drivingLicenceNumber: driver.licenseNo
       },
-      body: JSON.stringify({
-        drivingLicenceNumber: driver.licenseNo,
-        includeCPC: true,
-        includeTacho: true,
-        acceptPartialResponse: "true"
-      })
-    });
+      {
+        headers: {
+          'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
+          'Authorization': token
+        }
+      }
+    );
 
-    if (!driverResponse.ok) {
-      throw new Error(`Driver details fetch failed: ${driverResponse.status} ${driverResponse.statusText}`);
-    }
-
-    const driverData = await driverResponse.json();
-
-    console.log("Driver details received:", driverData);
+    console.log("Driver details received:", driverResponse.data);
     setDriverDetails({
       driver: driver,
-      dvlaData: driverData
+      dvlaData: driverResponse.data
     });
     setShowDriverDetails(true);
 
   } catch (err) {
     console.error("Error in handleView:", err);
-    alert(`Error fetching driver details: ${err.message}`);
+    alert(`Error fetching driver details: ${err.response?.data?.message || err.message}`);
   } finally {
     setViewLoading(null);
   }
