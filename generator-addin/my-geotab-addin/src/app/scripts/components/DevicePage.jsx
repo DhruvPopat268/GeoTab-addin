@@ -3,7 +3,7 @@ import Geotab from '../contexts/Geotab';
 import { useForm } from 'react-hook-form';
 import './DevicePage.css';
 import axios from 'axios'
-import { BASE_URL } from '../../../env';
+import { BASE_URL } from '../../../env.js';
 import { useNavigate } from 'react-router-dom';
 
 const DevicePage = ({ }) => {
