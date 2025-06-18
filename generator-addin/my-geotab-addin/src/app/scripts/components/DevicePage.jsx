@@ -173,50 +173,52 @@ const DevicePage = ({ }) => {
 
   // Updated handleView function to use serverless API
 const handleView = async (driver) => {
-  if (!driver.licenseNo) {
-    alert("License number is required to view driver details");
-    return;
-  }
+  // if (!driver.licenseNo) {
+  //   alert("License number is required to view driver details");
+  //   return;
+  // }
 
-  setViewLoading(driver.id);
+  // setViewLoading(driver.id);
   
-  try {
-    console.log("Authenticating with API...");
+  // try {
+  //   console.log("Authenticating with API...");
 
-    // Step 1: GET request to authenticate and get token (no headers needed)
-    const authResponse = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token');
+  //   // Step 1: GET request to authenticate and get token (no headers needed)
+  //   const authResponse = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token');
 
-    const token = authResponse.data.token;
+  //   const token = authResponse.data.token;
 
-    console.log("Authentication successful, fetching driver details...");
+  //   console.log("Authentication successful, fetching driver details..." , token);
 
-    // Step 2: POST request to fetch driver details with token
-    const driverResponse = await axios.post(
-      'https://erp.c4u-online.co.uk/api/third-party/driver-details',
-      {
-        drivingLicenceNumber: driver.licenseNo
-      },
-      {
-        headers: {
-          'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
-          'Authorization': token
-        }
-      }
-    );
+  //   // Step 2: POST request to fetch driver details with token
+  //   const driverResponse = await axios.post(
+  //     'https://erp.c4u-online.co.uk/api/third-party/driver-details',
+  //     {
+  //       drivingLicenceNumber: driver.licenseNo
+  //     },
+  //     {
+  //       headers: {
+  //         'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
+  //         'Authorization': token
+  //       }
+  //     }
+  //   );
 
-    console.log("Driver details received:", driverResponse.data);
-    setDriverDetails({
-      driver: driver,
-      dvlaData: driverResponse.data
-    });
-    setShowDriverDetails(true);
+  //   console.log("Driver details received:", driverResponse.data);
+  //   setDriverDetails({
+  //     driver: driver,
+  //     dvlaData: driverResponse.data
+  //   });
+  //   setShowDriverDetails(true);
 
-  } catch (err) {
-    console.error("Error in handleView:", err);
-    alert(`Error fetching driver details: ${err.response?.data?.message || err.message}`);
-  } finally {
-    setViewLoading(null);
-  }
+  // } catch (err) {
+  //   console.error("Error in handleView:", err);
+  //   alert(`Error fetching driver details: ${err.response?.data?.message || err.message}`);
+  // } finally {
+  //   setViewLoading(null);
+  // }
+
+  navigate(`/page-two/?${driver.licenseNo}`)
 };
 
   return (

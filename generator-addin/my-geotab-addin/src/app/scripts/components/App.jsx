@@ -29,5 +29,4 @@ const App = ({ geotabApi, geotabState, appName }) => {
     </>
   );
 };
-
 export default App;
