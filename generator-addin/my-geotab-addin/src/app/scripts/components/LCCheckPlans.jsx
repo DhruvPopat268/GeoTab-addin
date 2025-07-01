@@ -16,7 +16,7 @@ const LCCheckPlans = () => {
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/api/plans`);
+      const res = await axios.get(`${API_URL}/api/plans`);
       console.log(res);
       const formatted = res.data.map((plan) => ({
         ...plan,
