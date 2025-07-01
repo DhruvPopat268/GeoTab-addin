@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 7000;
 const connectToDb = require('./database/db');
-const driverRoutes = require('./routes/driver');
+const driver = require('./routes/driver');
 const driverDataRoutes = require('./routes/driverDataRoute')
 const userPaymentRoutes = require('./routes/UserPaymentRoute')
 
@@ -28,7 +28,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/driver', driverRoutes);
+app.use('/driver', driver);
 app.use('/driver/data', driverDataRoutes);
 app.use('/api/payments',userPaymentRoutes);
 
