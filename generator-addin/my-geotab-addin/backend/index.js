@@ -5,7 +5,8 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 7000;
 const connectToDb = require('./database/db');
-
+const driverRoute = require('./routes/driverRoute')
+const driverDataRoute = require('./routes/driverDataRoute')
 
 connectToDb();
 
@@ -26,7 +27,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
+app.use('/api/driver', driverRoute)
+app.use('/api/driverData', driverDataRoute)
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);

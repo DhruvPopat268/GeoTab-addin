@@ -58,7 +58,7 @@ const DevicePage = ({ }) => {
   const fetchAllDrivers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BASE_URL}/driver/getAllDrivers`);
+      const response = await axios.get(`${BASE_URL}/api/driver/getAllDrivers`);
       
       if (response.status === 200 && response.data.data) {
         setOriginalDrivers(response.data.data);
@@ -79,7 +79,7 @@ const DevicePage = ({ }) => {
       let res;
 
       if (isEditing) {
-        res = await axios.patch(`${BASE_URL}/driver/update`, {
+        res = await axios.patch(`${BASE_URL}/api/driver/update`, {
           email: editingDriver.email,
           updatedData: data
         });
@@ -88,7 +88,7 @@ const DevicePage = ({ }) => {
           throw new Error("Update failed");
         }
       } else {
-        res = await axios.post(`${BASE_URL}/driver/create`, data);
+        res = await axios.post(`${BASE_URL}/api/driver/create`, data);
 
         if (res.status === 409) {
           alert("User already exists");
@@ -135,7 +135,7 @@ const DevicePage = ({ }) => {
     try {
       if (!showDeleteConfirm) return;
 
-      const res = await axios.delete(`${BASE_URL}/driver/delete`, {
+      const res = await axios.delete(`${BASE_URL}/api/driver/delete`, {
         data: { email: showDeleteConfirm.email }
       });
 

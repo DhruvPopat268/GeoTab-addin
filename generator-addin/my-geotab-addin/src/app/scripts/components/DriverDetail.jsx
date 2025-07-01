@@ -196,7 +196,7 @@ const DriverLicenceSummary = () => {
                 setDriverData(driverData.data);
 
                 try {
-                    const backendResponse = await fetch(`${BASE_URL}/driver/data`, {
+                    const backendResponse = await fetch(`${BASE_URL}/api/driverData`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
