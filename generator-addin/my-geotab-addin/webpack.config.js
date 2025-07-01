@@ -2,8 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack'); // Import webpack
-const dotenv = require('dotenv'); // Import dotenv
+const webpack = require('webpack');
+const dotenv = require('dotenv');
 const config = require('./src/config.json');
 
 const { name: appName } = config;
@@ -15,22 +15,17 @@ const transform = function (content, path) {
   const { name } = config;
 
   for (let i = 0; i < len; i++) {
-
     config.items[i].url = `${name}/` + config.items[i].url;
-
     config.items[i].icon = `${name}/` + config.items[i].icon;
-
   }
 
   delete config['dev'];
   let response = JSON.stringify(config, null, 2);
-  // Returned string is written to file
   return response;
 }
 
 const jsFileName = () => {
   let fileName = '[name]-[contenthash].js'
-
   return fileName
 }
 
@@ -51,7 +46,7 @@ module.exports = (env) => {
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'main.js', // ✅ static filename
+      filename: 'main.js',
       assetModuleFilename: '[name][ext]',
       clean: true
     },
@@ -82,7 +77,8 @@ module.exports = (env) => {
           test: /\.css$/i,
           use: [
             MiniCssExtractPlugin.loader,
-            "css-loader", "postcss-loader",
+            "css-loader", 
+            "postcss-loader",
           ]
         },
         {
@@ -91,15 +87,28 @@ module.exports = (env) => {
           use: {
             loader: 'babel-loader',
             options: {
-
-              presets: ['@babel/preset-env', ["@babel/preset-react", {
-                "runtime": "automatic"
-              }]]
-
+              presets: [
+                '@babel/preset-env', 
+                ["@babel/preset-react", {
+                  "runtime": "automatic"
+                }]
+              ]
             }
           }
         },
-
+        {
+          test: /\.(ts|tsx)$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                transpileOnly: true,
+                configFile: 'tsconfig.json'
+              }
+            }
+          ]
+        },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
           type: 'asset/resource'
@@ -127,11 +136,18 @@ module.exports = (env) => {
           },
           { from: path.resolve(__dirname, 'public', 'addin.js'), to: path.resolve(__dirname, 'dist') },
           { from: path.resolve(__dirname, 'public', 'manifest.json'), to: path.resolve(__dirname, 'dist') },
-          { from: path.resolve(__dirname, 'public', '_redirects'), to: path.resolve(__dirname, 'dist') }, // Added line for _redirects
-          { from: path.resolve(__dirname, 'public', 'translations'), to: path.resolve(__dirname, 'dist', 'translations') }, // Copy translations folder
+          { from: path.resolve(__dirname, 'public', '_redirects'), to: path.resolve(__dirname, 'dist') },
+          { from: path.resolve(__dirname, 'public', 'translations'), to: path.resolve(__dirname, 'dist', 'translations') },
         ]
       }),
-      new webpack.DefinePlugin(envVars), // Add DefinePlugin here
-    ]
+      new webpack.DefinePlugin(envVars),
+    ],
+
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js', '.jsx'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+    },
   };
 };

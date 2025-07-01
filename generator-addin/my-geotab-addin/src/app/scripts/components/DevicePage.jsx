@@ -1,10 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Geotab from '../contexts/Geotab';
 import { useForm } from 'react-hook-form';
-import './DevicePage.css';
+import './componentStyles/DevicePage.css';
 import axios from 'axios'
 import { BASE_URL } from '../../../env.js';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar.jsx';
+
 
 const DevicePage = ({ }) => {
   const [context, setContext] = useContext(Geotab);
@@ -173,56 +175,15 @@ const DevicePage = ({ }) => {
 
   // Updated handleView function to use serverless API
 const handleView = async (driver) => {
-  // if (!driver.licenseNo) {
-  //   alert("License number is required to view driver details");
-  //   return;
-  // }
-
-  // setViewLoading(driver.id);
   
-  // try {
-  //   console.log("Authenticating with API...");
-
-  //   // Step 1: GET request to authenticate and get token (no headers needed)
-  //   const authResponse = await axios.get('https://erp.c4u-online.co.uk/api/driver/get/token');
-
-  //   const token = authResponse.data.token;
-
-  //   console.log("Authentication successful, fetching driver details..." , token);
-
-  //   // Step 2: POST request to fetch driver details with token
-  //   const driverResponse = await axios.post(
-  //     'https://erp.c4u-online.co.uk/api/third-party/driver-details',
-  //     {
-  //       drivingLicenceNumber: driver.licenseNo
-  //     },
-  //     {
-  //       headers: {
-  //         'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
-  //         'Authorization': token
-  //       }
-  //     }
-  //   );
-
-  //   console.log("Driver details received:", driverResponse.data);
-  //   setDriverDetails({
-  //     driver: driver,
-  //     dvlaData: driverResponse.data
-  //   });
-  //   setShowDriverDetails(true);
-
-  // } catch (err) {
-  //   console.error("Error in handleView:", err);
-  //   alert(`Error fetching driver details: ${err.response?.data?.message || err.message}`);
-  // } finally {
-  //   setViewLoading(null);
-  // }
-
-  navigate(`/page-two/?${driver.licenseNo}`)
+  navigate(`/driverDetail/?${driver.licenseNo}`)
 };
 
   return (
+    
     <div className="root">
+            <Navbar />
+
       <div className='main-con'>
         <div className="filter-container">
           <div className="filter-header">
@@ -480,7 +441,7 @@ const handleView = async (driver) => {
                     onClick={() => handleView(driver)}
                     disabled={viewLoading === driver.id}
                   >
-                    {viewLoading === driver.id ? 'Loading...' : 'View'}
+                    {viewLoading === driver.id ? 'Loading...' : 'Sync'}
                   </button>
                   <button
                     className="table-action-btn"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Navbar from './Navbar.jsx';
 
 const DriverLicenceSummary = () => {
     const [driverData, setDriverData] = useState(null);
@@ -19,7 +20,7 @@ const DriverLicenceSummary = () => {
             // Create a new window for printing
             const printWindow = window.open('', '_blank');
             const element = targetRef.current;
-            
+
             if (!element || !printWindow) {
                 throw new Error('Unable to create print window');
             }
@@ -88,11 +89,11 @@ const DriverLicenceSummary = () => {
             printWindow.document.close();
 
             // Wait for the content to load
-            printWindow.onload = function() {
+            printWindow.onload = function () {
                 setTimeout(() => {
                     // Print the window
                     printWindow.print();
-                    
+
                     // Close the window after printing
                     setTimeout(() => {
                         printWindow.close();
@@ -148,11 +149,13 @@ const DriverLicenceSummary = () => {
     // Fetch driver data from API
     const fetchDriverData = async () => {
         try {
+            console.log("data",window.geotab?.api);
+
             setLoading(true);
             setError(null);
 
             const drivingLicenceNumber = getDrivingLicenceFromUrl();
-            
+
             if (!drivingLicenceNumber) {
                 throw new Error('Driving licence number not found in URL');
             }
@@ -189,6 +192,30 @@ const DriverLicenceSummary = () => {
 
             if (driverData.status && driverData.data) {
                 setDriverData(driverData.data);
+
+                try {
+                    const backendResponse = await fetch('http://localhost:5000/driver/driverData', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            data: driverData.data
+                        })
+                    });
+
+                    if (!backendResponse.ok) {
+                        const backendError = await backendResponse.json();
+                        console.error("Backend error:", backendError);
+                        throw new Error(backendError.message || 'Failed to save driver data');
+                    }
+
+                    const result = await backendResponse.json();
+                    console.log(result.message);
+                } catch (backendErr) {
+                    console.error("Error storing driver data in backend:", backendErr);
+                }
+
             } else {
                 throw new Error('Invalid API response format or no data found');
             }
@@ -279,9 +306,11 @@ const DriverLicenceSummary = () => {
 
     return (
         <>
+            <Navbar />
+
             {/* Download button positioned on the right */}
-            <div className='download' style={{ 
-                marginBottom: '20px', 
+            <div className='download' style={{
+                marginBottom: '20px',
                 textAlign: 'right',
                 paddingRight: '20px'
             }}>

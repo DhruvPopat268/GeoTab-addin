@@ -1,0 +1,198 @@
+.dashboard-wrapper {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.dashboard-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.dashboard-subtitle {
+  font-size: 1.25rem;
+  color: #4b5563;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon.green {
+  color: #16a34a;
+}
+
+.icon.blue {
+  color: #2563eb;
+}
+
+.icon.purple {
+  color: #7c3aed;
+}
+
+.icon.orange {
+  color: #ea580c;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.stat-value.green {
+  color: #16a34a;
+}
+
+.stat-description {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.dashboard-sections {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+.section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.subscription {
+  margin-bottom: 2rem;
+}
+
+.subscription-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.subscription-plan {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.subscription-badge {
+  background: #e0f2fe;
+  color: #2563eb;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+}
+
+.subscription-usage {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.subscription-body progress {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  margin: 0.5rem 0;
+}
+
+.subscription-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.activity-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #3b82f6;
+  border-radius: 9999px;
+}
+
+.activity-info {
+  flex-grow: 1;
+}
+
+.activity-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.activity-api {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.eye-icon {
+  color: #9ca3af;
+}
+
+.button-container {
+  margin-top: 1.5rem;
+}
+
+.outline-btn {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: white;
+  font-weight: 500;
+  cursor: pointer;
+}

@@ -1,0 +1,179 @@
+.lc-main {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.lc-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.lc-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.lc-header h1 {
+  font-size: 2.5rem;
+  color: #111827;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.lc-header p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.lc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.lc-card {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: white;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.border-gray {
+  border-color: #d1d5db;
+}
+
+.border-blue {
+  border: 2px solid #3b82f6;
+}
+
+.border-purple {
+  border: 1px solid #8b5cf6;
+}
+
+.lc-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+}
+
+.lc-badge .icon {
+  margin-right: 0.25rem;
+}
+
+.lc-card-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.lc-card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.lc-pricing .price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.lc-pricing .per-call,
+.lc-pricing .duration {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.api-calls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.highlight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.lc-card-footer {
+  margin-top: 1rem;
+}
+
+.lc-card-footer button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.lc-info-box {
+  margin-top: 4rem;
+  background: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.lc-info-box h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.lc-info-box p {
+  color: #6b7280;
+  margin-bottom: 2rem;
+}
+
+.lc-info-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.lc-info-grid .icon {
+  margin-bottom: 0.5rem;
+  color: #2563eb;
+}
