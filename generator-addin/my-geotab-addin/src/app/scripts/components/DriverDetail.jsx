@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar.jsx';
+import { BASE_URL } from '../../../env.js';
+
 
 const DriverLicenceSummary = () => {
     const [driverData, setDriverData] = useState(null);
@@ -194,7 +196,7 @@ const DriverLicenceSummary = () => {
                 setDriverData(driverData.data);
 
                 try {
-                    const backendResponse = await fetch('https://geotab-addin-backend.onrender.com/driver/driverData', {
+                    const backendResponse = await fetch(`${BASE_URL}/driver/driverData`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

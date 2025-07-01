@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 7000;
 const connectToDb = require('./database/db');
 const driverRoutes = require('./routes/driverRoute');
-const driverDataRoutes = require('./routes/driverDataRoute');
+const driverDataRoutes = require('./routes/driverDataRoute')
 const userPaymentRoutes = require('./routes/UserPaymentRoute')
 
 connectToDb();
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/driver', driverRoutes);
-app.use('/driverData', driverDataRoutes);
+app.use('/driver', driverDataRoutes);
 app.use('/api/payments',userPaymentRoutes);
 
 app.listen(port, () => {
