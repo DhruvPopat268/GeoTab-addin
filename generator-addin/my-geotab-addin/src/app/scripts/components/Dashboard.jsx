@@ -1,15 +1,11 @@
-import React, { useEffect, useContext , useState} from 'react';
+import React,{useEffect , useContext} from 'react';
 import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
 import { Link } from 'react-router-dom';
-import GeotabContext from '../contexts/Geotab.js'
+import GeotabContext from '../contexts/Geotab.js';
 
 const Dashboard = () => {
-
-  const [userInfo, setUserInfo] = useState(null);
-
-
   const userStats = {
     totalSpent: 65.0,
     totalCalls: 8750,
@@ -57,53 +53,45 @@ const Dashboard = () => {
     { id: '4', action: 'API Call', api: 'Weather API', timestamp: '3 hours ago' },
   ];
 
-  const getUserInfo = () => {
-    setLoading(true);
-    setError(null);
-
-    if (window.api?.getSession) {
-      window.api.getSession((credentials, server) => {
-        setUserInfo({
-          userId: credentials.userId,
-          userName: credentials.userName,
-          database: credentials.database,
-          server: server
-        });
-        setLoading(false);
-      });
-    } else {
-      setError("MyGeotab API not available");
-      setLoading(false);
-    }
-  };
-
-  return { userInfo, loading, error, getUserInfo };
-};
-
-const MyComponent = () => {
-  const { userInfo, getUserInfo } = useMyGeotabUser();
+  const [context] = useContext(GeotabContext);
+  const geotabApi = context?.geotabApi;
+  const geotabState = context?.geotabState;
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+  if (!geotabApi || !geotabState?.userId) return console.log("geotab object is missing");
 
+  geotabApi.call("Get", {
+    typeName: "User",
+    search: {
+      id: geotabState.userId
+    }
+  }, (users) => {
+    if (users && users.length > 0) {
+      const user = users[0];
+      const email = user.name; // This is usually the login email
+      console.log("Logged-in user email:", email);
 
-  const [context] = useContext(GeotabContext);
-  const user = context?.loggedInUser;
+      // 👉 Now you can use this email in API request to store with payment info
+      // e.g., axios.post('/api/save-payment', { email, paymentId, amount, ... });
+    }
+  }, (error) => {
+    console.error("Error fetching user email:", error);
+  });
+}, [geotabApi, geotabState]);
+
+const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+
+if (sessionDataRaw) {
+  const sessionData = JSON.parse(sessionDataRaw);
+  const email = sessionData.userName;
+  console.log("Logged-in user email:", email);
+} else {
+  console.warn("Session data not found in localStorage");
+}
 
   return (
     <div className="dashboard-wrapper">
       <Navbar />
-      <div>
-        <h3>User Information</h3>
-        {userInfo && (
-          <div>
-            <p><strong>User ID:</strong> {userInfo.userId}</p>
-            <p><strong>User Name:</strong> {userInfo.userName}</p>
-            <p><strong>Database:</strong> {userInfo.database}</p>
-          </div>
-        )}
-      </div>
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="dashboard-title">Dashboard</h1>
