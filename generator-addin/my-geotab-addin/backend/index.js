@@ -6,8 +6,6 @@ const app = express();
 const port = process.env.PORT || 7000;
 const connectToDb = require('./database/db');
 
-const driverDataRoutes = require('./routes/driverDataRoute')
-const userPaymentRoutes = require('./routes/UserPaymentRoute')
 
 connectToDb();
 
@@ -29,8 +27,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
-app.use('/driver/data', driverDataRoutes);
-app.use('/api/payments',userPaymentRoutes);
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);
