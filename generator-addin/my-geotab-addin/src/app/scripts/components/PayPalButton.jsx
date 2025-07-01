@@ -13,8 +13,11 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
 
     // 🔍 Get userName from localStorage (replace key if your DB is different)
     const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1"); // Change to match your DB key
+    console.log(sessionDataRaw)
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+    console.log(sessionData)
     const userName = sessionData?.userName || "unknown@user.com";
+    console.log(userName)
 
     const buttonInstance = window.paypal.Buttons({
       createOrder: (_, actions) => {
