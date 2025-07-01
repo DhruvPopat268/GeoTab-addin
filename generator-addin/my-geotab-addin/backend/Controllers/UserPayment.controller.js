@@ -4,6 +4,7 @@ const generatePaymentId = require('../utils/generateId');
 module.exports.recordPayment = async (req, res) => {
   try {
     const { userId, amount, paypalId } = req.body;
+    console.log(req.body)
     const paymentId = generatePaymentId();
 
     const paymentData = { paymentId, amount, paypalId };

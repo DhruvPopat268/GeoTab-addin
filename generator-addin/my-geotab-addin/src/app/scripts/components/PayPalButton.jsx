@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { BASE_URL } from '../../../env.js';
 
-
 const PayPalButton = ({ amount, userId, onSuccess }) => {
   const paypalRef = useRef(null);
 
@@ -11,6 +10,11 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
     paypalRef.current.innerHTML = '';
 
     let isCancelled = false;
+
+    // 🔍 Get userName from localStorage (replace key if your DB is different)
+    const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1"); // Change to match your DB key
+    const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+    const userName = sessionData?.userName || "unknown@user.com";
 
     const buttonInstance = window.paypal.Buttons({
       createOrder: (_, actions) => {
@@ -26,11 +30,11 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
         const res = await fetch(`${BASE_URL}/api/userPayment/record`, {
           method: 'POST',
           headers: { 
-            'Content-Type': 'application/json' ,
+            'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            userId,
+            userId:userName,
             amount,
             paypalId: details.id,
           }),
