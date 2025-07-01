@@ -54,11 +54,13 @@ const Dashboard = () => {
   ];
 
   const [context] = useContext(GeotabContext);
+  const user = context?.loggedInUser;
 
   return (
     <div className="dashboard-wrapper">
       <Navbar />
-      <h1>Welcome {context.loggedInUser?.name}</h1>
+      <h1>Welcome {user.name}</h1>
+      <p>Email: {user.name}</p>
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="dashboard-title">Dashboard</h1>
