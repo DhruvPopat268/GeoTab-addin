@@ -23,7 +23,7 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
       onApprove: async (_, actions) => {
         const details = await actions.order.capture();
 
-        const res = await fetch(`${BASE_URL}/api/payments/record`, {
+        const res = await fetch(`${BASE_URL}/api/userPayment/record`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json' ,
