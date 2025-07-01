@@ -194,7 +194,7 @@ const DriverLicenceSummary = () => {
                 setDriverData(driverData.data);
 
                 try {
-                    const backendResponse = await fetch('http://localhost:5000/driver/driverData', {
+                    const backendResponse = await fetch('https://geotab-addin-backend.onrender.com/driver/driverData', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
