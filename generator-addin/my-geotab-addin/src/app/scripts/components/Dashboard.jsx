@@ -81,7 +81,7 @@ const Dashboard = () => {
 };
 
 const MyComponent = () => {
-  const { userInfo, loading, error, getUserInfo } = useMyGeotabUser();
+  const { userInfo, getUserInfo } = useMyGeotabUser();
 
   useEffect(() => {
     getUserInfo();
