@@ -1,8 +1,9 @@
-import React from 'react';
+import React , {useEffect,useContext } from 'react';
 import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
 import { Link } from 'react-router-dom';
+import GeotabContext from '../contexts/Geotab.js'
 
 const Dashboard = () => {
   const userStats = {
@@ -52,9 +53,12 @@ const Dashboard = () => {
     { id: '4', action: 'API Call', api: 'Weather API', timestamp: '3 hours ago' },
   ];
 
+  const [context] = useContext(GeotabContext);
+
   return (
     <div className="dashboard-wrapper">
       <Navbar />
+      <h1>Welcome {context.loggedInUser?.name}</h1>
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="dashboard-title">Dashboard</h1>

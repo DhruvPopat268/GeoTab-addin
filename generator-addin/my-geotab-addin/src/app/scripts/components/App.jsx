@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DevicePage from './DevicePage.jsx';
 import DriverDetail from './DriverDetail.jsx'
 import GeotabContext from '../contexts/Geotab';
@@ -13,6 +13,40 @@ const App = ({ geotabApi, geotabState, appName }) => {
   const logger = Logger(appName);
   const [context, setContext] = useState({ geotabApi, geotabState, logger });
 
+  useEffect(() => {
+    const fetchLoggedInUser = async () => {
+      try {
+        console.log("Session Info:", geotabState.currentSession);
+
+        // Get the user info
+        geotabApi.call("Get", {
+          typeName: "User",
+          search: { id: geotabState.userId }
+        }, (user) => {
+          if (user && user.length > 0) {
+            console.log("Logged-in User Info:", user[0]);
+
+            // Optionally store it in context
+            setContext(prev => ({
+              ...prev,
+              loggedInUser: user[0]
+            }));
+          } else {
+            console.warn("User not found");
+          }
+        }, (error) => {
+          console.error("Error fetching user:", error);
+        });
+
+      } catch (err) {
+        console.error("Unexpected error getting user data:", err);
+      }
+    };
+
+    if (geotabApi && geotabState?.userId) {
+      fetchLoggedInUser();
+    }
+  }, [geotabApi, geotabState]);
 
 
   console.log("App loaded");
