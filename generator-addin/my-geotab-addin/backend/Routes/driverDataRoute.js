@@ -3,7 +3,7 @@ const router = express.Router();
 const DriverData = require('../models/driverData');
 
 // CREATE or UPDATE Driver Data
-router.post('/driverData', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const data = req.body.data;
     const licenceNumber = data?.driver?.drivingLicenceNumber;

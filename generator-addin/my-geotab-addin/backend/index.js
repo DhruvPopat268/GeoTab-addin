@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/driver', driverRoutes);
-app.use('/driver', driverDataRoutes);
+app.use('/driver/data', driverDataRoutes);
 app.use('/api/payments',userPaymentRoutes);
 
 app.listen(port, () => {
