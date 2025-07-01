@@ -10,7 +10,7 @@ module.exports.recordPayment = async (req, res) => {
     const paymentData = { paymentId, amount, paypalId };
 
     // Step 1: Check if user exists
-    let user = await User.findById(userId);
+    let user = await User.findOne({userId});
 
     // Step 2: If not, create user with first payment
     if (!user) {
