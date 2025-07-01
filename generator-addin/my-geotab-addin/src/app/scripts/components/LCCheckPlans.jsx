@@ -5,7 +5,7 @@ import Navbar from './Navbar.jsx';
 import { useToast } from '../hooks/use-toast.jsx';
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
-import { BASE_URL } from '../../../env.js';
+import { API_URL } from '../../../env.js';
 
 const LCCheckPlans = () => {
   const navigate = useNavigate();
