@@ -1,4 +1,4 @@
-import React , {useEffect,useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
@@ -6,6 +6,10 @@ import { Link } from 'react-router-dom';
 import GeotabContext from '../contexts/Geotab.js'
 
 const Dashboard = () => {
+
+  const [userInfo, setUserInfo] = useState(null);
+
+
   const userStats = {
     totalSpent: 65.0,
     totalCalls: 8750,
@@ -53,14 +57,53 @@ const Dashboard = () => {
     { id: '4', action: 'API Call', api: 'Weather API', timestamp: '3 hours ago' },
   ];
 
+  const getUserInfo = () => {
+    setLoading(true);
+    setError(null);
+
+    if (window.api?.getSession) {
+      window.api.getSession((credentials, server) => {
+        setUserInfo({
+          userId: credentials.userId,
+          userName: credentials.userName,
+          database: credentials.database,
+          server: server
+        });
+        setLoading(false);
+      });
+    } else {
+      setError("MyGeotab API not available");
+      setLoading(false);
+    }
+  };
+
+  return { userInfo, loading, error, getUserInfo };
+};
+
+const MyComponent = () => {
+  const { userInfo, loading, error, getUserInfo } = useMyGeotabUser();
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
+
   const [context] = useContext(GeotabContext);
   const user = context?.loggedInUser;
 
   return (
     <div className="dashboard-wrapper">
       <Navbar />
-      <h1>Welcome {user.name}</h1>
-      <p>Email: {user.name}</p>
+      <div>
+        <h3>User Information</h3>
+        {userInfo && (
+          <div>
+            <p><strong>User ID:</strong> {userInfo.userId}</p>
+            <p><strong>User Name:</strong> {userInfo.userName}</p>
+            <p><strong>Database:</strong> {userInfo.database}</p>
+          </div>
+        )}
+      </div>
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="dashboard-title">Dashboard</h1>
