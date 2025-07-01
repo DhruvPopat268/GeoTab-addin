@@ -8,8 +8,7 @@ const paymentSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
+  userId: String,
   payments: [paymentSchema]
 });
 

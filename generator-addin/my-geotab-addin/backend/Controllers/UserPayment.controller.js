@@ -14,7 +14,7 @@ module.exports.recordPayment = async (req, res) => {
     // Step 2: If not, create user with first payment
     if (!user) {
       user = new User({
-        _id: userId,
+        userId,
         payments: [paymentData]
       });
       await user.save();

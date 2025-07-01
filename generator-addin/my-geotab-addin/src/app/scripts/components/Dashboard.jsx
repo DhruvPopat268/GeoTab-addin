@@ -1,9 +1,8 @@
-import React,{useEffect , useContext} from 'react';
+import React from 'react';
 import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
 import { Link } from 'react-router-dom';
-import GeotabContext from '../contexts/Geotab.js';
 
 const Dashboard = () => {
   const userStats = {
@@ -52,42 +51,6 @@ const Dashboard = () => {
     { id: '3', action: 'Plan Purchase', api: 'News API - Starter', timestamp: '2 hours ago' },
     { id: '4', action: 'API Call', api: 'Weather API', timestamp: '3 hours ago' },
   ];
-
-  const [context] = useContext(GeotabContext);
-  const geotabApi = context?.geotabApi;
-  const geotabState = context?.geotabState;
-
-  useEffect(() => {
-  if (!geotabApi || !geotabState?.userId) return console.log("geotab object is missing");
-
-  geotabApi.call("Get", {
-    typeName: "User",
-    search: {
-      id: geotabState.userId
-    }
-  }, (users) => {
-    if (users && users.length > 0) {
-      const user = users[0];
-      const email = user.name; // This is usually the login email
-      console.log("Logged-in user email:", email);
-
-      // 👉 Now you can use this email in API request to store with payment info
-      // e.g., axios.post('/api/save-payment', { email, paymentId, amount, ... });
-    }
-  }, (error) => {
-    console.error("Error fetching user email:", error);
-  });
-}, [geotabApi, geotabState]);
-
-const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
-
-if (sessionDataRaw) {
-  const sessionData = JSON.parse(sessionDataRaw);
-  const email = sessionData.userName;
-  console.log("Logged-in user email:", email);
-} else {
-  console.warn("Session data not found in localStorage");
-}
 
   return (
     <div className="dashboard-wrapper">
