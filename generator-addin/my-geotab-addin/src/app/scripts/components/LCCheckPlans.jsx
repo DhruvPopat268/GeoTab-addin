@@ -1,71 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Star, Zap, Shield, Clock } from 'lucide-react';
+import { Check, Star, Zap, Shield, Clock, CreditCard } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import { useToast } from '../hooks/use-toast.jsx';
+import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
+import { BASE_URL } from '../../../env.js';
 
 const LCCheckPlans = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const plans = [
-    {
-      id: 'basic',
-      name: 'Basic',
-      price: 15,
-      calls: 1000,
-      duration: '1 month',
-      features: [
-        '1,000 API calls per month',
-        'Basic support',
-        'Standard response time',
-        'Email notifications',
-        'Basic analytics'
-      ],
-      colorClass: 'border-gray',
-      isPopular: false,
-    },
-    {
-      id: 'standard',
-      name: 'Standard',
-      price: 35,
-      calls: 5000,
-      duration: '1 month',
-      features: [
-        '5,000 API calls per month',
-        'Priority support',
-        'Faster response time',
-        'Real-time notifications',
-        'Advanced analytics',
-        'Custom webhooks'
-      ],
-      colorClass: 'border-blue',
-      isPopular: true,
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 75,
-      calls: 15000,
-      duration: '1 month',
-      features: [
-        '15,000 API calls per month',
-        '24/7 dedicated support',
-        'Fastest response time',
-        'Multi-channel notifications',
-        'Enterprise analytics',
-        'Custom integrations',
-        'SLA guarantee',
-        'White-label options'
-      ],
-      colorClass: 'border-purple',
-      isPopular: false,
-    },
-  ];
+  const fetchPlans = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${BASE_URL}/api/plans`);
+      console.log(res);
+      const formatted = res.data.map((plan) => ({
+        ...plan,
+        duration: '1 month',
+        features: [
+          `${plan.includedCalls.toLocaleString()} API calls per month`,
+          'Basic support',
+          'Standard response time',
+          'Email notifications',
+        ],
+        isPopular: plan.name === 'Standard',
+        colorClass:
+          plan.name === 'Enterprise'
+            ? 'border-purple'
+            : plan.name === 'Standard'
+            ? 'border-blue'
+            : 'border-gray',
+      }));
+      setPlans(formatted);
+    } catch (err) {
+      toast({ title: 'Error fetching plans', description: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
   const handlePurchase = (planId) => {
-    const plan = plans.find(p => p.id === planId);
+    const plan = plans.find(p => p._id === planId);
     if (plan) {
       localStorage.setItem('selectedPlan', JSON.stringify({
         apiId: 'lc-check',
@@ -84,95 +67,152 @@ const LCCheckPlans = () => {
     <div className="lc-main">
       <Navbar />
 
+      <div className="lc-header-section">
+        <div className="lc-header-container">
+          <div className="lc-header-content">
+            <h1 className="lc-main-title">LC Check API Plans</h1>
+            <p className="lc-main-description">
+              Choose the perfect plan for your LC (Letter of Credit) verification needs.
+              Our API provides comprehensive document validation and compliance checking.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="lc-container">
-        <div className="lc-header">
-          <h1>LC Check API Plans</h1>
-          <p>
-            Choose the perfect plan for your LC (Letter of Credit) verification needs.
-            Our API provides comprehensive document validation and compliance checking.
-          </p>
-        </div>
+        {loading ? (
+          <div className="lc-loading">
+            <div className="lc-loading-content">
+              <div className="lc-spinner"></div>
+              <p className="lc-loading-text">Loading plans...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="lc-grid">
+            {plans.map(plan => {
+              const pricePerCall = (plan.price / plan.includedCalls).toFixed(3);
+              return (
+                <div 
+                  key={plan._id} 
+                  className={`lc-card ${plan.isPopular ? 'lc-card-popular' : ''}`}
+                >
+                  
 
-        <div className="lc-grid">
-          {plans.map(plan => {
-            const pricePerCall = (plan.price / plan.calls).toFixed(3);
-            return (
-              <div key={plan.id} className={`lc-card ${plan.colorClass}`}>
-                {plan.isPopular && (
-                  <div className="lc-badge">
-                    <Star size={12} className="icon" />
-                    Most Popular
-                  </div>
-                )}
+                  <div className="lc-card-content">
+                    <div className="lc-plan-header">
+                      <h2 className="lc-plan-name">{plan.name}</h2>
+                      <div className="lc-pricing">
+                        <span className="lc-price">£{plan.price}</span>
+                        <span className="lc-price-period">/month</span>
+                      </div>
+                      <div className="lc-price-details">
+                        <p className="lc-price-per-call">£{pricePerCall} per call</p>
+                        <p className="lc-validity">Valid for {plan.duration}</p>
+                      </div>
+                    </div>
 
-                <div className="lc-card-header">
-                  <h2>{plan.name}</h2>
-                  <div className="lc-pricing">
-                    <div className="price">£{plan.price}</div>
-                    <div className="per-call">£{pricePerCall} per call</div>
-                    <div className="duration">Valid for {plan.duration}</div>
+                    <div className="lc-api-calls-highlight">
+                      <div className="lc-api-calls-content">
+                        <Zap size={20} className="lc-zap-icon" />
+                        <span className="lc-api-calls-text">
+                          {plan.includedCalls.toLocaleString()} API calls
+                        </span>
+                      </div>
+                    </div>
+
+                    <ul className="lc-features-list">
+                      {(plan.features || []).map((feature, i) => (
+                        <li key={i} className="lc-feature-item">
+                          <Check size={16} className="lc-check-icon" />
+                          <span className="lc-feature-text">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="lc-highlights">
+                      <div className="lc-highlight-item">
+                        <Shield size={16} className="lc-shield-icon" />
+                        <span>Enterprise-grade security</span>
+                      </div>
+                      <div className="lc-highlight-item">
+                        <Clock size={16} className="lc-clock-icon" />
+                        <span>Instant activation</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handlePurchase(plan._id)}
+                      className={`lc-purchase-btn ${plan.isPopular ? 'lc-purchase-btn-popular' : ''}`}
+                    >
+                      <CreditCard size={16} className="lc-btn-icon" />
+                      Get {plan.name} Plan
+                    </button>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
 
-                <div className="lc-card-content">
-                  <div className="api-calls">
-                    <Zap size={20} className="icon" />
-                    {plan.calls.toLocaleString()} API calls
-                  </div>
-
-                  <ul className="features">
-                    {plan.features.map((feature, i) => (
-                      <li key={i}>
-                        <Check size={16} className="icon" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="highlight">
-                    <Shield size={16} className="icon" />
-                    Enterprise-grade security
-                  </div>
-
-                  <div className="highlight">
-                    <Clock size={16} className="icon" />
-                    Instant activation
-                  </div>
-                </div>
-
-                <div className="lc-card-footer">
-                  <button onClick={() => handlePurchase(plan.id)}>
-                    Get {plan.name} Plan
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="lc-info-box">
-          <h2>What is LC Check API?</h2>
-          <p>
-            Our LC Check API provides comprehensive Letter of Credit verification and validation services.
-            It helps financial institutions, banks, and businesses verify the authenticity and compliance
-            of trade documents in international commerce.
-          </p>
+        <div className="lc-info-section">
+          <div className="lc-info-header">
+            <h2 className="lc-info-title">What is LC Check API?</h2>
+            <p className="lc-info-description">
+              Our LC Check API provides comprehensive Letter of Credit verification and validation services.
+              It helps financial institutions, banks, and businesses verify the authenticity and compliance
+              of trade documents in international commerce.
+            </p>
+          </div>
 
           <div className="lc-info-grid">
-            <div>
-              <Shield size={32} className="icon" />
-              <h3>Secure Verification</h3>
-              <p>Bank-grade security for document validation</p>
+            <div className="lc-info-item">
+              <div className="lc-info-icon lc-info-icon-blue">
+                <Shield size={32} />
+              </div>
+              <h3 className="lc-info-item-title">Secure Verification</h3>
+              <p className="lc-info-item-text">
+                Bank-grade security for document validation
+              </p>
             </div>
-            <div>
-              <Zap size={32} className="icon" />
-              <h3>Real-time Processing</h3>
-              <p>Instant API responses for time-critical operations</p>
+
+            <div className="lc-info-item">
+              <div className="lc-info-icon lc-info-icon-green">
+                <Zap size={32} />
+              </div>
+              <h3 className="lc-info-item-title">Real-time Processing</h3>
+              <p className="lc-info-item-text">
+                Instant API responses for time-critical operations
+              </p>
             </div>
-            <div>
-              <Check size={32} className="icon" />
-              <h3>Compliance Ready</h3>
-              <p>Meets international trade compliance standards</p>
+
+            <div className="lc-info-item">
+              <div className="lc-info-icon lc-info-icon-purple">
+                <Check size={32} />
+              </div>
+              <h3 className="lc-info-item-title">Compliance Ready</h3>
+              <p className="lc-info-item-text">
+                Meets international trade compliance standards
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="lc-trust-section">
+          <div className="lc-trust-content">
+            <p className="lc-trust-text">Trusted by financial institutions worldwide</p>
+            <div className="lc-trust-indicators">
+              <div className="lc-trust-item">
+                <Shield size={16} />
+                <span>SOC 2 Compliant</span>
+              </div>
+              <div className="lc-trust-item">
+                <Check size={16} />
+                <span>99.9% Uptime</span>
+              </div>
+              <div className="lc-trust-item">
+                <Clock size={16} />
+                <span>24/7 Support</span>
+              </div>
             </div>
           </div>
         </div>

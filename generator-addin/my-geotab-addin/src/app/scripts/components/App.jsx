@@ -27,7 +27,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
             <Route path="/" element={<Dashboard />} />
 
-            <Route path="/addin-addin-prayoshaAddIn" element={<DevicePage />} />
+            <Route path="/addin-prayosha-prayoshaAddIn" element={<DevicePage />} />
 
             <Route path="/lc-check" element={<DevicePage />} />
 

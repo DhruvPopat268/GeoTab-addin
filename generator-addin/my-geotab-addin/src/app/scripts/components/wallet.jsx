@@ -5,12 +5,14 @@ import {
 import Navbar from './Navbar.jsx';
 
 import './componentStyles/wallet.css';
+import PayPalButton from './PayPalButton.jsx';
 
 const Wallet = () => {
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paypal');
   const [isProcessing, setIsProcessing] = useState(false);
   const [balance] = useState(125.50);
+  const userId = 'AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn';
 
   const transactions = [
     { id: '1', type: 'deposit', amount: 50.00, description: 'PayPal Deposit', date: '2024-01-15 14:30', status: 'completed' },
@@ -96,20 +98,20 @@ const Wallet = () => {
                   ))}
                 </div>
 
-                <button
-                  className="paypal-button"
-                  onClick={handlePayPalDeposit}
-                  disabled={!depositAmount || parseFloat(depositAmount) <= 0 || isProcessing}
-                >
-                  {isProcessing ? (
-                    <div className="spinner">Processing...</div>
-                  ) : (
-                    <div className="paypal-button-content">
-                      <span className="method-icon white">PP</span>
-                      <span>Pay with PayPal</span>
-                    </div>
-                  )}
-                </button>
+                {selectedPaymentMethod === 'paypal' && depositAmount > 0 && (
+                  <div className="paypal-button">
+                    <PayPalButton
+                      amount={parseFloat(depositAmount)}
+                      userId={userId}
+                      onSuccess={(data) => {
+                        alert(`£${depositAmount} deposited successfully!`);
+                        setDepositAmount('');
+                        setIsProcessing(false);
+                        // Optionally refresh balance or transactions from backend
+                      }}
+                    />
+                  </div>
+                )}
 
                 <div className="secure-box">
                   <CheckCircle className="icon-green" size={16} />
