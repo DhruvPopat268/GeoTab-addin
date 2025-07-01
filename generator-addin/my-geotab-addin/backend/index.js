@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 7000;
 const connectToDb = require('./database/db');
-const driverRoutes = require('./routes/driverRoute.js');
+const driverRoutes = require('./routes/driverRoute');
 const driverDataRoutes = require('./routes/driverDataRoute')
 const userPaymentRoutes = require('./routes/UserPaymentRoute')
 
