@@ -31,3 +31,23 @@ module.exports.recordPayment = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to save payment' });
   }
 };
+
+module.exports.getUserPayments = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    const user = await User.findOne({ userId });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error('Error fetching user payments:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

@@ -4,4 +4,6 @@ const  recordPayment  = require('../Controllers/UserPayment.controller');
 
 router.post('/record', recordPayment.recordPayment);
 
+router.get('/getUserPayments', recordPayment.getUserPayments);
+
 module.exports = router;

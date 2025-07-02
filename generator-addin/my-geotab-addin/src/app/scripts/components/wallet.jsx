@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plus, Minus, ArrowUpRight, ArrowDownLeft, CreditCard, CheckCircle
 } from 'lucide-react';
 import Navbar from './Navbar.jsx';
-
 import './componentStyles/wallet.css';
 import PayPalButton from './PayPalButton.jsx';
+import { BASE_URL } from '../../../env.js';
+import axios from 'axios';
+
 
 const Wallet = () => {
   const [depositAmount, setDepositAmount] = useState('');
@@ -41,6 +43,30 @@ const Wallet = () => {
       hour: '2-digit', minute: '2-digit',
     });
   };
+
+
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1"); // Change to match your DB key
+  console.log(sessionDataRaw)
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  console.log(sessionData)
+  const userName = sessionData?.userName || "unknown@user.com";
+  console.log(userName)
+
+ useEffect(() => {
+  const fetchUserPayments = async() => {
+
+    try{
+      const response = await axios.get(`${BASE_URL}/api/userPayment/getUserPayments`,{
+        userId: userName,
+      })
+      console.log(response)
+
+    } catch(err){
+      console.log(err)
+    }
+  }
+  fetchUserPayments()
+ },[])
 
   return (
     <div className="wallet">
