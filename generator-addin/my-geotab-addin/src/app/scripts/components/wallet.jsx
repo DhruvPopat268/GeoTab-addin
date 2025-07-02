@@ -55,7 +55,7 @@ const Wallet = () => {
   const fetchUserPayments = async() => {
 
     try{
-      const response = await axios.get(`${BASE_URL}/api/userPayment/getUserPayments`,{
+      const response = await axios.post(`${BASE_URL}/api/userPayment/getUserPayments`,{
         userId: userName,
       })
       console.log(response)
