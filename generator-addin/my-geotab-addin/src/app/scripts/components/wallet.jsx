@@ -44,7 +44,6 @@ const Wallet = () => {
     });
   };
 
-
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1"); // Change to match your DB key
   console.log(sessionDataRaw)
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
