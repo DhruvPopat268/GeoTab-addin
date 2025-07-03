@@ -123,7 +123,7 @@ module.exports.wallet = async (req, res) => {
       return res.status(404).json({ message: 'Wallet not found' });
     }
 
-    res.json({
+    res.status(200).json({
       userId: wallet.userId,
       balance: wallet.balance,
       credits: wallet.credits,

@@ -3,24 +3,30 @@ import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
 import { Link } from 'react-router-dom';
+import { BASE_URL } from '../../../env.js';
+import axios from 'axios';
+
 
 const Dashboard = () => {
   const [walletData, setWalletData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  const userName = sessionData?.userName || "unknown@user.com";
+
   // Fetch wallet data from API
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL || 'YOUR_BASE_URL'}/api/UserWallet/wallet`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch wallet data');
-        }
-        const data = await response.json();
-        setWalletData(data);
+        const response = await axios.post(`${BASE_URL}/api/UserWallet/wallet`, {
+          userId: userName, // send userId in body
+        });
+
+        setWalletData(response.data); // response.data holds the returned JSON
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
@@ -154,8 +160,8 @@ const Dashboard = () => {
                       {walletData.credits} / {walletData.currentPlan.credits} credits
                     </span>
                   </div>
-                  <progress 
-                    max="100" 
+                  <progress
+                    max="100"
                     value={(walletData.credits / walletData.currentPlan.credits) * 100}
                   ></progress>
                   <div className="subscription-footer">
