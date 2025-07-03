@@ -7,34 +7,48 @@ module.exports.deposit = async (req, res) => {
 
     const paymentId = generatePaymentId(); // generate server-side
 
-    const update = {
-      $push: {
-        payments: {
+    // Step 1: Check if wallet exists
+    const existingWallet = await UserWallet.findOne({ userId });
+
+    if (existingWallet) {
+      // Step 2: Wallet exists – update balance and push payment
+      const updatedWallet = await UserWallet.findOneAndUpdate(
+        { userId },
+        {
+          $inc: { balance: amount },
+          $push: {
+            payments: {
+              paymentId,
+              paypalId,
+              amount,
+              date: new Date()
+            }
+          }
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({ message: "Deposit successful", wallet: updatedWallet });
+    } else {
+      // Step 3: First-time deposit – create new wallet
+      const newWallet = new UserWallet({
+        userId,
+        balance: amount,
+        credits: 0,
+        purchases: [],
+        payments: [{
           paymentId,
           paypalId,
           amount,
           date: new Date()
-        }
-      },
-      $inc: { balance: amount },
-      $setOnInsert: {
-        userId,
-        purchases: [],
-        credits: 0,
-        balance: 0,
-        payments: []
-      }
-    };
+        }]
+      });
 
-    const options = { upsert: true, new: true };
+      await newWallet.save();
 
-    const wallet = await UserWallet.findOneAndUpdate(
-      { userId },
-      update,
-      options
-    );
+      return res.status(200).json({ message: "Wallet created and deposit successful", wallet: newWallet });
+    }
 
-    res.status(200).json({ message: "Deposit successful", wallet });
   } catch (err) {
     console.log("Deposit error:", err);
     res.status(500).json({ message: "Internal server error" });
