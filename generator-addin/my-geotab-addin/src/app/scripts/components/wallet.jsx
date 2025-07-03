@@ -8,20 +8,75 @@ import PayPalButton from './PayPalButton.jsx';
 import { BASE_URL } from '../../../env.js';
 import axios from 'axios';
 
-
 const Wallet = () => {
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paypal');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [balance] = useState(125.50);
+  const [walletData, setWalletData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
   const userId = 'AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn';
 
-  const transactions = [
-    { id: '1', type: 'deposit', amount: 50.00, description: 'PayPal Deposit', date: '2024-01-15 14:30', status: 'completed' },
-    { id: '2', type: 'purchase', amount: -25.00, description: 'Weather API - Pro Plan', date: '2024-01-14 09:15', status: 'completed' },
-    { id: '3', type: 'deposit', amount: 100.00, description: 'PayPal Deposit', date: '2024-01-10 16:45', status: 'completed' },
-    { id: '4', type: 'purchase', amount: -15.00, description: 'Currency Exchange API - Basic Plan', date: '2024-01-08 11:20', status: 'completed' },
-  ];
+  // Fetch wallet data from API
+  useEffect(() => {
+    fetchWalletData();
+  }, []);
+
+  const fetchWalletData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BASE_URL}/api/UserWallet/wallet`);
+      setWalletData(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching wallet data:', err);
+      setError('Failed to load wallet data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Combine and sort transactions
+  const getAllTransactions = () => {
+    if (!walletData) return [];
+
+    const payments = walletData.payments.map(payment => ({
+      id: payment._id,
+      type: 'deposit',
+      amount: payment.amount,
+      description: 'PayPal Deposit',
+      date: payment.date,
+      status: 'completed',
+      paypalId: payment.paypalId
+    }));
+
+    const purchases = walletData.purchases.map(purchase => ({
+      id: purchase._id,
+      type: 'purchase',
+      amount: -purchase.amount,
+      description: `${purchase.description} Plan`,
+      date: purchase.date,
+      status: 'completed',
+      credits: purchase.credits
+    }));
+
+    return [...payments, ...purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+  };
+
+  // Filter transactions based on active tab
+  const getFilteredTransactions = () => {
+    const allTransactions = getAllTransactions();
+    
+    switch (activeTab) {
+      case 'deposits':
+        return allTransactions.filter(t => t.type === 'deposit');
+      case 'purchases':
+        return allTransactions.filter(t => t.type === 'purchase');
+      default:
+        return allTransactions;
+    }
+  };
 
   const handlePayPalDeposit = () => {
     const amount = parseFloat(depositAmount);
@@ -31,6 +86,8 @@ const Wallet = () => {
         setIsProcessing(false);
         alert(`£${amount} has been deposited via PayPal.`);
         setDepositAmount('');
+        // Refresh wallet data after successful deposit
+        fetchWalletData();
       }, 2000);
     } else {
       alert('Please enter a valid deposit amount.');
@@ -44,14 +101,34 @@ const Wallet = () => {
     });
   };
 
-  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1"); // Change to match your DB key
-  console.log(sessionDataRaw)
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
-  console.log(sessionData)
   const userName = sessionData?.userName || "unknown@user.com";
-  console.log(userName)
 
+  if (loading) {
+    return (
+      <div className="wallet">
+        <Navbar />
+        <div className="wallet-container">
+          <div className="loading">Loading wallet data...</div>
+        </div>
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="wallet">
+        <Navbar />
+        <div className="wallet-container">
+          <div className="error">
+            <p>{error}</p>
+            <button onClick={fetchWalletData}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="wallet">
@@ -69,8 +146,19 @@ const Wallet = () => {
                 <span>Account Balance</span>
               </div>
               <div className="card-content">
-                <div className="balance">£{balance.toFixed(2)}</div>
+                <div className="balance">£{walletData?.balance?.toFixed(2) || '0.00'}</div>
                 <div className="small-text">Available for API purchases</div>
+                {walletData?.credits && (
+                  <div className="credits-info">
+                    <div className="small-text">Credits: {walletData.credits}</div>
+                  </div>
+                )}
+                {walletData?.currentPlan && (
+                  <div className="current-plan">
+                    <div className="small-text">Current Plan: {walletData.currentPlan.description}</div>
+                    <div className="small-text">Expires: {formatDate(walletData.currentPlan.expiryDate)}</div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -118,7 +206,8 @@ const Wallet = () => {
                         alert(`£${depositAmount} deposited successfully!`);
                         setDepositAmount('');
                         setIsProcessing(false);
-                        // Optionally refresh balance or transactions from backend
+                        // Refresh wallet data after successful deposit
+                        fetchWalletData();
                       }}
                     />
                   </div>
@@ -145,38 +234,55 @@ const Wallet = () => {
               <div className="card-content">
                 <div className="tabs">
                   {['all', 'deposits', 'purchases'].map(type => (
-                    <button key={type}>{type}</button>
+                    <button 
+                      key={type}
+                      className={activeTab === type ? 'active' : ''}
+                      onClick={() => setActiveTab(type)}
+                    >
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
                   ))}
                 </div>
                 <div className="transactions">
-                  {transactions.map(transaction => (
-                    <div key={transaction.id} className="transaction">
-                      <div className="transaction-left">
-                        <div className={`circle-icon ${transaction.type}`}>
-                          {transaction.type === 'deposit' ? (
-                            <ArrowDownLeft className="icon-green" />
-                          ) : (
-                            <ArrowUpRight className="icon-red" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="bold-text">{transaction.description}</div>
-                          <div className="small-text">{formatDate(transaction.date)}</div>
-                        </div>
-                      </div>
-                      <div className="transaction-right">
-                        <div className={`amount ${transaction.amount > 0 ? 'green' : 'red'}`}>
-                          {transaction.amount > 0 ? '+' : ''}£{Math.abs(transaction.amount).toFixed(2)}
-                        </div>
-                        <span className="badge">{transaction.status}</span>
-                      </div>
+                  {getFilteredTransactions().length === 0 ? (
+                    <div className="no-transactions">
+                      <p>No {activeTab === 'all' ? '' : activeTab} transactions found.</p>
                     </div>
-                  ))}
+                  ) : (
+                    getFilteredTransactions().map(transaction => (
+                      <div key={transaction.id} className="transaction">
+                        <div className="transaction-left">
+                          <div className={`circle-icon ${transaction.type}`}>
+                            {transaction.type === 'deposit' ? (
+                              <ArrowDownLeft className="icon-green" />
+                            ) : (
+                              <ArrowUpRight className="icon-red" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="bold-text">{transaction.description}</div>
+                            <div className="small-text">{formatDate(transaction.date)}</div>
+                            {transaction.paypalId && (
+                              <div className="small-text">PayPal ID: {transaction.paypalId}</div>
+                            )}
+                            {transaction.credits && (
+                              <div className="small-text">Credits: {transaction.credits}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="transaction-right">
+                          <div className={`amount ${transaction.amount > 0 ? 'green' : 'red'}`}>
+                            {transaction.amount > 0 ? '+' : ''}£{Math.abs(transaction.amount).toFixed(2)}
+                          </div>
+                          <span className="badge">{transaction.status}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

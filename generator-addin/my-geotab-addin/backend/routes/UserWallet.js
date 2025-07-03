@@ -6,4 +6,6 @@ router.post('/deposit', UserWallet.deposit);
 
 router.post('/purchase', UserWallet.purchase);
 
+router.post('/wallet', UserWallet.wallet);
+
 module.exports = router;
