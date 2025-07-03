@@ -120,40 +120,7 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-sections">
-          {/* Current Plan Info */}
-          {walletData?.currentPlan && (
-            <div className="section">
-              <h2 className="section-title">Current Plan</h2>
-              <div className="subscription">
-                <div className="subscription-header">
-                  <div>
-                    <h3>{walletData.currentPlan.description} Plan</h3>
-                    <p className="subscription-plan">
-                      £{walletData.currentPlan.amount} - {walletData.currentPlan.credits} credits
-                    </p>
-                  </div>
-                  <span className="subscription-badge">active</span>
-                </div>
-                <div className="subscription-body">
-                  <div className="subscription-usage">
-                    <span>Usage</span>
-                    <span>
-                      {walletData.credits} / {walletData.currentPlan.credits} credits
-                    </span>
-                  </div>
-                  <progress
-                    max="100"
-                    value={(walletData.credits / walletData.currentPlan.credits) * 100}
-                  ></progress>
-                  <div className="subscription-footer">
-                    <span>{Math.max(0, walletData.currentPlan.credits - walletData.credits)} credits remaining</span>
-                    <span>Valid until {new Date(walletData.currentPlan.expiryDate).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
+          
           {/* Active Subscription */}
           {walletData?.currentPlan && (
             <div className="section">
@@ -166,30 +133,11 @@ const Dashboard = () => {
                       £{walletData.currentPlan.amount} - {walletData.currentPlan.credits} credits
                     </p>
                   </div>
-                  <span className="subscription-badge">active</span>
+                  
                 </div>
-                <div className="subscription-body">
-                  <div className="subscription-usage">
-                    <span>Usage</span>
-                    <span>
-                      {walletData.credits} / {walletData.currentPlan.credits} credits
-                    </span>
-                  </div>
-                  <progress
-                    max="100"
-                    value={(walletData.credits / walletData.currentPlan.credits) * 100}
-                  ></progress>
-                  <div className="subscription-footer">
-                    <span>{Math.max(0, walletData.currentPlan.credits - walletData.credits)} credits remaining</span>
-                    <span>Valid until {new Date(walletData.currentPlan.expiryDate).toLocaleDateString()}</span>
-                  </div>
-                </div>
+                
               </div>
-              <div className="button-container">
-                <Link to="/">
-                  <button className="outline-btn">Browse More Plans</button>
-                </Link>
-              </div>
+              
             </div>
           )}
 
@@ -208,58 +156,10 @@ const Dashboard = () => {
                   <span className="subscription-badge inactive">inactive</span>
                 </div>
               </div>
-              <div className="button-container">
-                <Link to="/">
-                  <button className="outline-btn">Browse Plans</button>
-                </Link>
-              </div>
+              
             </div>
           )}
-
-          {/* Recent Purchases */}
-          {walletData?.purchases && walletData.purchases.length > 0 && (
-            <div className="section">
-              <h2 className="section-title">Recent Purchases</h2>
-              {walletData.purchases.slice(-3).reverse().map((purchase, index) => (
-                <div key={purchase._id || index} className="activity-item">
-                  <div className="activity-dot"></div>
-                  <div className="activity-info">
-                    <div className="activity-action">
-                      <span>Plan Purchase</span>
-                      <CreditCard size={14} className="eye-icon" />
-                    </div>
-                    <div className="activity-api">
-                      {purchase.description} Plan - £{purchase.amount} ({purchase.credits} credits)
-                    </div>
-                  </div>
-                  <div className="activity-time">
-                    {new Date(purchase.date).toLocaleDateString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Activity */}
-          <div className="section">
-            <h2 className="section-title">Recent Activity</h2>
-            {recentActivity.map(item => (
-              <div key={item.id} className="activity-item">
-                <div className="activity-dot"></div>
-                <div className="activity-info">
-                  <div className="activity-action">
-                    <span>{item.action}</span>
-                    {item.action === 'API Call' && <Eye size={14} className="eye-icon" />}
-                  </div>
-                  <div className="activity-api">{item.api}</div>
-                </div>
-                <div className="activity-time">{item.timestamp}</div>
-              </div>
-            ))}
-            <div className="button-container">
-              <button className="outline-btn">View All Activity</button>
-            </div>
-          </div>
+      
         </div>
       </div>
     </div>

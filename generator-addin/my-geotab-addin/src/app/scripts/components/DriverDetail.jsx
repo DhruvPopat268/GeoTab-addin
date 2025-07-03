@@ -9,6 +9,10 @@ const DriverLicenceSummary = () => {
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
+    const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  const userName = sessionData?.userName || "unknown@user.com";
+
     const targetRef = useRef();
 
     // PDF Generation function using browser's print functionality
@@ -181,7 +185,8 @@ const DriverLicenceSummary = () => {
                         'Authorization': token
                     },
                     body: JSON.stringify({
-                        drivingLicenceNumber: drivingLicenceNumber
+                        drivingLicenceNumber: drivingLicenceNumber,
+                        userId:userName
                     })
                 }
             );
