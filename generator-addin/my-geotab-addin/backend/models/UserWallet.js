@@ -10,7 +10,7 @@ const paymentSchema = new mongoose.Schema({
 const purchaseSchema = new mongoose.Schema({
   planId: String, // ID or name of the plan purchased
   amount: Number,
-  description: String, // e.g., "Weather API - Pro Plan"
+  name: String, // e.g., "Weather API - Pro Plan"
   date: Date,
   credits: Number       // <-- Added credits here
 });

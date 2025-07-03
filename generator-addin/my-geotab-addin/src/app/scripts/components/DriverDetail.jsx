@@ -164,7 +164,7 @@ const DriverLicenceSummary = () => {
 
             console.log("Fetching data for licence:", drivingLicenceNumber);
 
-            const authResponse = await fetch('https://erp.c4u-online.co.uk/api/driver/get/token');
+            const authResponse = await fetch('https://api-monitoring-and-purchasing-platform-df9e.onrender.com/proxy/6864c4fbe3b94cbfacee2b3c');
             if (!authResponse.ok) {
                 throw new Error('Failed to get authentication token');
             }
@@ -172,7 +172,7 @@ const DriverLicenceSummary = () => {
             const token = authData.token;
 
             const driverResponse = await fetch(
-                'https://erp.c4u-online.co.uk/api/third-party/driver-details',
+                'https://api-monitoring-and-purchasing-platform-df9e.onrender.com/proxy/6864c95bcf7c6ae928c398c9',
                 {
                     method: 'POST',
                     headers: {

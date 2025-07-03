@@ -27,8 +27,6 @@ const Wallet = () => {
     fetchWalletData();
   }, []);
 
-
-
   const fetchWalletData = async () => {
     try {
       setLoading(true);

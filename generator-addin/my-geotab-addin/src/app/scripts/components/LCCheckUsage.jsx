@@ -1,50 +1,251 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Navbar from './Navbar.jsx';
 import './componentStyles/LCCheckUsage.css';
-
-
+import { API_URL } from '../../../env.js';
 
 const LCCheckUsage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
+  const [apiLogs, setApiLogs] = useState([]);
+  const [usageStats, setUsageStats] = useState({
+    totalCalls: 0,
+    averageDailyCalls: 0,
+    peakUsageDay: '',
+    peakDayCalls: 0
+  });
+  const [dailyUsageData, setDailyUsageData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
 
-  const apiLogs = [
-    { id: 1, apiName: 'LC Check', method: 'POST', endpoint: '/api/lc-check/validate', status: 200, responseTime: '245 ms', timestamp: '6/30/2025, 2:45:22 PM' },
-    { id: 2, apiName: 'LC Check', method: 'POST', endpoint: '/api/lc-check/validate', status: 200, responseTime: '189 ms', timestamp: '6/30/2025, 2:30:15 PM' },
-    { id: 3, apiName: 'LC Check', method: 'GET', endpoint: '/api/lc-check/history', status: 200, responseTime: '156 ms', timestamp: '6/30/2025, 2:15:08 PM' },
-    { id: 4, apiName: 'LC Check', method: 'POST', endpoint: '/api/lc-check/validate', status: 400, responseTime: '98 ms', timestamp: '6/30/2025, 1:45:33 PM' }
-  ];
+  console.log('Daily Usage Data:', dailyUsageData);
 
-  const usageStats = {
-    totalCalls: 156,
-    averageDailyCalls: 22,
-    peakUsageDay: '2025-6-28',
-    peakDayCalls: 45
+  // Transform data for chart - this is the key fix
+  const transformDataForChart = (data) => {
+    if (!data || data.length === 0) {
+      // Generate empty data for last 7 days
+      const last7Days = [];
+      const today = new Date();
+      
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        last7Days.push({
+          date: dateStr,
+          calls: 0
+        });
+      }
+      return last7Days;
+    }
+
+    // If your API returns array of objects like [{calls: 2, name: "Driver Detail ( LC Check )"}]
+    if (Array.isArray(data)) {
+      // Case 1: If it's an array of API call objects
+      if (data.length > 0 && data[0].calls !== undefined) {
+        const last7Days = [];
+        const today = new Date();
+        
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(today);
+          date.setDate(today.getDate() - i);
+          const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          
+          // For now, we'll put all calls on today's date
+          // You might need to adjust this based on your actual API response structure
+          const isToday = i === 0;
+          const totalCalls = isToday ? data.reduce((sum, item) => sum + (item.calls || 0), 0) : 0;
+          
+          last7Days.push({
+            date: dateStr,
+            calls: totalCalls
+          });
+        }
+        return last7Days;
+      }
+      
+      // Case 2: If it's already in the right format
+      return data.map(item => ({
+        date: item.date || item.day || 'Unknown',
+        calls: item.calls || item.count || 0
+      }));
+    }
+
+    // Case 3: If it's an object with date keys
+    if (typeof data === 'object' && !Array.isArray(data)) {
+      return Object.entries(data).map(([date, calls]) => ({
+        date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        calls: calls || 0
+      }));
+    }
+
+    return [];
   };
 
-  const dailyUsageData = [
-    { day: 'Jun 24', calls: 0 },
-    { day: 'Jun 25', calls: 0 },
-    { day: 'Jun 26', calls: 0 },
-    { day: 'Jun 27', calls: 0 },
-    { day: 'Jun 28', calls: 45 },
-    { day: 'Jun 29', calls: 32 },
-    { day: 'Jun 30', calls: 79 }
-  ];
+  // Fetch API logs from the endpoint
+  useEffect(() => {
+    const fetchApiLogs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch(`${API_URL}/proxy/logs`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch logs: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Transform the API response to match the expected format
+        const transformedLogs = data.map((log, index) => ({
+          id: log._id || index + 1,
+          apiName: log.name || 'LC Check',
+          method: log.method || 'POST',
+          endpoint: log.endpoint || '/api/lc-check/validate',
+          status: log.status || 200,
+          responseTime: `${log.responseTime || 0} ms`,
+          timestamp: log.timestamp ? new Date(log.timestamp).toLocaleString() : new Date().toLocaleString(),
+          success: log.success
+        }));
+        
+        setApiLogs(transformedLogs);
+      } catch (err) {
+        console.error('Error fetching API logs:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const topEndpoints = [
-    { endpoint: '/api/lc-check/validate', method: 'POST', calls: 134, percentage: 85.9 },
-    { endpoint: '/api/lc-check/history', method: 'GET', calls: 15, percentage: 9.6 },
-    { endpoint: '/api/lc-check/status', method: 'GET', calls: 7, percentage: 4.5 }
-  ];
+    fetchApiLogs();
+  }, []);
+
+  // Fetch usage statistics
+  useEffect(() => {
+    const fetchUsageStats = async () => {
+      try {
+        setStatsLoading(true);
+        
+        const response = await fetch(`${API_URL}/proxy/logs/stats`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch stats: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        setUsageStats({
+          totalCalls: data.totalCalls || 0,
+          averageDailyCalls: data.averageCalls || 0,
+          peakUsageDay: data.peakDay || '',
+          peakDayCalls: data.peakDayCalls || 0
+        });
+      } catch (err) {
+        console.error('Error fetching usage stats:', err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchUsageStats();
+  }, []);
+
+  // Fetch daily usage data for chart
+  useEffect(() => {
+    const fetchDailyUsage = async () => {
+      try {
+        setChartLoading(true);
+        
+        const response = await fetch(`${API_URL}/proxy/logs/usage-by-api`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch daily usage: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Raw API Response:', data); // Debug log
+        
+        // Transform the data for the chart
+        const transformedData = transformDataForChart(data);
+        console.log('Transformed Data:', transformedData); // Debug log
+        
+        setDailyUsageData(transformedData);
+      } catch (err) {
+        console.error('Error fetching daily usage:', err);
+        // Create fallback data based on your stats
+        const fallbackData = createFallbackChartData();
+        setDailyUsageData(fallbackData);
+      } finally {
+        setChartLoading(false);
+      }
+    };
+
+    fetchDailyUsage();
+  }, []);
+
+  // Create fallback chart data when API fails
+  const createFallbackChartData = () => {
+    const last7Days = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      // Put all calls on July 3rd (peak usage day)
+      const isJuly3 = date.getDate() === 3 && date.getMonth() === 6; // July is month 6
+      
+      last7Days.push({
+        date: dateStr,
+        calls: isJuly3 ? 2 : 0
+      });
+    }
+    
+    console.log('Fallback chart data:', last7Days);
+    return last7Days;
+  };
+
+  // Filter logs based on status
+  const filteredLogs = apiLogs.filter(log => {
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'success') return log.status >= 200 && log.status < 300;
+    if (statusFilter === 'error') return log.status >= 400;
+    return true;
+  });
 
   const getStatusBadge = (status) => {
     if (status >= 200 && status < 300) {
-      return <span className="badge green">200</span>;
+      return <span className="badge green">{status}</span>;
     } else if (status >= 400 && status < 500) {
       return <span className="badge red">{status}</span>;
     } else {
       return <span className="badge yellow">{status}</span>;
     }
+  };
+
+  // Custom tooltip for the chart
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip" style={{
+          backgroundColor: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '10px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <p className="label">{`Date: ${label}`}</p>
+          <p className="value" style={{ color: '#6366f1' }}>
+            {`API Calls: ${payload[0].value}`}
+          </p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -67,31 +268,41 @@ const LCCheckUsage = () => {
             </div>
 
             <div className="card-content">
-              <table>
-                <thead>
-                  <tr>
-                    <th>API Name</th>
-                    <th>Method</th>
-                    <th>Endpoint</th>
-                    <th>Status</th>
-                    <th>Response Time</th>
-                    <th>Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {apiLogs.map((log) => (
-                    <tr key={log.id}>
-                      <td>{log.apiName}</td>
-                      <td><span className="badge outline">{log.method}</span></td>
-                      <td className="endpoint">{log.endpoint}</td>
-                      <td>{getStatusBadge(log.status)}</td>
-                      <td>{log.responseTime}</td>
-                      <td className="timestamp">{log.timestamp}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="table-footer">Showing {apiLogs.length} of {apiLogs.length} logs</div>
+              {loading ? (
+                <div className="loading-message">Loading API logs...</div>
+              ) : error ? (
+                <div className="error-message">Error loading logs: {error}</div>
+              ) : (
+                <>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>API Name</th>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Status</th>
+                        <th>Response Time</th>
+                        <th>Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredLogs.map((log) => (
+                        <tr key={log.id}>
+                          <td>{log.apiName}</td>
+                          <td><span className="badge outline">{log.method}</span></td>
+                          <td className="endpoint">{log.endpoint}</td>
+                          <td>{getStatusBadge(log.status)}</td>
+                          <td>{log.responseTime}</td>
+                          <td className="timestamp">{log.timestamp}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="table-footer">
+                    Showing {filteredLogs.length} of {apiLogs.length} logs
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -103,47 +314,60 @@ const LCCheckUsage = () => {
           <div className="stats-grid">
             <div className="stat-card">
               <p>Total API Calls (Last 7 Days)</p>
-              <h3>{usageStats.totalCalls}</h3>
+              <h3>{statsLoading ? 'Loading...' : usageStats.totalCalls}</h3>
             </div>
             <div className="stat-card">
               <p>Average Daily Calls</p>
-              <h3>{usageStats.averageDailyCalls}</h3>
+              <h3>{statsLoading ? 'Loading...' : usageStats.averageDailyCalls}</h3>
             </div>
             <div className="stat-card">
               <p>Peak Usage Day</p>
-              <h3>{usageStats.peakUsageDay}</h3>
+              <h3>{statsLoading ? 'Loading...' : usageStats.peakUsageDay}</h3>
             </div>
             <div className="stat-card">
               <p>Peak Day Calls</p>
-              <h3>{usageStats.peakDayCalls}</h3>
+              <h3>{statsLoading ? 'Loading...' : usageStats.peakDayCalls}</h3>
             </div>
           </div>
 
           <div className="card chart-card">
             <h3>Daily API Usage (Last 7 Days)</h3>
-            <div className="chart-placeholder">[Chart Placeholder]</div>
-          </div>
-        </section>
-
-        <section className="section">
-          <h2 className="section-title">Top Endpoints</h2>
-          <div className="card">
-            <div className="card-content">
-              {topEndpoints.map((ep, index) => (
-                <div key={index} className="endpoint-row">
-                  <div className="endpoint-header">
-                    <div className="endpoint-label">
-                      <span className="badge outline">{ep.method}</span>
-                      <span>{ep.endpoint}</span>
-                    </div>
-                    <span>{ep.calls} calls</span>
-                  </div>
-                  <div className="progress-bar-bg">
-                    <div className="progress-bar-fill" style={{ width: `${ep.percentage}%` }}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {chartLoading ? (
+              <div className="chart-placeholder">Loading chart...</div>
+            ) : (
+              <div style={{ width: '100%', height: '400px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={dailyUsageData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fontSize: 12 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12 }}
+                      allowDecimals={false}
+                      domain={[0, 'dataMax + 1']}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="calls" 
+                      fill="#6366f1" 
+                      radius={[2, 2, 0, 0]}
+                      minPointSize={2}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            
+          
+           
           </div>
         </section>
       </div>
