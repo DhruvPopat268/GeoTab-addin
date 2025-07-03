@@ -66,7 +66,7 @@ module.exports.purchase = async (req, res) => {
     
     const amount = planDetails.price;
     const credits = planDetails.includedCalls;
-    const description = planDetails.name;
+    const name = planDetails.name;
     
     const wallet = await UserWallet.findOne({ userId });
     if (!wallet) {
@@ -85,7 +85,7 @@ module.exports.purchase = async (req, res) => {
     wallet.purchases.push({
       planId,
       amount,
-      description,
+      name,
       date: now,
       credits
     });
@@ -94,7 +94,6 @@ module.exports.purchase = async (req, res) => {
     wallet.currentPlan = {
       planId,
       amount,
-      description,
       date: now,
       expiryDate,
       credits

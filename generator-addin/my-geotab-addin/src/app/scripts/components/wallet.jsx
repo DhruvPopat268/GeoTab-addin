@@ -59,7 +59,7 @@ const Wallet = () => {
       id: purchase._id,
       type: 'purchase',
       amount: -purchase.amount,
-      description: `${purchase.description} Plan`,
+      name: `${purchase.name} Plan`,
       date: purchase.date,
       status: 'completed',
       credits: purchase.credits
@@ -262,7 +262,7 @@ const Wallet = () => {
                             )}
                           </div>
                           <div>
-                            <div className="bold-text">{transaction.description}</div>
+                            <div className="bold-text">{transaction.name}</div>
                             <div className="small-text">{formatDate(transaction.date)}</div>
                             {transaction.paypalId && (
                               <div className="small-text">PayPal ID: {transaction.paypalId}</div>
