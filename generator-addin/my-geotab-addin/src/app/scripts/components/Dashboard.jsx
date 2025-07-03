@@ -104,7 +104,7 @@ const Dashboard = () => {
               <span>Wallet Balance</span>
               <CreditCard className="icon green" />
             </div>
-            <div className="stat-value green">£{userStats.walletBalance}</div>
+            <div className="stat-value green">£{walletData.balance}</div>
             <p className="stat-description">Available for purchases</p>
           </div>
 
@@ -113,29 +113,10 @@ const Dashboard = () => {
               <span>Total Credits</span>
               <TrendingUp className="icon blue" />
             </div>
-            <div className="stat-value">{userStats.totalCredits}</div>
-            <p className="stat-description">
-              {walletData?.currentPlan?.description || 'Current'} Plan
-            </p>
+            <div className="stat-value">{walletData.credits}</div>
           </div>
 
-          <div className="stat-card">
-            <div className="stat-header">
-              <span>Credits Used</span>
-              <Activity className="icon purple" />
-            </div>
-            <div className="stat-value">{userStats.creditsUsed}</div>
-            <p className="stat-description">From current plan</p>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span>Credits Left</span>
-              <Zap className="icon orange" />
-            </div>
-            <div className="stat-value">{userStats.creditsLeft}</div>
-            <p className="stat-description">Remaining credits</p>
-          </div>
+          
         </div>
 
         <div className="dashboard-sections">
