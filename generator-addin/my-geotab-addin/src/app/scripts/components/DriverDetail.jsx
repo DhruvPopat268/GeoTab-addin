@@ -10,8 +10,8 @@ const DriverLicenceSummary = () => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
     const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
-  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
-  const userName = sessionData?.userName || "unknown@user.com";
+    const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+    const userName = sessionData?.userName || "unknown@user.com";
 
     const targetRef = useRef();
 
@@ -155,7 +155,7 @@ const DriverLicenceSummary = () => {
     // Fetch driver data from API
     const fetchDriverData = async () => {
         try {
-            console.log("data",window.geotab?.api);
+            console.log("data", window.geotab?.api);
 
             setLoading(true);
             setError(null);
@@ -186,7 +186,7 @@ const DriverLicenceSummary = () => {
                     },
                     body: JSON.stringify({
                         drivingLicenceNumber: drivingLicenceNumber,
-                        userId:userName
+                        userId: userName
                     })
                 }
             );
@@ -196,6 +196,8 @@ const DriverLicenceSummary = () => {
             }
 
             const driverData = await driverResponse.json();
+
+
 
             if (driverData.status && driverData.data) {
                 setDriverData(driverData.data);
@@ -219,6 +221,26 @@ const DriverLicenceSummary = () => {
 
                     const result = await backendResponse.json();
                     console.log(result.message);
+
+                    // ✅ After successful driverData post, call deductDeposit
+                    const deductResponse = await fetch(`${BASE_URL}/api/UserWallet/deductDeposit`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: userName  // make sure userName is defined
+                        })
+                    });
+
+                    const deductResult = await deductResponse.json();
+                    if (deductResponse.ok) {
+                        console.log("✅", deductResult.message); // "API call successful. 1 credit deducted."
+                        console.log("Remaining Credits:", deductResult.remainingCredits);
+                    } else {
+                        console.warn("❌ Failed to deduct credit:", deductResult.message);
+                    }
+
                 } catch (backendErr) {
                     console.error("Error storing driver data in backend:", backendErr);
                 }
@@ -226,6 +248,7 @@ const DriverLicenceSummary = () => {
             } else {
                 throw new Error('Invalid API response format or no data found');
             }
+
 
         } catch (err) {
             console.error("Error fetching driver data:", err);

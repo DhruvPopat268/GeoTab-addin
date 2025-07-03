@@ -10,4 +10,6 @@ router.post('/wallet', UserWallet.wallet);
 
 router.post('/checksEligibility', UserWallet.checksEligibility);
 
+router.post('/deductDeposit', UserWallet.deductCredit);
+
 module.exports = router;

@@ -92,6 +92,7 @@ module.exports.purchase = async (req, res) => {
     
     // Update currentPlan
     wallet.currentPlan = {
+      name,
       planId,
       amount,
       date: now,
@@ -140,7 +141,6 @@ module.exports.checksEligibility = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    // Validate userId
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -148,73 +148,42 @@ module.exports.checksEligibility = async (req, res) => {
       });
     }
 
-    // Find user wallet
-    const userWallet = await UserWallet.findOne({ userId });
+    const wallet = await UserWallet.findOne({ userId });
 
-    if (!userWallet) {
-      return res.status(404).json({
+    if (!wallet) {
+      return res.status(200).json({
         success: false,
         message: 'User wallet not found'
       });
     }
 
-    // Check if user has a current plan
-    if (!userWallet.currentPlan) {
-      return res.status(200).json({
-        success: true,
-        userId: userId,
-        planExpired: 'no_plan',
-        credits: userWallet.credits || 0,
-        message: 'No active plan found'
-      });
-    }
+    const plan = wallet.currentPlan;
 
-    // Get current date and plan expiry date
-    const currentDate = new Date();
-    const expiryDate = new Date(userWallet.currentPlan.expiryDate);
-    
-    // Check if plan expired (today's date is greater than expiry date)
-    const isPlanExpired = currentDate > expiryDate;
-    
-    // Get user credits
-    const userCredits = userWallet.credits || 0;
+    const isPlanExpired = plan ? new Date(plan.expiryDate) < new Date() : true;
 
-    // Prepare response
     const response = {
       success: true,
-      userId: userId,
-      planExpired: isPlanExpired ? 'yes' : 'no',
-      credits: userCredits,
-      currentPlan: {
-        planId: userWallet.currentPlan.planId,
-        description: userWallet.currentPlan.description,
-        amount: userWallet.currentPlan.amount,
-        totalCredits: userWallet.currentPlan.credits,
-        expiryDate: userWallet.currentPlan.expiryDate
-      }
+      credits: wallet.credits || 0,
+      expiryDate: plan?.expiryDate || null,
+      creditStatus: wallet.credits > 0,
+      planExpired: isPlanExpired,
+      message: ''
     };
 
-    // Add message based on credits and expiry status
-    if (userCredits === 0) {
-      response.message = '0 credits left';
-      response.data = {
-        credits:0
-      }
+    if (!plan) {
+      response.message = 'No active plan found';
+    } else if (response.credits === 0) {
+      response.message = 'No credits left';
     } else if (isPlanExpired) {
       response.message = 'Plan is expired';
-      response.data = {
-        planExpired: true,
-      }
     } else {
-      response.message = 'Plan is active';
-      response.data = {
-        planExpired: false,
-      }
+      response.message = 'User is eligible to use API';
     }
+
     return res.status(200).json(response);
 
   } catch (error) {
-    console.error('Error checking plan expiry:', error);
+    console.error('Error in checksEligibility:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -222,3 +191,23 @@ module.exports.checksEligibility = async (req, res) => {
     });
   }
 };
+
+
+module.exports.deductCredit = async(req,res) => {
+  const { userId } = req.body;
+
+  try {
+    // 👉 Your main API logic here (e.g., fetching weather, sending SMS, etc.)
+    
+    // Only if API logic succeeded, now deduct 1 credit:
+    const wallet = await UserWallet.findOne({ userId });
+
+    wallet.credits -= 1;
+    await wallet.save();
+
+    return res.status(200).json({ message: 'API call successful. 1 credit deducted.', remainingCredits: wallet.credits });
+  } catch (err) {
+    console.error('API Error:', err);
+    return res.status(500).json({ message: 'API failed. No credits deducted.' });
+  }
+}

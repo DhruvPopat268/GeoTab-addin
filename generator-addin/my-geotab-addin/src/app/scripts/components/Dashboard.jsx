@@ -127,7 +127,7 @@ const Dashboard = () => {
               <div className="subscription">
                 <div className="subscription-header">
                   <div>
-                    <h3>{walletData.currentPlan.description} Plan</h3>
+                    <h3>{walletData.currentPlan.name} Plan</h3>
                     <p className="subscription-plan">
                       £{walletData.currentPlan.amount} - {walletData.currentPlan.credits} credits
                     </p>

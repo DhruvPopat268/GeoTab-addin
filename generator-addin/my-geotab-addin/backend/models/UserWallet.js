@@ -20,7 +20,7 @@ const purchaseSchema = new mongoose.Schema({
 const currentPlanSchema = new mongoose.Schema({
   planId: String,
   amount: Number,
-  description: String,
+  name: String,
   date: Date,
   expiryDate: Date,
   credits: Number        // <-- Added credits here
