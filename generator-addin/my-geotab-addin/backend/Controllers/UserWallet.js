@@ -1,4 +1,4 @@
-const User = require('../models/UserWallet');
+const UserWallet = require('../models/UserWallet');
 const generatePaymentId = require('../utils/generateId');
 
 module.exports.deposit = async (req, res) => {
