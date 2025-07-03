@@ -18,15 +18,21 @@ const Wallet = () => {
   const [activeTab, setActiveTab] = useState('all');
   const userId = 'AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn';
 
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  const userName = sessionData?.userName || "unknown@user.com";
+
   // Fetch wallet data from API
   useEffect(() => {
     fetchWalletData();
   }, []);
 
+
+
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BASE_URL}/api/UserWallet/wallet`);
+      const response = await axios.post(`${BASE_URL}/api/UserWallet/wallet` , {userId:userName});
       setWalletData(response.data);
       setError(null);
     } catch (err) {
@@ -101,9 +107,7 @@ const Wallet = () => {
     });
   };
 
-  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
-  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
-  const userName = sessionData?.userName || "unknown@user.com";
+  
 
   if (loading) {
     return (
