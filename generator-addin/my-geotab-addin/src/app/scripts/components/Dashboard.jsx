@@ -7,7 +7,7 @@ import { BASE_URL } from '../../../env.js';
 import axios from 'axios';
 
 const Dashboard = () => {
-  const [walletData, setWalletData] = useState(null);
+  const [walletData, setWalletData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
