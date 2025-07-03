@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { BASE_URL } from '../../../env.js';
 import axios from 'axios';
 
-
 const Dashboard = () => {
   const [walletData, setWalletData] = useState(null);
   const [loading, setLoading] = useState(true);

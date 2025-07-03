@@ -119,7 +119,7 @@ module.exports.wallet = async (req, res) => {
     const wallet = await UserWallet.findOne({ userId });
 
     if (!wallet) {
-      return res.status(404).json({ message: 'Wallet not found' });
+      return res.status(200).json([]);
     }
 
     res.status(200).json({
