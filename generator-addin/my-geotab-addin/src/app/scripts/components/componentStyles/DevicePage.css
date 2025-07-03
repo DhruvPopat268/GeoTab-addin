@@ -19,6 +19,7 @@ h2 {
 /* Filter Container */
 .filter-container {
     padding: 1rem 1.5rem;
+    margin-left: 30px;
     margin-top: 20px;
     height: auto;
     min-height: 80px;
@@ -96,7 +97,7 @@ h2 {
     background-color: #218838;
 }
 
-/* Form Popup Styles */
+/* Form Popup Styles - FIXED */
 .form-popup-overlay {
     position: fixed;
     top: 0;
@@ -108,18 +109,21 @@ h2 {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .form-popup-content {
     background: white;
     padding: 2rem;
     border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
+    width: 100%;
+    max-width: 900px;
+    max-height: 95vh;
     overflow-y: auto;
     position: relative;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin: auto;
 }
 
 .close-btn {
@@ -131,29 +135,45 @@ h2 {
     font-size: 1.5rem;
     cursor: pointer;
     color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+    background-color: #f0f0f0;
 }
 
 /* Form Grid Layout */
 .form-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
     margin-top: 1.5rem;
 }
 
 .form-column {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 /* Form Elements */
 .form-group {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
 }
 
 .form-group label {
-    display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
     color: #333;
+    font-size: 0.9rem;
 }
 
 .form-group label:after {
@@ -169,6 +189,25 @@ h2 {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00467f;
+    box-shadow: 0 0 0 2px rgba(0, 70, 127, 0.1);
+}
+
+.form-group input.error,
+.form-group select.error {
+    border-color: #dc3545;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
 }
 
 /* Form Actions */
@@ -187,6 +226,8 @@ h2 {
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
 }
 
 .cancel-btn {
@@ -232,7 +273,7 @@ h2 {
 .drivers-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1000px; /* Ensures horizontal scroll when needed */
+    min-width: 1000px;
 }
 
 .drivers-table th {
@@ -248,7 +289,6 @@ h2 {
 .drivers-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #e0e0e0;
-
 }
 
 .drivers-table tr:hover {
@@ -328,13 +368,16 @@ h2 {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .delete-confirm-content {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 100%;
+    max-width: 400px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -358,6 +401,119 @@ h2 {
     background-color: #cc0000;
 }
 
+/* Root and Page Container */
+.root {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Sync Confirmation Modal */
+.confirm-popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.confirm-popup-content p {
+    margin-bottom: 25px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.confirm-btn {
+    background-color: #25477b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.confirm-btn:hover {
+    background-color: #25477b;
+}
+
+/* Driver Details Modal */
+.driver-details-modal {
+    max-width: 1000px;
+}
+
+.driver-details-content {
+    margin-top: 20px;
+}
+
+.details-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.details-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.details-grid > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.details-grid > div:last-child {
+    border-bottom: none;
+}
+
+.dvla-details {
+    background-color: white;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.dvla-details pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .filter-container {
@@ -377,8 +533,17 @@ h2 {
         justify-content: flex-end;
     }
     
+    .form-popup-overlay {
+        padding: 10px;
+    }
+    
+    .form-popup-content {
+        padding: 1.5rem;
+        max-height: 90vh;
+    }
+    
     .form-grid {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
 
@@ -393,268 +558,33 @@ h2 {
         font-size: 12px;
         margin-right: 4px;
     }
+    
+    .page-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* Add these styles to your existing DevicePage.css */
-
-.root {
-  min-height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
-
-.main-con {
-  margin-bottom: 20px;
-}
-
-.filter-container {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.filter-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.filter-header h2 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.status-dropdown {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  min-width: 150px;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.action-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.filter-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.filter-btn:hover {
-  background-color: #0056b3;
-}
-
-.reset-btn {
-  background-color: #6c757d;
-  color: white;
-}
-
-.reset-btn:hover {
-  background-color: #545b62;
-}
-
-.create-btn {
-  background-color: #28a745;
-  color: white;
-}
-
-.create-btn:hover {
-  background-color: #1e7e34;
-}
-
-.drivers-table-container {
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.drivers-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.drivers-table th {
-  background-color: #007bff;
-  color: white;
-  padding: 12px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.drivers-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.drivers-table tbody tr:hover {
-  background-color: #f8f9fa;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 5px;
-}
-
-.table-action-btn {
-  padding: 4px 8px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.table-action-btn.view {
-  background-color: #007bff;
-  color: white;
-}
-
-.table-action-btn.view:hover {
-  background-color: #0056b3;
-}
-
-.table-action-btn:not(.view):not(.danger) {
-  background-color: #6c757d;
-  color: white;
-}
-
-.table-action-btn:not(.view):not(.danger):hover {
-  background-color: #545b62;
-}
-
-.table-action-btn.danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.table-action-btn.danger:hover {
-  background-color: #c82333;
-}
-
-.no-drivers {
-  text-align: center;
-  color: #6c757d;
-  font-style: italic;
-  padding: 20px;
-}
-
-/* Sync Confirmation Modal */
-.confirm-popup-content {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.confirm-popup-content h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.confirm-popup-content p {
-  margin-bottom: 25px;
-  color: #666;
-  line-height: 1.5;
-}
-
-.confirm-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.confirm-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.confirm-btn:hover {
-  background-color: #0056b3;
-}
-
-.cancel-btn {
-  background-color: #6c757d;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.cancel-btn:hover {
-  background-color: #545b62;
-}
-
-/* Form popup overlay */
-.form-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .page-container {
-    margin: 10px;
-    padding: 15px;
-  }
-  
-  .filter-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .filter-actions {
-    flex-wrap: wrap;
-  }
-  
-  .drivers-table-container {
-    overflow-x: auto;
-  }
-  
-  .drivers-table {
-    min-width: 800px;
-  }
+@media (max-width: 480px) {
+    .form-popup-content {
+        padding: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+    
+    .drivers-table {
+        min-width: 800px;
+    }
 }

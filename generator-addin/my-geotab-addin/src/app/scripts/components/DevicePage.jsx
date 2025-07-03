@@ -36,17 +36,21 @@ const DevicePage = ({ }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [filterStatus, setFilterStatus] = useState('All Statuses');
   const [loading, setLoading] = useState(true);
-  
+
   // New state for DVLA view functionality
   const [viewLoading, setViewLoading] = useState(null);
   const [driverDetails, setDriverDetails] = useState(null);
   const [showDriverDetails, setShowDriverDetails] = useState(false);
-  
+
   // New state for sync confirmation
   const [showSyncConfirm, setShowSyncConfirm] = useState(null);
 
   // Watch company selection for dependent fields
   const selectedCompany = watch('companyName');
+
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  const userName = sessionData?.userName || "unknown@user.com";
 
   // Fetch all drivers on component mount
   useEffect(() => {
@@ -62,7 +66,7 @@ const DevicePage = ({ }) => {
     try {
       setLoading(true);
       const response = await axios.get(`${BASE_URL}/api/driver/getAllDrivers`);
-      
+
       if (response.status === 200 && response.data.data) {
         setOriginalDrivers(response.data.data);
         setDisplayedDrivers(response.data.data);
@@ -192,13 +196,13 @@ const DevicePage = ({ }) => {
       if (!showSyncConfirm) return;
 
       setViewLoading(showSyncConfirm.id);
-      
+
       // Check wallet eligibility
-      const eligibilityResponse = await axios.get(`${BASE_URL}/api/UserWallet/checksEligibility`);
-      
+      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName });
+
       if (eligibilityResponse.status === 200) {
         const { creditStatus, planExpired } = eligibilityResponse.data;
-        
+
         // Check if either creditStatus or planExpired is false
         if (!creditStatus || !planExpired) {
           alert("You don't have enough credits");
@@ -206,7 +210,7 @@ const DevicePage = ({ }) => {
           setShowSyncConfirm(null);
           return;
         }
-        
+
         // If both are true, navigate to driver detail page
         navigate(`/driverDetail/?${showSyncConfirm.licenseNo}`);
         setShowSyncConfirm(null);
@@ -227,7 +231,7 @@ const DevicePage = ({ }) => {
   return (
     <div className="root">
       <Navbar />
-      
+
       <div className="page-container">
         <div className='main-con'>
           <div className="filter-container">

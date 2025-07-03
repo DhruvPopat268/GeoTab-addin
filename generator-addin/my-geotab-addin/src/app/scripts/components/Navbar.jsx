@@ -22,7 +22,7 @@ const navItems = [
         <div className="navbar-inner">
           <div className="navbar-left">
             <Link to="/" className="navbar-logo">
-              API Hub
+              Prayosha
             </Link>
           </div>
 
@@ -40,10 +40,10 @@ const navItems = [
           </div>
 
           <div className="navbar-right">
-            <div className="navbar-balance">
+            {/* <div className="navbar-balance">
               <CreditCard size={16} className="balance-icon" />
               <span className="balance-text">£125.50</span>
-            </div>
+            </div> */}
             <div className="navbar-user-icon">
               <User size={18} className="user-icon" />
             </div>
