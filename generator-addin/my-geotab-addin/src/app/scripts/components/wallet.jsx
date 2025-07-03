@@ -12,7 +12,7 @@ const Wallet = () => {
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paypal');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [walletData, setWalletData] = useState(null);
+  const [walletData, setWalletData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
