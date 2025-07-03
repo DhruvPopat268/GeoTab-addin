@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Star, Zap, Shield, Clock, CreditCard } from 'lucide-react';
+import { Check, Star, Zap, Shield, Clock, CreditCard, X } from 'lucide-react';
 import Navbar from './Navbar.jsx';
 import { useToast } from '../hooks/use-toast.jsx';
 import axios from 'axios';
@@ -12,6 +12,9 @@ const LCCheckPlans = () => {
   const { toast } = useToast();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [purchasing, setPurchasing] = useState(false);
 
   const fetchPlans = async () => {
     setLoading(true);
@@ -50,18 +53,54 @@ const LCCheckPlans = () => {
   const handlePurchase = (planId) => {
     const plan = plans.find(p => p._id === planId);
     if (plan) {
-      localStorage.setItem('selectedPlan', JSON.stringify({
-        apiId: 'lc-check',
-        apiName: 'LC Check API',
-        plan: plan,
-      }));
-      navigate('/payment');
-      toast({
-        title: "Plan Selected",
-        description: `${plan.name} plan for LC Check API has been added to your cart.`,
-      });
+      setSelectedPlan(plan);
+      setShowConfirmation(true);
     }
   };
+
+  const confirmPurchase = async () => {
+    if (!selectedPlan) return;
+    
+    setPurchasing(true);
+    try {
+      const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+      const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+      const userName = sessionData?.userName || "unknown@user.com";
+
+      const response = await axios.post(`${API_URL}/api/UserWallet/purchase`, {
+        userId: userName,
+        planId: selectedPlan._id
+      });
+
+      if (response.status === 200) {
+        toast({
+          title: "Payment Successful!",
+          description: `${selectedPlan.name} plan has been purchased successfully.`,
+        });
+        setShowConfirmation(false);
+        setSelectedPlan(null);
+      }
+    } catch (err) {
+      toast({ 
+        title: 'Purchase Failed', 
+        description: err.response?.data?.message || err.message 
+      });
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const cancelPurchase = () => {
+    setShowConfirmation(false);
+    setSelectedPlan(null);
+  };
+
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  console.log(sessionDataRaw);
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  console.log(sessionData);
+  const userName = sessionData?.userName || "unknown@user.com";
+  console.log(userName);
 
   return (
     <div className="lc-main">
@@ -96,8 +135,6 @@ const LCCheckPlans = () => {
                   key={plan._id} 
                   className={`lc-card ${plan.isPopular ? 'lc-card-popular' : ''}`}
                 >
-                  
-
                   <div className="lc-card-content">
                     <div className="lc-plan-header">
                       <h2 className="lc-plan-name">{plan.name}</h2>
@@ -217,6 +254,59 @@ const LCCheckPlans = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="lc-modal-overlay">
+          <div className="lc-modal">
+            <div className="lc-modal-header">
+              <h3 className="lc-modal-title">Confirm Purchase</h3>
+              <button 
+                onClick={cancelPurchase}
+                className="lc-modal-close"
+                disabled={purchasing}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="lc-modal-body">
+              <p className="lc-modal-text">
+                Do you want to purchase the <strong>{selectedPlan?.name}</strong> plan?
+              </p>
+              <div className="lc-modal-plan-details">
+                <div className="lc-modal-detail">
+                  <span className="lc-modal-detail-label">Price:</span>
+                  <span className="lc-modal-detail-value">£{selectedPlan?.price}/month</span>
+                </div>
+                <div className="lc-modal-detail">
+                  <span className="lc-modal-detail-label">API Calls:</span>
+                  <span className="lc-modal-detail-value">
+                    {selectedPlan?.includedCalls.toLocaleString()} calls
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lc-modal-footer">
+              <button 
+                onClick={cancelPurchase}
+                className="lc-modal-btn lc-modal-btn-cancel"
+                disabled={purchasing}
+              >
+                No, Cancel
+              </button>
+              <button 
+                onClick={confirmPurchase}
+                className="lc-modal-btn lc-modal-btn-confirm"
+                disabled={purchasing}
+              >
+                {purchasing ? 'Processing...' : 'Yes, Purchase'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

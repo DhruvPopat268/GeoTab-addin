@@ -1,5 +1,6 @@
 const UserWallet = require('../models/UserWallet');
 const generatePaymentId = require('../utils/generateId');
+const planDetails = require('../../../../../PT-API-Monitoring/call-charge-portal/backend/models/Plan'); // Assuming this is 
 
 module.exports.deposit = async (req, res) => {
   try {
@@ -57,35 +58,64 @@ module.exports.deposit = async (req, res) => {
 
 module.exports.purchase = async (req, res) => {
   try {
-    // POST /api/wallet/purchase
-    router.post("/purchase", async (req, res) => {
-      const { userId, planId } = req.body;
+    const { userId, planId } = req.body;
 
-      const wallet = await UserWallet.findOne({ userId });
+    // Fetch plan details from Plan model using planId
+    const plan = await planDetails.findById(planId);
+    if (!plan) {
+      return res.status(404).json({ message: "Plan not found" });
+    }
 
-      if (!wallet || wallet.balance < amount) {
-        return res.status(400).json({ message: "Insufficient balance" });
-      }
+    const amount = planDetails.price;
+    const credits = planDetails.includedCalls;
+    const description = planDetails.name;
 
-      wallet.purchases.push({
-        planId,
-        amount,
-        description,
-        date: new Date()
-      });
+    const wallet = await UserWallet.findOne({ userId });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
 
-      wallet.balance -= amount;
-      wallet.credits += credits;
+    if (wallet.balance < amount) {
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
 
-      await wallet.save();
+    const now = new Date();
+    const expiryDate = new Date(now);
+    expiryDate.setDate(now.getDate() + 30); // 30-day validity
 
-      res.status(200).json({ message: "Purchase successful", wallet });
-    });
+    // Add to purchase history
+wallet.purchases.push({
+  planId,
+  amount,
+  description,
+  date: now,
+  credits  // <-- include plan credits
+});
+
+// Update currentPlan
+wallet.currentPlan = {
+  planId,
+  amount,
+  description,
+  date: now,
+  expiryDate,
+  credits  // <-- include plan credits
+};
+
+
+    // Update balance and credits
+    wallet.balance -= amount;
+    wallet.credits += credits;
+
+    await wallet.save();
+
+    res.status(200).json({ message: "Purchase successful", wallet });
 
   } catch (err) {
-    console.log(err)
+    console.error("Purchase error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 module.exports.wallet = async (req, res) => {
   try {

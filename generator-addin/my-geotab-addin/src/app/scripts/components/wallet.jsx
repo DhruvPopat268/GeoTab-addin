@@ -51,21 +51,7 @@ const Wallet = () => {
   const userName = sessionData?.userName || "unknown@user.com";
   console.log(userName)
 
- useEffect(() => {
-  const fetchUserPayments = async() => {
 
-    try{
-      const response = await axios.post(`${BASE_URL}/api/userPayment/getUserPayments`,{
-        userId: userName,
-      })
-      console.log(response)
-
-    } catch(err){
-      console.log(err)
-    }
-  }
-  fetchUserPayments()
- },[])
 
   return (
     <div className="wallet">
