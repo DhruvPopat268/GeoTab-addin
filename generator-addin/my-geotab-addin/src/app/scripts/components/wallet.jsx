@@ -45,25 +45,26 @@ const Wallet = () => {
   const getAllTransactions = () => {
     if (!walletData) return [];
 
-    const payments = walletData.payments.map(payment => ({
-      id: payment._id,
-      type: 'deposit',
-      amount: payment.amount,
-      description: 'PayPal Deposit',
-      date: payment.date,
-      status: 'completed',
-      paypalId: payment.paypalId
-    }));
+const payments = (walletData?.payments || []).map(payment => ({
+  id: payment._id,
+  type: 'deposit',
+  amount: payment.amount,
+  description: 'PayPal Deposit',
+  date: payment.date,
+  status: 'completed',
+  paypalId: payment.paypalId
+}));
 
-    const purchases = walletData.purchases.map(purchase => ({
-      id: purchase._id,
-      type: 'purchase',
-      amount: -purchase.amount,
-      name: `${purchase.name} Plan`,
-      date: purchase.date,
-      status: 'completed',
-      credits: purchase.credits
-    }));
+const purchases = (walletData?.purchases || []).map(purchase => ({
+  id: purchase._id,
+  type: 'purchase',
+  amount: -purchase.amount,
+  name: `${purchase.name} Plan`,
+  date: purchase.date,
+  status: 'completed',
+  credits: purchase.credits
+}));
+
 
     return [...payments, ...purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
   };
