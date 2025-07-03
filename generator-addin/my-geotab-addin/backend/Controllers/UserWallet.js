@@ -128,9 +128,11 @@ module.exports.wallet = async (req, res) => {
       balance: wallet.balance,
       credits: wallet.credits,
       payments: wallet.payments,
-      purchases: wallet.purchases
+      purchases: wallet.purchases,
+      currentPlan: wallet.currentPlan  // <-- Added currentPlan here
     });
   } catch (err) {
-    console.log(err)
+    console.log("Wallet fetch error:", err);
+    res.status(500).json({ message: 'Internal server error' });
   }
-}
+};

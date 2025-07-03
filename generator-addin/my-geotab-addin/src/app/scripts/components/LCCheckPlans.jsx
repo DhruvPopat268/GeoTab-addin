@@ -5,7 +5,7 @@ import Navbar from './Navbar.jsx';
 import { useToast } from '../hooks/use-toast.jsx';
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
-import { API_URL } from '../../../env.js';
+import { API_URL , BASE_URL } from '../../../env.js';
 
 const LCCheckPlans = () => {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ const LCCheckPlans = () => {
       const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
       const userName = sessionData?.userName || "unknown@user.com";
 
-      const response = await axios.post(`${API_URL}/api/UserWallet/purchase`, {
+      const response = await axios.post(`${BASE_URL}/api/UserWallet/purchase`, {
         userId: userName,
         planId: selectedPlan._id,
         planDetails: {
