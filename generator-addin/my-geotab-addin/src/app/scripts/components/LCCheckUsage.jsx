@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import Navbar from './Navbar.jsx';
 import './componentStyles/LCCheckUsage.css';
 import { API_URL } from '../../../env.js';
+import axios from 'axios';
 
 const LCCheckUsage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
@@ -21,18 +22,22 @@ const LCCheckUsage = () => {
 
   console.log('Daily Usage Data:', dailyUsageData);
 
+  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
+  const userName = sessionData?.userName || "unknown@user.com";
+
   // Transform data for chart - this is the key fix
   const transformDataForChart = (data) => {
     if (!data || data.length === 0) {
       // Generate empty data for last 7 days
       const last7Days = [];
       const today = new Date();
-      
+
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
         const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
+
         last7Days.push({
           date: dateStr,
           calls: 0
@@ -47,17 +52,17 @@ const LCCheckUsage = () => {
       if (data.length > 0 && data[0].calls !== undefined) {
         const last7Days = [];
         const today = new Date();
-        
+
         for (let i = 6; i >= 0; i--) {
           const date = new Date(today);
           date.setDate(today.getDate() - i);
           const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          
+
           // For now, we'll put all calls on today's date
           // You might need to adjust this based on your actual API response structure
           const isToday = i === 0;
           const totalCalls = isToday ? data.reduce((sum, item) => sum + (item.calls || 0), 0) : 0;
-          
+
           last7Days.push({
             date: dateStr,
             calls: totalCalls
@@ -65,7 +70,7 @@ const LCCheckUsage = () => {
         }
         return last7Days;
       }
-      
+
       // Case 2: If it's already in the right format
       return data.map(item => ({
         date: item.date || item.day || 'Unknown',
@@ -90,15 +95,13 @@ const LCCheckUsage = () => {
       try {
         setLoading(true);
         setError(null);
-        
-        const response = await fetch(`${API_URL}/proxy/logs`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch logs: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
+
+        const response = await axios.post(`${API_URL}/proxy/logs`, {
+          userId: userName // Make sure this is defined in your component
+        });
+
+        const data = response.data;
+
         // Transform the API response to match the expected format
         const transformedLogs = data.map((log, index) => ({
           id: log._id || index + 1,
@@ -110,11 +113,11 @@ const LCCheckUsage = () => {
           timestamp: log.timestamp ? new Date(log.timestamp).toLocaleString() : new Date().toLocaleString(),
           success: log.success
         }));
-        
+
         setApiLogs(transformedLogs);
       } catch (err) {
         console.error('Error fetching API logs:', err);
-        setError(err.message);
+        setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
@@ -128,15 +131,13 @@ const LCCheckUsage = () => {
     const fetchUsageStats = async () => {
       try {
         setStatsLoading(true);
-        
-        const response = await fetch(`${API_URL}/proxy/logs/stats`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch stats: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
+
+        const response = await axios.post(`${API_URL}/proxy/logs/stats`, {
+          userId: userName // Replace with the logged-in user ID
+        });
+
+        const data = response.data;
+
         setUsageStats({
           totalCalls: data.totalCalls || 0,
           averageDailyCalls: data.averageCalls || 0,
@@ -144,7 +145,7 @@ const LCCheckUsage = () => {
           peakDayCalls: data.peakDayCalls || 0
         });
       } catch (err) {
-        console.error('Error fetching usage stats:', err);
+        console.error('Error fetching usage stats:', err.response?.data?.message || err.message);
       } finally {
         setStatsLoading(false);
       }
@@ -158,24 +159,21 @@ const LCCheckUsage = () => {
     const fetchDailyUsage = async () => {
       try {
         setChartLoading(true);
-        
-        const response = await fetch(`${API_URL}/proxy/logs/usage-by-api`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch daily usage: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Raw API Response:', data); // Debug log
-        
+
+        const response = await axios.post(`${API_URL}/proxy/logs/daily-usage`, {
+          userId: userName // Same here
+        });
+
+        const data = response.data;
+        console.log('Raw API Response:', data);
+
         // Transform the data for the chart
         const transformedData = transformDataForChart(data);
-        console.log('Transformed Data:', transformedData); // Debug log
-        
+        console.log('Transformed Data:', transformedData);
+
         setDailyUsageData(transformedData);
       } catch (err) {
-        console.error('Error fetching daily usage:', err);
-        // Create fallback data based on your stats
+        console.error('Error fetching daily usage:', err.response?.data?.message || err.message);
         const fallbackData = createFallbackChartData();
         setDailyUsageData(fallbackData);
       } finally {
@@ -190,21 +188,21 @@ const LCCheckUsage = () => {
   const createFallbackChartData = () => {
     const last7Days = [];
     const today = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
+
       // Put all calls on July 3rd (peak usage day)
       const isJuly3 = date.getDate() === 3 && date.getMonth() === 6; // July is month 6
-      
+
       last7Days.push({
         date: dateStr,
         calls: isJuly3 ? 2 : 0
       });
     }
-    
+
     console.log('Fallback chart data:', last7Days);
     return last7Days;
   };
@@ -342,22 +340,22 @@ const LCCheckUsage = () => {
                     margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="date" 
+                    <XAxis
+                      dataKey="date"
                       tick={{ fontSize: 12 }}
                       angle={-45}
                       textAnchor="end"
                       height={60}
                     />
-                    <YAxis 
+                    <YAxis
                       tick={{ fontSize: 12 }}
                       allowDecimals={false}
                       domain={[0, 'dataMax + 1']}
                     />
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar 
-                      dataKey="calls" 
-                      fill="#6366f1" 
+                    <Bar
+                      dataKey="calls"
+                      fill="#6366f1"
                       radius={[2, 2, 0, 0]}
                       minPointSize={2}
                     />
@@ -365,9 +363,9 @@ const LCCheckUsage = () => {
                 </ResponsiveContainer>
               </div>
             )}
-            
-          
-           
+
+
+
           </div>
         </section>
       </div>
