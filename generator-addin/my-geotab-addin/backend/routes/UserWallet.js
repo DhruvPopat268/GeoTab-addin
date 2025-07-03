@@ -8,4 +8,6 @@ router.post('/purchase', UserWallet.purchase);
 
 router.post('/wallet', UserWallet.wallet);
 
+router.post('/checksEligibility', UserWallet.checksEligibility);
+
 module.exports = router;

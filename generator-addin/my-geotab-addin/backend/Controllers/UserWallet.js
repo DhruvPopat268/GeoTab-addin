@@ -136,3 +136,90 @@ module.exports.wallet = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+module.exports.checksEligibility = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Validate userId
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'userId is required'
+      });
+    }
+
+    // Find user wallet
+    const userWallet = await UserWallet.findOne({ userId });
+
+    if (!userWallet) {
+      return res.status(404).json({
+        success: false,
+        message: 'User wallet not found'
+      });
+    }
+
+    // Check if user has a current plan
+    if (!userWallet.currentPlan) {
+      return res.status(200).json({
+        success: true,
+        userId: userId,
+        planExpired: 'no_plan',
+        credits: userWallet.credits || 0,
+        message: 'No active plan found'
+      });
+    }
+
+    // Get current date and plan expiry date
+    const currentDate = new Date();
+    const expiryDate = new Date(userWallet.currentPlan.expiryDate);
+    
+    // Check if plan expired (today's date is greater than expiry date)
+    const isPlanExpired = currentDate > expiryDate;
+    
+    // Get user credits
+    const userCredits = userWallet.credits || 0;
+
+    // Prepare response
+    const response = {
+      success: true,
+      userId: userId,
+      planExpired: isPlanExpired ? 'yes' : 'no',
+      credits: userCredits,
+      currentPlan: {
+        planId: userWallet.currentPlan.planId,
+        description: userWallet.currentPlan.description,
+        amount: userWallet.currentPlan.amount,
+        totalCredits: userWallet.currentPlan.credits,
+        expiryDate: userWallet.currentPlan.expiryDate
+      }
+    };
+
+    // Add message based on credits and expiry status
+    if (userCredits === 0) {
+      response.message = '0 credits left';
+      response.data = {
+        credits:0
+      }
+    } else if (isPlanExpired) {
+      response.message = 'Plan is expired';
+      response.data = {
+        planExpired: true,
+      }
+    } else {
+      response.message = 'Plan is active';
+      response.data = {
+        planExpired: false,
+      }
+    }
+    return res.status(200).json(response);
+
+  } catch (error) {
+    console.error('Error checking plan expiry:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
