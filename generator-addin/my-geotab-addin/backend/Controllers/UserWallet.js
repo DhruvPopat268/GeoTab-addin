@@ -58,59 +58,56 @@ module.exports.deposit = async (req, res) => {
 
 module.exports.purchase = async (req, res) => {
   try {
-    const { userId, planId } = req.body;
-
-    // Fetch plan details from Plan model using planId
-    const plan = await planDetails.findById(planId);
-    if (!plan) {
-      return res.status(404).json({ message: "Plan not found" });
+    const { userId, planId, planDetails } = req.body;
+    
+    // Validate that planDetails are provided
+    if (!planDetails || !planDetails.price || !planDetails.includedCalls || !planDetails.name) {
+      return res.status(400).json({ message: "Plan details are required" });
     }
-
+    
     const amount = planDetails.price;
     const credits = planDetails.includedCalls;
     const description = planDetails.name;
-
+    
     const wallet = await UserWallet.findOne({ userId });
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
-
+    
     if (wallet.balance < amount) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
-
+    
     const now = new Date();
     const expiryDate = new Date(now);
     expiryDate.setDate(now.getDate() + 30); // 30-day validity
-
+    
     // Add to purchase history
-wallet.purchases.push({
-  planId,
-  amount,
-  description,
-  date: now,
-  credits  // <-- include plan credits
-});
-
-// Update currentPlan
-wallet.currentPlan = {
-  planId,
-  amount,
-  description,
-  date: now,
-  expiryDate,
-  credits  // <-- include plan credits
-};
-
-
+    wallet.purchases.push({
+      planId,
+      amount,
+      description,
+      date: now,
+      credits
+    });
+    
+    // Update currentPlan
+    wallet.currentPlan = {
+      planId,
+      amount,
+      description,
+      date: now,
+      expiryDate,
+      credits
+    };
+    
     // Update balance and credits
     wallet.balance -= amount;
     wallet.credits += credits;
-
+    
     await wallet.save();
-
+    
     res.status(200).json({ message: "Purchase successful", wallet });
-
   } catch (err) {
     console.error("Purchase error:", err);
     res.status(500).json({ message: "Internal server error" });

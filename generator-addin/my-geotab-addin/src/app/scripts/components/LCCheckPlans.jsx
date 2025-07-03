@@ -35,8 +35,8 @@ const LCCheckPlans = () => {
           plan.name === 'Enterprise'
             ? 'border-purple'
             : plan.name === 'Standard'
-            ? 'border-blue'
-            : 'border-gray',
+              ? 'border-blue'
+              : 'border-gray',
       }));
       setPlans(formatted);
     } catch (err) {
@@ -60,7 +60,7 @@ const LCCheckPlans = () => {
 
   const confirmPurchase = async () => {
     if (!selectedPlan) return;
-    
+
     setPurchasing(true);
     try {
       const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
@@ -69,7 +69,12 @@ const LCCheckPlans = () => {
 
       const response = await axios.post(`${API_URL}/api/UserWallet/purchase`, {
         userId: userName,
-        planId: selectedPlan._id
+        planId: selectedPlan._id,
+        planDetails: {
+          price: selectedPlan.price,
+          includedCalls: selectedPlan.includedCalls,
+          name: selectedPlan.name
+        }
       });
 
       if (response.status === 200) {
@@ -81,9 +86,9 @@ const LCCheckPlans = () => {
         setSelectedPlan(null);
       }
     } catch (err) {
-      toast({ 
-        title: 'Purchase Failed', 
-        description: err.response?.data?.message || err.message 
+      toast({
+        title: 'Purchase Failed',
+        description: err.response?.data?.message || err.message
       });
     } finally {
       setPurchasing(false);
@@ -131,8 +136,8 @@ const LCCheckPlans = () => {
             {plans.map(plan => {
               const pricePerCall = (plan.price / plan.includedCalls).toFixed(3);
               return (
-                <div 
-                  key={plan._id} 
+                <div
+                  key={plan._id}
                   className={`lc-card ${plan.isPopular ? 'lc-card-popular' : ''}`}
                 >
                   <div className="lc-card-content">
@@ -261,7 +266,7 @@ const LCCheckPlans = () => {
           <div className="lc-modal">
             <div className="lc-modal-header">
               <h3 className="lc-modal-title">Confirm Purchase</h3>
-              <button 
+              <button
                 onClick={cancelPurchase}
                 className="lc-modal-close"
                 disabled={purchasing}
@@ -269,7 +274,7 @@ const LCCheckPlans = () => {
                 <X size={20} />
               </button>
             </div>
-            
+
             <div className="lc-modal-body">
               <p className="lc-modal-text">
                 Do you want to purchase the <strong>{selectedPlan?.name}</strong> plan?
@@ -287,16 +292,16 @@ const LCCheckPlans = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="lc-modal-footer">
-              <button 
+              <button
                 onClick={cancelPurchase}
                 className="lc-modal-btn lc-modal-btn-cancel"
                 disabled={purchasing}
               >
                 No, Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmPurchase}
                 className="lc-modal-btn lc-modal-btn-confirm"
                 disabled={purchasing}
