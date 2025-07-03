@@ -1,3 +1,5 @@
 module.exports = function generatePaymentId() {
-  return 'pay_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const timestamp = Date.now().toString(); // current time in ms
+  const randomPart = Math.floor(Math.random() * 1000000).toString().padStart(6, '0'); // 6-digit random number
+  return 'pay_' + timestamp + randomPart;
 };
