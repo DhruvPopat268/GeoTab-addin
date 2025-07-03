@@ -1,6 +1,5 @@
 const UserWallet = require('../models/UserWallet');
 const generatePaymentId = require('../utils/generateId');
-const planDetails = require('../../../../../PT-API-Monitoring/call-charge-portal/backend/models/Plan'); // Assuming this is 
 
 module.exports.deposit = async (req, res) => {
   try {
