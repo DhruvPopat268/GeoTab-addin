@@ -22,7 +22,7 @@ const navItems = [
         <div className="navbar-inner">
           <div className="navbar-left">
             <Link to="/" className="navbar-logo">
-              Prayosha
+              PTC Transport
             </Link>
           </div>
 
