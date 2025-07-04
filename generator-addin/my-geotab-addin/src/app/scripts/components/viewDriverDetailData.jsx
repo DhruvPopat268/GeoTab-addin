@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
-import './componentStyles/DriverDetail.css';
+import './componentStyles/viewDriverDetailData.css';
+import axios from 'axios';
 
-const DriverLicenceSummary = () => {
+const ViewDriverLicenceSummary = () => {
     const [driverData, setDriverData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -155,8 +156,6 @@ const DriverLicenceSummary = () => {
     // Fetch driver data from API
     const fetchDriverData = async () => {
         try {
-            console.log("data", window.geotab?.api);
-
             setLoading(true);
             setError(null);
 
@@ -166,93 +165,22 @@ const DriverLicenceSummary = () => {
                 throw new Error('Driving licence number not found in URL');
             }
 
-            console.log("Fetching data for licence:", drivingLicenceNumber);
+            console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
-            const authResponse = await fetch('https://api-monitoring-and-purchasing-platform-df9e.onrender.com/proxy/6864c4fbe3b94cbfacee2b3c');
-            if (!authResponse.ok) {
-                throw new Error('Failed to get authentication token');
-            }
-            const authData = await authResponse.json();
-            const token = authData.token;
+            const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
+                drivingLicenceNumber
+            });
 
-            const driverResponse = await fetch(
-                'https://api-monitoring-and-purchasing-platform-df9e.onrender.com/proxy/6864c95bcf7c6ae928c398c9',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': 'vHjOOKz70O3L8mmcVAQDc3EqqxfRRWOgamUSCnN1',
-                        'Authorization': token
-                    },
-                    body: JSON.stringify({
-                        drivingLicenceNumber: drivingLicenceNumber,
-                        userId: userName
-                    })
-                }
-            );
-
-            if (!driverResponse.ok) {
-                throw new Error(`API request failed: ${driverResponse.status}`);
-            }
-
-            const driverData = await driverResponse.json();
-
-
-
-            if (driverData.status && driverData.data) {
-                setDriverData(driverData.data);
-
-                try {
-                    const backendResponse = await fetch(`${BASE_URL}/api/driverData`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            data: driverData.data
-                        })
-                    });
-
-                    if (!backendResponse.ok) {
-                        const backendError = await backendResponse.json();
-                        console.error("Backend error:", backendError);
-                        throw new Error(backendError.message || 'Failed to save driver data');
-                    }
-
-                    const result = await backendResponse.json();
-                    console.log(result.message);
-
-                    // ✅ After successful driverData post, call deductDeposit
-                    const deductResponse = await fetch(`${BASE_URL}/api/UserWallet/deductDeposit`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            userId: userName  // make sure userName is defined
-                        })
-                    });
-
-                    const deductResult = await deductResponse.json();
-                    if (deductResponse.ok) {
-                        console.log("✅", deductResult.message); // "API call successful. 1 credit deducted."
-                        console.log("Remaining Credits:", deductResult.remainingCredits);
-                    } else {
-                        console.warn("❌ Failed to deduct credit:", deductResult.message);
-                    }
-
-                } catch (backendErr) {
-                    console.error("Error storing driver data in backend:", backendErr);
-                }
-
+            if (response.data?.data) {
+                setDriverData(response.data.data);
+                console.log("Driver fetched successfully");
             } else {
-                throw new Error('Invalid API response format or no data found');
+                throw new Error("Driver not found");
             }
-
 
         } catch (err) {
             console.error("Error fetching driver data:", err);
-            setError(`Error fetching driver details: ${err.message}`);
+            setError(`Error: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -624,4 +552,4 @@ const DriverLicenceSummary = () => {
     );
 };
 
-export default DriverLicenceSummary;
+export default ViewDriverLicenceSummary;

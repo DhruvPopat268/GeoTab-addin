@@ -5,7 +5,7 @@
 
 .main-con {
     width: 100vw;
-    padding: 20px;
+    /* padding: 20px; */
     box-sizing: border-box;
 }
 
@@ -19,7 +19,7 @@ h2 {
 /* Filter Container */
 .filter-container {
     padding: 1rem 1.5rem;
-    margin-left: 30px;
+    /* margin-left: 30px; */
     margin-top: 20px;
     height: auto;
     min-height: 80px;
@@ -263,6 +263,7 @@ h2 {
 
 /* Enhanced Table Styles */
 .drivers-table-container {
+    width: 1200px;
     margin-top: 2rem;
     overflow-x: auto;
     border: 1px solid #e0e0e0;
@@ -408,7 +409,7 @@ h2 {
 }
 
 .page-container {
-    max-width: 1200px;
+    max-width: 1250px;
     margin: 0 auto;
     padding: 20px;
     background-color: white;
@@ -536,7 +537,6 @@ h2 {
     .form-popup-overlay {
         padding: 10px;
     }
-    
     .form-popup-content {
         padding: 1.5rem;
         max-height: 90vh;

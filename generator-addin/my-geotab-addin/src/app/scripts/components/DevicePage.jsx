@@ -225,7 +225,11 @@ const DevicePage = ({ }) => {
 
   // Updated handleView function (keeping the original for backward compatibility)
   const handleView = async (driver) => {
-    navigate(`/driverDetail/?${driver.licenseNo}`)
+    navigate(`/viewDriverDetailData/?${driver.licenseNo}`)
+  };
+
+    const handleHistory = async (driver) => {
+    navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNo}`)
   };
 
   return (
@@ -478,7 +482,7 @@ const DevicePage = ({ }) => {
                 <th>CONTACT NUMBER</th>
                 <th>EMAIL</th>
                 <th>DEPOT</th>
-                <th>DOB</th>
+                {/* <th>DOB</th> */}
               </tr>
             </thead>
             <tbody>
@@ -491,6 +495,20 @@ const DevicePage = ({ }) => {
                       disabled={viewLoading === driver.id}
                     >
                       {viewLoading === driver.id ? 'Loading...' : 'Sync'}
+                    </button>
+                     <button
+                      className="table-action-btn view"
+                      onClick={() => handleView(driver)}
+                      disabled={viewLoading === driver.id}
+                    >
+                      {viewLoading === driver.id ? 'Loading...' : 'view'}
+                    </button>
+                      <button
+                      className="table-action-btn view"
+                      onClick={() => handleHistory(driver)}
+                      disabled={viewLoading === driver.id}
+                    >
+                      {viewLoading === driver.id ? 'Loading...' : 'history'}
                     </button>
                     <button
                       className="table-action-btn"
@@ -513,7 +531,7 @@ const DevicePage = ({ }) => {
                   <td>{driver.contactNumber}</td>
                   <td>{driver.email}</td>
                   <td>{driver.depotName}</td>
-                  <td>{driver.dob}</td>
+                  {/* <td>{driver.dob}</td> */}
                 </tr>
               ))}
               {displayedDrivers.length === 0 && (

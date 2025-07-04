@@ -1,0 +1,272 @@
+.parent-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 90%;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-top: 30px;
+}
+
+.details-container {
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+}
+
+.details-container h1 {
+  font-size: 22px;
+  margin-bottom: 35px;
+  font-weight: bold;
+
+}
+
+.details-container p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.status-endorsements-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.status-box,
+.endorsements-box {
+  width: 48%;
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.status-box {
+  background-color: #229183;
+}
+
+.endorsements-box {
+  background-color: #28a745;
+}
+
+.status-text,
+.endorsement-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.offences-container {
+  width: 90%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.offences-container h2 {
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.offences-table {
+  width: 100%;
+  border-collapse: collapse;
+
+}
+
+.offences-table th,
+.offences-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+.offences-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.parent-div {
+  width: 90%;
+  margin-left: 60px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.first-div,
+.second-div {
+  margin-bottom: 20px;
+}
+
+.tachograph-table caption {
+  margin-bottom: 15px;
+}
+
+.qualification-table caption {
+  margin-bottom: 15px;
+
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.additional-info {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.edit-button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.vehicle-table {
+  width: 90%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  margin-left: 60px;
+
+}
+
+
+
+th,
+td {
+  background-color: #f2f2f2;
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: small;
+}
+
+td {
+  height: 40px;
+}
+
+.vehicle {
+  margin-top: 20px;
+  font-size: 30px;
+  font-weight: 500;
+  margin-left: 60px;
+  margin-bottom: 10px;
+}
+
+.disclaimer{
+  width: 95%;
+}
+
+.disclaimer h2 {
+  margin-top: 20px;
+  margin-left: 60px;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.disclaimer p {
+  margin-left: 60px;
+  font-size: medium;
+}
+
+.download{
+  height: 50px;
+  width: 95%;
+}
+
+.downloadbtn{
+  background-color: #4a4b4e;
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+  float: right;
+  margin-top: 20px;
+}
+
+/* Add these styles to your existing DriverDetail.css */
+
+/* PDF download button styles */
+.downloadbtn {
+  padding: 10px 20px;
+  background-color: #4a4b4e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.downloadbtn:hover {
+  background-color: #4a4b4e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Print-specific styles */
+@media print {
+  .download {
+      display: none !important;
+  }
+  
+  body {
+      font-size: 12pt !important;
+      line-height: 1.5 !important;
+  }
+  
+  table {
+      width: 100% !important;
+      page-break-inside: auto;
+  }
+  
+  tr {
+      page-break-inside: avoid;
+  }
+  
+  /* Ensure tables have borders in PDF */
+  table, th, td {
+      border: 1px solid #ddd !important;
+      border-collapse: collapse !important;
+  }
+  
+  th, td {
+      padding: 8px !important;
+  }
+  
+  /* Force background colors */
+  * {
+      -webkit-print-color-adjust: exact !important;
+      color-adjust: exact !important;
+  }
+}

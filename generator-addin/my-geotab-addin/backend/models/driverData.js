@@ -25,7 +25,6 @@ const addressSchema = new mongoose.Schema({
 }, { _id: false });
 
 const driverSchema = new mongoose.Schema({
-  drivingLicenceNumber: { type: String, required: true, unique: true },
   firstNames: String,
   lastName: String,
   gender: String,
@@ -59,7 +58,7 @@ const cpcSchema = new mongoose.Schema({
   lgvValidTo: String,
 }, { _id: false });
 
-const DriverDataSchema = new mongoose.Schema({
+const detailSchema = new mongoose.Schema({
   driver: driverSchema,
   licence: licenceSchema,
   endorsements: [mongoose.Schema.Types.Mixed],
@@ -68,7 +67,12 @@ const DriverDataSchema = new mongoose.Schema({
   holder: holderSchema,
   cpc: {
     cpcs: [cpcSchema],
-  },
+  }
+}, {timestamps: true });
+
+const DriverDataSchema = new mongoose.Schema({
+  drivingLicenceNumber: { type: String, required: true, unique: true },
+  details: [detailSchema]
 }, { timestamps: true });
 
 module.exports = mongoose.model('DriverData', DriverDataSchema);

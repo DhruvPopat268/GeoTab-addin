@@ -8,6 +8,8 @@ import Dashboard from './Dashboard.jsx';
 import LCCheckPlans from './LCCheckPlans.jsx';
 import LCCheckUsage from './LCCheckUsage.jsx';
 import Wallet from './wallet.jsx';
+import ViewDriverLicenceSummary from './viewDriverDetailData.jsx';
+import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
 
 const App = ({ geotabApi, geotabState, appName }) => {
   const logger = Logger(appName);
@@ -70,6 +72,11 @@ const App = ({ geotabApi, geotabState, appName }) => {
             <Route path="/lc-check-usage" element={<LCCheckUsage />} />
 
             <Route path="/driverDetail" element={<DriverDetail />} />
+
+            <Route path="/viewDriverDetailData" element={<ViewDriverLicenceSummary />} />
+
+            <Route path="/GetHistoryOfDriverDetail" element={<GetHistoryOfDriverDetail />} />
+
 
             <Route path="/wallet" element={<Wallet />} />
 
