@@ -38,6 +38,18 @@
   padding: 1rem;
 }
 
+.stat-note {
+  text-align: left;
+  margin-top: 0.5rem;
+}
+
+.stat-note p {
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem; /* optional for better appearance */
+}
+
+
 .stat-header {
   display: flex;
   justify-content: space-between;
