@@ -114,7 +114,10 @@ const Dashboard = () => {
             </div>
             <div className="stat-value">{walletData.credits}</div>
             <div className="stat-note">
-              <p>**plan will Expire at {walletData.currentPlan?.expiryDate}</p>
+              <p>
+                **plan will Expire at {new Date(walletData.currentPlan?.expiryDate).toLocaleDateString('en-GB')}
+              </p>
+
               <p>**if you will not use credits till expiry date credits will 0</p>
             </div>
           </div>
