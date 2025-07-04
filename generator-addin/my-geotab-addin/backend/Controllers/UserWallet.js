@@ -158,21 +158,22 @@ module.exports.checksEligibility = async (req, res) => {
     }
 
     const plan = wallet.currentPlan;
-
     const isPlanExpired = plan ? new Date(plan.expiryDate) < new Date() : true;
+    const currentCredits = wallet.credits || 0;
+    const isZeroCredit = currentCredits === 0;
 
     const response = {
       success: true,
-      credits: wallet.credits || 0,
+      credits: currentCredits,
       expiryDate: plan?.expiryDate || null,
-      creditStatus: wallet.credits > 0,
+      zeroCredit: isZeroCredit,
       planExpired: isPlanExpired,
       message: ''
     };
 
     if (!plan) {
       response.message = 'No active plan found';
-    } else if (response.credits === 0) {
+    } else if (isZeroCredit) {
       response.message = 'No credits left';
     } else if (isPlanExpired) {
       response.message = 'Plan is expired';
@@ -191,6 +192,7 @@ module.exports.checksEligibility = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports.deductCredit = async(req,res) => {

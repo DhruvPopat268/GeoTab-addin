@@ -201,10 +201,10 @@ const DevicePage = ({ }) => {
       const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName });
 
       if (eligibilityResponse.status === 200) {
-        const { creditStatus, planExpired } = eligibilityResponse.data;
+        const { zeroCredit, planExpired } = eligibilityResponse.data;
 
         // Check if either creditStatus or planExpired is false
-        if (!creditStatus || !planExpired) {
+        if (zeroCredit || planExpired) {
           alert("You don't have enough credits");
           setViewLoading(null);
           setShowSyncConfirm(null);
