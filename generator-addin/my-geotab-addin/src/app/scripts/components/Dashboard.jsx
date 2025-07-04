@@ -113,9 +113,10 @@ const Dashboard = () => {
               <TrendingUp className="icon blue" />
             </div>
             <div className="stat-value">{walletData.credits}</div>
+            <p>**plan will Expire at ${walletData.currentPlan?.expiryDate}</p>
+            <p>**if you will not use credits till expiry date credits will 0</p>
           </div>
 
-          
         </div>
 
         <div className="dashboard-sections">
