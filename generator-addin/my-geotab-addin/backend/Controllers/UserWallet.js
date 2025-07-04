@@ -159,6 +159,13 @@ module.exports.checksEligibility = async (req, res) => {
 
     const plan = wallet.currentPlan;
     const isPlanExpired = plan ? new Date(plan.expiryDate) < new Date() : true;
+
+    // If plan expired and credits > 0, set credits to 0 and save
+    if (isPlanExpired && wallet.credits > 0) {
+      wallet.credits = 0;
+      await wallet.save();
+    }
+
     const currentCredits = wallet.credits || 0;
     const isZeroCredit = currentCredits === 0;
 
@@ -173,10 +180,10 @@ module.exports.checksEligibility = async (req, res) => {
 
     if (!plan) {
       response.message = 'No active plan found';
-    } else if (isZeroCredit) {
-      response.message = 'No credits left';
     } else if (isPlanExpired) {
       response.message = 'Plan is expired';
+    } else if (isZeroCredit) {
+      response.message = 'No credits left';
     } else {
       response.message = 'User is eligible to use API';
     }
@@ -192,7 +199,6 @@ module.exports.checksEligibility = async (req, res) => {
     });
   }
 };
-
 
 
 module.exports.deductCredit = async(req,res) => {
