@@ -75,6 +75,7 @@
     "react-hook-form": "^7.56.1",
     "react-router-dom": "^7.6.0",
     "react-to-pdf": "^2.0.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^3.0.2",
     "tailwind-merge": "^3.3.1"
   }
