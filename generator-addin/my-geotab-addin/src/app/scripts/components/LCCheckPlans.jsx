@@ -86,10 +86,11 @@ const LCCheckPlans = () => {
         setSelectedPlan(null);
       }
     } catch (err) {
-      toast({
-        title: 'Purchase Failed',
-        description: err.response?.data?.message || err.message
-      });
+      // toast({
+      //   title: 'Purchase Failed',
+      //   description: err.response?.data?.message || err.message
+      // });
+      alert(err.response?.data?.message);
     } finally {
       setPurchasing(false);
     }
