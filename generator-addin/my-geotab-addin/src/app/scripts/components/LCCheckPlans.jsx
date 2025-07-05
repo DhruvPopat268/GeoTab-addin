@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star, Zap, Shield, Clock, CreditCard, X } from 'lucide-react';
 import Navbar from './Navbar.jsx';
-import { useToast } from '../hooks/use-toast.jsx';
+
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
 import { API_URL , BASE_URL } from '../../../env.js';
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const LCCheckPlans = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -42,7 +42,7 @@ const LCCheckPlans = () => {
       }));
       setPlans(formatted);
     } catch (err) {
-      toast({ title: 'Error fetching plans', description: err.message });
+      toast.error({ title: 'Error fetching plans', description: err.message });
     } finally {
       setLoading(false);
     }
