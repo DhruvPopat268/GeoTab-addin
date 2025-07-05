@@ -68,7 +68,7 @@ const DriverLicenseTable = () => {
 
     return licenceNo;
   };
-
+  
   const fetchDriverData = async () => {
     try {
       setLoading(true);
