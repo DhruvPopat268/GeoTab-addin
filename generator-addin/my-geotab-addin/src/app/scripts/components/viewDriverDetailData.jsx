@@ -169,7 +169,7 @@ const ViewDriverLicenceSummary = () => {
 
             const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
                 drivingLicenceNumber,
-                userId:userName
+                userId: userName
             });
 
             if (response.data?.data) {

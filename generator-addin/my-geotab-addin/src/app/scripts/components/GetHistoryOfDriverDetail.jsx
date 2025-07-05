@@ -335,50 +335,50 @@ const DriverLicenseTable = () => {
     return htmlContent;
   };
 
-  const handleDownload = (recordData) => {
-    try {
-      console.log('Downloading record:', recordData);
+  // const handleDownload = (recordData) => {
+  //   try {
+  //     console.log('Downloading record:', recordData);
       
-      // Generate PDF-like HTML content
-      const pdfContent = generatePDF(recordData);
+  //     // Generate PDF-like HTML content
+  //     const pdfContent = generatePDF(recordData);
       
-      // Create blob and download
-      const blob = new Blob([pdfContent], { type: 'text/html;charset=utf-8' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
+  //     // Create blob and download
+  //     const blob = new Blob([pdfContent], { type: 'text/html;charset=utf-8' });
+  //     const link = document.createElement('a');
+  //     const url = URL.createObjectURL(blob);
       
-      link.setAttribute('href', url);
-      link.setAttribute('download', `driver-license-report-${drivingLicenceNumber}-${Date.now()}.html`);
-      link.style.visibility = 'hidden';
+  //     link.setAttribute('href', url);
+  //     link.setAttribute('download', `driver-license-report-${drivingLicenceNumber}-${Date.now()}.html`);
+  //     link.style.visibility = 'hidden';
       
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
       
-      // Clean up
-      URL.revokeObjectURL(url);
+  //     // Clean up
+  //     URL.revokeObjectURL(url);
       
-      toast.success('Report downloaded successfully!');
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error('Failed to download report');
-    }
-  };
+  //     toast.success('Report downloaded successfully!');
+  //   } catch (error) {
+  //     console.error('Download error:', error);
+  //     toast.error('Failed to download report');
+  //   }
+  // };
 
-  const SortableHeader = ({ children, sortKey }) => (
-    <th
-      className="sortable-header"
-      onClick={() => handleSort(sortKey)}
-    >
-      <div className="header-content">
-        {children}
-        <ChevronDown
-          className={`sort-icon ${sortConfig.key === sortKey && sortConfig.direction === 'desc' ? 'rotated' : ''
-            }`}
-        />
-      </div>
-    </th>
-  );
+  // const SortableHeader = ({ children, sortKey }) => (
+  //   <th
+  //     className="sortable-header"
+  //     onClick={() => handleSort(sortKey)}
+  //   >
+  //     <div className="header-content">
+  //       {children}
+  //       <ChevronDown
+  //         className={`sort-icon ${sortConfig.key === sortKey && sortConfig.direction === 'desc' ? 'rotated' : ''
+  //           }`}
+  //       />
+  //     </div>
+  //   </th>
+  // );
 
   if (loading) {
     return (
@@ -456,9 +456,14 @@ const DriverLicenseTable = () => {
           <table className="driver-table">
             <thead className="table-header">
               <tr>
-                <SortableHeader sortKey="action">Action</SortableHeader>
+                {/* <SortableHeader sortKey="action">Action</SortableHeader>
                 <SortableHeader sortKey="driverLicenseNo">Driver Licence No</SortableHeader>
-                <SortableHeader sortKey="lcCheck">LC Check</SortableHeader>
+                <SortableHeader sortKey="lcCheck">LC Check</SortableHeader> */}
+
+                <th>Action</th>
+                <th>Driver Licence No</th>
+                <th>LC Check</th>
+
               </tr>
             </thead>
             <tbody className="table-body">
@@ -480,13 +485,13 @@ const DriverLicenseTable = () => {
                         >
                           <Eye className="action-icon" />
                         </button>
-                        <button
+                        {/* <button
                           onClick={() => handleDownload(record)}
                           className="act-btn download-btn"
                           title="Download Report"
                         >
                           <Download className="action-icon" />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                     <td className="table-cell">
