@@ -9,4 +9,6 @@ router.post('/getRecentDriverByLicence', driverDataController.getRecentDriverByL
 
 router.post('/getAllDriversByLicence', driverDataController.getAllDriversByLicence);
 
+router.post('/getDriverDetailByLcCheckId', driverDataController.getDriverDetailByLcCheckId);
+
 module.exports = router;

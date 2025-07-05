@@ -124,34 +124,31 @@ const LCCheckView = () => {
     };
 
     // Extract driving licence number from URL
-    const getDrivingLicenceFromUrl = () => {
+    const getLicenceAndLcCheckIdFromUrl = () => {
         const hash = window.location.hash;
         console.log('Full hash:', hash);
 
-        const [pathPart, queryString] = hash.split('?');
-        console.log('Path part:', pathPart);
-        console.log('Query string:', queryString);
+        // Remove leading "#/" and split by "/"
+        const pathSegments = hash.replace(/^#\/|\/$/g, '').split('/');
 
-        const pathSegments = pathPart.split('/');
-        const licenceFromPath = pathSegments[pathSegments.length - 1];
-        console.log('Licence from path:', licenceFromPath);
+        console.log('Path segments:', pathSegments);
 
-        let licenceFromQuery = '';
-        if (queryString) {
-            if (queryString.includes('=')) {
-                const urlParams = new URLSearchParams(queryString);
-                licenceFromQuery = urlParams.get('drivingLicenceNumber') || urlParams.get('licence') || '';
-            } else {
-                licenceFromQuery = queryString;
-            }
+        let licenceNo = '';
+        let lcCheckId = '';
+
+        // Check if URL follows expected pattern
+        const lcCheckIndex = pathSegments.indexOf('LCCheckView');
+        if (lcCheckIndex !== -1 && pathSegments.length > lcCheckIndex + 2) {
+            licenceNo = pathSegments[lcCheckIndex + 2];
+            lcCheckId = pathSegments[lcCheckIndex + 3];
         }
-        console.log('Licence from query:', licenceFromQuery);
 
-        const licenceNo = licenceFromQuery || licenceFromPath || '';
-        console.log('Final Licence No:', licenceNo);
+        console.log('Licence No:', licenceNo);
+        console.log('LC Check ID:', lcCheckId);
 
-        return licenceNo;
+        return { licenceNo, lcCheckId };
     };
+
 
     // Fetch driver data from API
     const fetchDriverData = async () => {
@@ -159,7 +156,7 @@ const LCCheckView = () => {
             setLoading(true);
             setError(null);
 
-            const drivingLicenceNumber = getDrivingLicenceFromUrl();
+            const { licenceNo, lcCheckId } = getLicenceAndLcCheckIdFromUrl();
 
             if (!drivingLicenceNumber) {
                 throw new Error('Driving licence number not found in URL');
@@ -168,8 +165,9 @@ const LCCheckView = () => {
             console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
             const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
-                drivingLicenceNumber,
-                userId:userName
+                licenceNo,
+                lcCheckId,
+                userId: userName
             });
 
             if (response.data?.data) {

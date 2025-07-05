@@ -101,3 +101,34 @@ module.exports.getAllDriversByLicence = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+module.exports.getDriverDetailByLcCheckId = async (req, res) => {
+  try {
+    const { userId, licenceNo, lcCheckId } = req.body;
+
+    if (!userId || !licenceNo || !lcCheckId) {
+      return res.status(400).json({ status: false, message: "Missing userId, licenceNo or lcCheckId" });
+    }
+
+    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber: licenceNo });
+
+    if (!driverDoc || !Array.isArray(driverDoc.details)) {
+      return res.status(404).json({ status: false, message: "Driver or details not found" });
+    }
+
+    const detail = driverDoc.details.find(d => d._id.toString() === lcCheckId);
+
+    if (!detail) {
+      return res.status(404).json({ status: false, message: "LC Check ID not found in driver details" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      data: detail
+    });
+
+  } catch (error) {
+    console.error("Error fetching driver detail:", error);
+    res.status(500).json({ status: false, message: "Server error", error: error.message });
+  }
+};
