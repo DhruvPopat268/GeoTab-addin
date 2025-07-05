@@ -158,11 +158,11 @@ const LCCheckView = () => {
 
             const { licenceNo, lcCheckId } = getLicenceAndLcCheckIdFromUrl();
 
-            if (!drivingLicenceNumber) {
-                throw new Error('Driving licence number not found in URL');
+            if (!licenceNo || !lcCheckId ) {
+                throw new Error('Driving licence or lc check id is not found in URL');
             }
 
-            console.log("Fetching driver from backend using:", drivingLicenceNumber);
+            // console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
             const response = await axios.post(`${BASE_URL}/api/driverData/getDriverDetailByLcCheckId`, {
                 licenceNo,
