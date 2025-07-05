@@ -1,0 +1,107 @@
+.api-card {
+  height: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s ease;
+  background-color: white;
+}
+
+.api-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.api-card-header {
+  padding: 1rem 1rem 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.api-card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.api-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.secondary-badge {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.popular-badge {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.external-icon {
+  color: #9ca3af;
+  margin-left: 0.5rem;
+}
+
+.api-card-content {
+  padding: 1rem;
+  flex: 1;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  gap: 0.5rem;
+}
+
+.icon.green {
+  color: #22c55e;
+}
+
+.icon.blue {
+  color: #3b82f6;
+}
+
+.api-card-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.button-link {
+  display: block;
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background-color: #1d4ed8;
+}

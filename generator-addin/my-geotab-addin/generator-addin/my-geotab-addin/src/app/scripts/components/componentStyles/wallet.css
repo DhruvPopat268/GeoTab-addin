@@ -1,0 +1,231 @@
+.wallet {
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.wallet-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.wallet-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.wallet-subtitle {
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.wallet-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+.wallet-left, .wallet-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.balance {
+  font-size: 2.5rem;
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.icon-green {
+  color: #16a34a;
+}
+
+.icon-blue {
+  color: #2563eb;
+}
+
+.icon-red {
+  color: #dc2626;
+}
+
+.label, .small-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.method-box {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.method-box.selected {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.method-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.method-icon {
+  width: 2rem;
+  height: 2rem;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="number"] {
+  padding: 0.5rem;
+  font-size: 1.125rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+.quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.quick-buttons button {
+  height: 2.5rem;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.paypal-button {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  height: 3rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.paypal-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.secure-box {
+  background: #ecfdf5;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  margin-top: 5px;
+}
+
+.limits {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.tabs button {
+  border: none;
+  background: none;
+  padding: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.transactions {
+  margin-top: 1rem;
+}
+
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.transaction-left {
+  display: flex;
+  gap: 1rem;
+}
+
+.circle-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-icon.deposit {
+  background-color: #dcfce7;
+}
+
+.circle-icon.purchase {
+  background-color: #fee2e2;
+}
+
+.bold-text {
+  font-weight: 500;
+  color: #111827;
+}
+
+.amount.green {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.amount.red {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.75rem;
+  background: #e5e7eb;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}

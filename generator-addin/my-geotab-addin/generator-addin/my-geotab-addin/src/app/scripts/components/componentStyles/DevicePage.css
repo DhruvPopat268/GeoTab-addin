@@ -1,0 +1,590 @@
+/* Base Styles */
+.div {
+    background-color: red;
+}
+
+.main-con {
+    width: 100vw;
+    /* padding: 20px; */
+    box-sizing: border-box;
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Filter Container */
+.filter-container {
+    padding: 1rem 1.5rem;
+    /* margin-left: 30px; */
+    margin-top: 20px;
+    height: auto;
+    min-height: 80px;
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-dropdown {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    min-width: 150px;
+}
+
+/* Action Buttons */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background-color: #48494b;
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin-left: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background-color: #363738;
+}
+
+/* Specific button styles */
+.filter-btn {
+    background-color: #00467f;
+}
+
+.filter-btn:hover {
+    background-color: #003366;
+}
+
+.reset-btn {
+    background-color: #6c757d;
+}
+
+.reset-btn:hover {
+    background-color: #5a6268;
+}
+
+.create-btn {
+    background-color: #28a745;
+}
+
+.create-btn:hover {
+    background-color: #218838;
+}
+
+/* Form Popup Styles - FIXED */
+.form-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.form-popup-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 95vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Form Elements */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.form-group label:after {
+    content: '*';
+    color: red;
+    margin-left: 4px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #00467f;
+    box-shadow: 0 0 0 2px rgba(0, 70, 127, 0.1);
+}
+
+.form-group input.error,
+.form-group select.error {
+    border-color: #dc3545;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.cancel-btn,
+.submit-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn {
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.cancel-btn:hover {
+    background: #e0e0e0;
+}
+
+.submit-btn {
+    background: #00467f;
+    color: white;
+    border: none;
+}
+
+.submit-btn:hover {
+    background: #003366;
+}
+
+.update-btn{
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    background: yellowgreen;
+    color: white;
+    border: none;
+    display: none;
+}
+
+/* Enhanced Table Styles */
+.drivers-table-container {
+    width: 1200px;
+    margin-top: 2rem;
+    overflow-x: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.drivers-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+.drivers-table th {
+    background-color: #00467f;
+    color: white;
+    padding: 12px 15px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+}
+
+.drivers-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.drivers-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Enhanced Action Buttons */
+.action-buttons {
+    white-space: nowrap;
+}
+
+.table-action-btn {
+    padding: 6px 12px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.table-action-btn:last-child {
+    margin-right: 0;
+}
+
+/* View button */
+.table-action-btn.view {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+/* Edit button */
+.table-action-btn.edit {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+/* Delete button */
+.table-action-btn.danger {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+/* Hover effects */
+.table-action-btn.view:hover {
+    background-color: #bbdefb;
+}
+
+.table-action-btn.edit:hover {
+    background-color: #c8e6c9;
+}
+
+.table-action-btn.danger:hover {
+    background-color: #ffcdd2;
+}
+
+.no-drivers {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Delete Confirmation Modal */
+.delete-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.delete-confirm-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.delete-confirm-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.delete-btn {
+    background-color: #ff4444;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #cc0000;
+}
+
+/* Root and Page Container */
+.root {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.page-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Sync Confirmation Modal */
+.confirm-popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.confirm-popup-content p {
+    margin-bottom: 25px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.confirm-btn {
+    background-color: #25477b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.confirm-btn:hover {
+    background-color: #25477b;
+}
+
+/* Driver Details Modal */
+.driver-details-modal {
+    max-width: 1000px;
+}
+
+.driver-details-content {
+    margin-top: 20px;
+}
+
+.details-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.details-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.details-grid > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.details-grid > div:last-child {
+    border-bottom: none;
+}
+
+.dvla-details {
+    background-color: white;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.dvla-details pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .filter-container {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .filter-header {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .filter-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .form-popup-overlay {
+        padding: 10px;
+    }
+    .form-popup-content {
+        padding: 1.5rem;
+        max-height: 90vh;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .drivers-table th, 
+    .drivers-table td {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    
+    .table-action-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin-right: 4px;
+    }
+    
+    .page-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-popup-content {
+        padding: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+    
+    .drivers-table {
+        min-width: 800px;
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "prayoshaAddIn",
+  "version": "1.0",
+  "pages": [
+    {
+      "name": "main",
+      "url": "index.html"
+    },
+    {
+      "name": "driverDetail",
+      "url": "driverDetail.html",
+      "menuName": {
+        "en": "Driver Details"
+      }
+    }
+  ]
+}
