@@ -10,6 +10,8 @@ import LCCheckUsage from './LCCheckUsage.jsx';
 import Wallet from './wallet.jsx';
 import ViewDriverLicenceSummary from './viewDriverDetailData.jsx';
 import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
+import { ToastContainer, toast } from 'react-toastify';
+import './componentStyles/toast.css';
 
 const App = ({ geotabApi, geotabState, appName }) => {
   const logger = Logger(appName);
@@ -80,7 +82,19 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
             <Route path="/wallet" element={<Wallet />} />
 
+           
+
+
           </Routes>
+
+           <ToastContainer
+              toastClassName="toast"
+              bodyClassName=""
+              position="top-right"
+              autoClose={3000}
+              closeButton={false}
+              className="toast-container"
+            />
         </Router>
       </GeotabContext.Provider>
     </>

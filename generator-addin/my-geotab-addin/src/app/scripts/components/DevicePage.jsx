@@ -6,6 +6,8 @@ import axios from 'axios'
 import { BASE_URL } from '../../../env.js';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar.jsx';
+import { toast } from 'react-toastify';
+
 
 
 const DevicePage = ({ }) => {
@@ -112,7 +114,7 @@ const DevicePage = ({ }) => {
       setShowCreateForm(false);
 
       // Confirm visually
-      alert(isEditing ? "Driver updated successfully" : "Driver created successfully");
+      toast.success(isEditing ? "Driver updated successfully" : "Driver created successfully");
 
     } catch (error) {
       console.error("Error submitting driver:", error);
