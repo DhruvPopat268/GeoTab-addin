@@ -168,7 +168,8 @@ const ViewDriverLicenceSummary = () => {
             console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
             const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
-                drivingLicenceNumber
+                drivingLicenceNumber,
+                userId:userName
             });
 
             if (response.data?.data) {
