@@ -4,6 +4,7 @@ import './componentStyles/GetHistoryOfDriverDetail.css';
 import Navbar from './Navbar.jsx';
 import axios from 'axios';
 import { BASE_URL } from '../../../env.js';
+import { toast } from 'react-toastify';
 
 
 
@@ -33,7 +34,7 @@ const DriverLicenseTable = () => {
   const handleView = (record) => {
     console.log('Viewing record:', record);
     // Add your view logic here
-    alert(`Viewing details for ${record.driverLicenseNo}`);
+    toast.success(`Viewing details for ${record.driverLicenseNo}`);
   };
 
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");

@@ -7,6 +7,8 @@ import './componentStyles/wallet.css';
 import PayPalButton from './PayPalButton.jsx';
 import { BASE_URL } from '../../../env.js';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
 
 const Wallet = () => {
   const [depositAmount, setDepositAmount] = useState('');
@@ -89,13 +91,13 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
       setIsProcessing(true);
       setTimeout(() => {
         setIsProcessing(false);
-        alert(`£${amount} has been deposited via PayPal.`);
+        toast.success(`£${amount} has been deposited via PayPal.`);
         setDepositAmount('');
         // Refresh wallet data after successful deposit
         fetchWalletData();
       }, 2000);
     } else {
-      alert('Please enter a valid deposit amount.');
+      toast.error('Please enter a valid deposit amount.');
     }
   };
 
@@ -206,7 +208,7 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
                       amount={parseFloat(depositAmount)}
                       userId={userId}
                       onSuccess={(data) => {
-                        alert(`£${depositAmount} deposited successfully!`);
+                        toast.success(`£${depositAmount} deposited successfully!`);
                         setDepositAmount('');
                         setIsProcessing(false);
                         // Refresh wallet data after successful deposit

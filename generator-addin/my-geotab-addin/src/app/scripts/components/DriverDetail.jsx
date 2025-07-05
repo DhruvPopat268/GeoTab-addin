@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
 import './componentStyles/DriverDetail.css';
+import { toast } from 'react-toastify';
+
 
 const DriverLicenceSummary = () => {
     const [driverData, setDriverData] = useState(null);
@@ -107,11 +109,11 @@ const DriverLicenceSummary = () => {
                 }, 500);
             };
 
-            alert('Print dialog opened. Please select "Save as PDF" in the print dialog to generate PDF.');
+            toast.success('Print dialog opened. Please select "Save as PDF" in the print dialog to generate PDF.');
 
         } catch (error) {
             console.error('Error generating PDF:', error);
-            alert('Failed to generate PDF. Please try again.');
+            toast.error('Failed to generate PDF. Please try again.');
         } finally {
             // Show the download button again
             setTimeout(() => {

@@ -1,7 +1,7 @@
 /* toast.css */
 .toast-container {
   position: fixed;
-  top: 1rem;
+  top: 3rem;
   right: 1rem;
   z-index: 9999;
   max-width: 300px;

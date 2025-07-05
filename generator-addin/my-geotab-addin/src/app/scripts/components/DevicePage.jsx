@@ -75,7 +75,7 @@ const DevicePage = ({ }) => {
       }
     } catch (error) {
       console.error("Error fetching drivers:", error);
-      alert(`Error fetching drivers: ${error.response?.data?.error || error.message}`);
+      toast.error(`Error fetching drivers: ${error.response?.data?.error || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ const DevicePage = ({ }) => {
         res = await axios.post(`${BASE_URL}/api/driver/create`, data);
 
         if (res.status === 409) {
-          alert("User already exists");
+          toast.error("User already exists");
           return;
         }
       }
@@ -118,7 +118,7 @@ const DevicePage = ({ }) => {
 
     } catch (error) {
       console.error("Error submitting driver:", error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+      toast.error(`Error: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -157,11 +157,11 @@ const DevicePage = ({ }) => {
 
       // Close modal and show success
       setShowDeleteConfirm(null);
-      alert("Driver deleted successfully");
+      toast.success("Driver deleted successfully");
 
     } catch (error) {
       console.error("Delete error:", error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+      toast.error(`Error: ${error.response?.data?.message || error.message}`);
       setShowDeleteConfirm(null);
     }
   };
@@ -207,7 +207,7 @@ const DevicePage = ({ }) => {
 
         // Check if either creditStatus or planExpired is false
         if (zeroCredit || planExpired) {
-          alert("You don't have enough credits");
+          toast.error("You don't have enough credits");
           setViewLoading(null);
           setShowSyncConfirm(null);
           return;
@@ -219,7 +219,7 @@ const DevicePage = ({ }) => {
       }
     } catch (error) {
       console.error("Error checking eligibility:", error);
-      alert(`Error checking eligibility: ${error.response?.data?.message || error.message}`);
+      toast.error(`Error checking eligibility: ${error.response?.data?.message || error.message}`);
     } finally {
       setViewLoading(null);
     }

@@ -6,6 +6,8 @@ import { useToast } from '../hooks/use-toast.jsx';
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
 import { API_URL , BASE_URL } from '../../../env.js';
+import { toast } from 'react-toastify';
+
 
 const LCCheckPlans = () => {
   const navigate = useNavigate();
@@ -90,7 +92,7 @@ const LCCheckPlans = () => {
       //   title: 'Purchase Failed',
       //   description: err.response?.data?.message || err.message
       // });
-      alert(err.response?.data?.message);
+      toast.error(err.response?.data?.message);
     } finally {
       setPurchasing(false);
     }

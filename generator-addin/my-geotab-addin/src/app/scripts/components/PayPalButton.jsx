@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { BASE_URL } from '../../../env.js';
+import { toast } from 'react-toastify';
+
 
 const PayPalButton = ({ amount, userId, onSuccess }) => {
   const paypalRef = useRef(null);
@@ -58,12 +60,12 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
           } else {
             const errorMsg = data.message || `HTTP ${res.status}: ${res.statusText}`;
             console.error('Save failed:', errorMsg);
-            alert(`Payment was successful but saving failed: ${errorMsg}`);
+            toast.success(`Payment was successful but saving failed: ${errorMsg}`);
           }
           
         } catch (error) {
           console.error('Error in payment processing:', error);
-          alert('Payment was successful but saving failed: ' + error.message);
+          toast.error('Payment was successful but saving failed: ' + error.message);
         }
       }
     });
