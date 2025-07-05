@@ -5,6 +5,7 @@ import Navbar from './Navbar.jsx';
 import axios from 'axios';
 import { BASE_URL } from '../../../env.js';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -15,6 +16,9 @@ const DriverLicenseTable = () => {
   const [drivingLicenceNumber, setDrivingLicenceNumber] = useState()
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+    const navigate = useNavigate();
+
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -31,10 +35,8 @@ const DriverLicenseTable = () => {
     setData(sortedData);
   };
 
-  const handleView = (record) => {
-    console.log('Viewing record:', record);
-    // Add your view logic here
-    toast.success(`Viewing details for ${record.driverLicenseNo}`);
+  const handleView = (data) => {
+    navigate (`/LCCheckView/?/${drivingLicenceNumber}/${data._id}`)
   };
 
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
@@ -156,18 +158,18 @@ const DriverLicenseTable = () => {
             </thead>
             <tbody className="table-body">
               {data.map((data) => (
-                <tr key={data.id} className="table-row">
+                <tr key={data._id} className="table-row">
                   <td className="table-cell">
                     <div className="act-btns">
                       <button
-                        onClick={() => handleView(record)}
+                        onClick={() => handleView(data)}
                         className="act-btn view-btn"
                         title="View Details"
                       >
                         <Eye className="action-icon" />
                       </button>
                       <button
-                        onClick={() => handleDownload(record)}
+                        onClick={() => handleDownload(data)}
                         className="act-btn download-btn"
                         title="Download"
                       >

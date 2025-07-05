@@ -10,6 +10,7 @@ import LCCheckUsage from './LCCheckUsage.jsx';
 import Wallet from './wallet.jsx';
 import ViewDriverLicenceSummary from './viewDriverDetailData.jsx';
 import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
+import LCCheckView from './LCCheckView.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import './componentStyles/toast.css';
 
@@ -79,6 +80,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
             <Route path="/GetHistoryOfDriverDetail" element={<GetHistoryOfDriverDetail />} />
 
+            <Route path="/LCCheckView" element={<LCCheckView />} />
 
             <Route path="/wallet" element={<Wallet />} />
 
