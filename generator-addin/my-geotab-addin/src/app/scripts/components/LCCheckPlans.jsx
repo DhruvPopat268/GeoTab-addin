@@ -80,10 +80,7 @@ const LCCheckPlans = () => {
       });
 
       if (response.status === 200) {
-        toast({
-          title: "Payment Successful!",
-          description: `${selectedPlan.name} plan has been purchased successfully.`,
-        });
+        toast.success(`${selectedPlan.name} plan has been purchased successfully.`);
         setShowConfirmation(false);
         setSelectedPlan(null);
       }
