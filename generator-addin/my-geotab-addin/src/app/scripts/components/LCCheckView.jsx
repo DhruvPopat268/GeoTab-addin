@@ -164,7 +164,7 @@ const LCCheckView = () => {
 
             console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
-            const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
+            const response = await axios.post(`${BASE_URL}/api/driverData/getDriverDetailByLcCheckId`, {
                 licenceNo,
                 lcCheckId,
                 userId: userName
