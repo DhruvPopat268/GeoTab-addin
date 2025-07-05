@@ -3,13 +3,14 @@ const DriverData = require('../models/driverData');
 module.exports.driverData = async (req, res, next) => {
   try {
     const data = req.body.data;
+    const userId = req.body.userId;
     const licenceNumber = data?.driver?.drivingLicenceNumber;
 
-    if (!licenceNumber) {
-      return res.status(400).json({ message: "Missing drivingLicenceNumber" });
+    if (!userId || !licenceNumber) {
+      return res.status(400).json({ message: "Missing userId or drivingLicenceNumber" });
     }
 
-    const existing = await DriverData.findOne({ drivingLicenceNumber: licenceNumber });
+    const existing = await DriverData.findOne({ userId, drivingLicenceNumber: licenceNumber });
 
     const detailEntry = {
       driver: {
@@ -28,20 +29,18 @@ module.exports.driverData = async (req, res, next) => {
     };
 
     if (existing) {
-      // Append new detail
       existing.details.push(detailEntry);
       await existing.save();
       return res.status(200).json({ message: 'Data appended successfully' });
     } else {
-      // Create new document
       const newDriverData = new DriverData({
+        userId,
         drivingLicenceNumber: licenceNumber,
         details: [detailEntry],
       });
       await newDriverData.save();
       return res.status(201).json({ message: 'Created new driver record successfully' });
     }
-
   } catch (error) {
     console.error('Error storing driver data:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -50,13 +49,13 @@ module.exports.driverData = async (req, res, next) => {
 
 module.exports.getRecentDriverByLicence = async (req, res) => {
   try {
-    const { drivingLicenceNumber } = req.body;
+    const { userId, drivingLicenceNumber } = req.body;
 
-    if (!drivingLicenceNumber) {
-      return res.status(400).json({ status: false, message: "Missing drivingLicenceNumber" });
+    if (!userId || !drivingLicenceNumber) {
+      return res.status(400).json({ status: false, message: "Missing userId or drivingLicenceNumber" });
     }
 
-    const driverDoc = await DriverData.findOne({ drivingLicenceNumber });
+    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber });
 
     if (!driverDoc || !driverDoc.details || driverDoc.details.length === 0) {
       return res.status(404).json({ status: false, message: "No driver details found" });
@@ -75,17 +74,15 @@ module.exports.getRecentDriverByLicence = async (req, res) => {
   }
 };
 
-
 module.exports.getAllDriversByLicence = async (req, res) => {
   try {
-    const { drivingLicenceNumber } = req.body;
+    const { userId, drivingLicenceNumber } = req.body;
 
-    if (!drivingLicenceNumber) {
-      return res.status(400).json({ message: "Missing drivingLicenceNumber" });
+    if (!userId || !drivingLicenceNumber) {
+      return res.status(400).json({ message: "Missing userId or drivingLicenceNumber" });
     }
 
-    // Find the single document by drivingLicenceNumber
-    const driverDoc = await DriverData.findOne({ drivingLicenceNumber });
+    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber });
 
     if (!driverDoc || !driverDoc.details || driverDoc.details.length === 0) {
       return res.status(404).json({ message: "No driver details found" });

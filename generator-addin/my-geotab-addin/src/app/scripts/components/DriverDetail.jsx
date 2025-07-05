@@ -209,7 +209,8 @@ const DriverLicenceSummary = () => {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            data: driverData.data
+                            data: driverData.data,
+                            userId:userName
                         })
                     });
 

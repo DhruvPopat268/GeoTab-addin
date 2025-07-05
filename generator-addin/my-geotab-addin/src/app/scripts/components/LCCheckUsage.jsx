@@ -277,7 +277,7 @@ const LCCheckUsage = () => {
                       <tr>
                         <th>API Name</th>
                         <th>Method</th>
-                        <th>Endpoint</th>
+                        {/* <th>Endpoint</th> */}
                         <th>Status</th>
                         <th>Response Time</th>
                         <th>Timestamp</th>
@@ -288,7 +288,7 @@ const LCCheckUsage = () => {
                         <tr key={log.id}>
                           <td>{log.apiName}</td>
                           <td><span className="badge outline">{log.method}</span></td>
-                          <td className="endpoint">{log.endpoint}</td>
+                          {/* <td className="endpoint">{log.endpoint}</td> */}
                           <td>{getStatusBadge(log.status)}</td>
                           <td>{log.responseTime}</td>
                           <td className="timestamp">{log.timestamp}</td>

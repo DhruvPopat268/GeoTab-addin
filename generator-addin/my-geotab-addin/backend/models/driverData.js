@@ -71,6 +71,7 @@ const detailSchema = new mongoose.Schema({
 }, {timestamps: true });
 
 const DriverDataSchema = new mongoose.Schema({
+  userId:{type: String, required: true},
   drivingLicenceNumber: { type: String, required: true, unique: true },
   details: [detailSchema]
 }, { timestamps: true });
