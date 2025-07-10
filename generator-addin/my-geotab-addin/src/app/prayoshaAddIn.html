@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Prayosha Add-in</title>
@@ -9,23 +10,23 @@
             padding: 20px;
             font-family: Arial, sans-serif;
         }
-        
+
         .page {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         h1 {
             color: #333;
             margin-bottom: 20px;
         }
-        
+
         #driver-list {
             list-style-type: none;
             padding: 0;
             margin: 0;
         }
-        
+
         #driver-list li {
             padding: 10px;
             margin: 5px 0;
@@ -33,18 +34,18 @@
             border-radius: 4px;
             border-left: 4px solid #007bff;
         }
-        
+
         .loading {
             color: #666;
             font-style: italic;
         }
-        
+
         .error {
             color: #dc3545;
             background-color: #f8d7da;
             border-color: #f5c6cb;
         }
-        
+
         .btn {
             background-color: #007bff;
             color: white;
@@ -54,12 +55,13 @@
             cursor: pointer;
             margin: 10px 0;
         }
-        
+
         .btn:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
     <div id="prayoshaAddIn" class="addon page">
         <h1>Welcome to the Prayosha Add-In</h1>
@@ -74,35 +76,35 @@
 
         // Register the add-in with MyGeotab
         if (typeof geotab !== 'undefined' && geotab.addin) {
-            geotab.addin.prayoshaAddIn = function(api, state) {
+            geotab.addin.prayoshaAddIn = function (api, state) {
                 // Store references
                 currentApi = api;
                 currentState = state;
-                
+
                 return {
-                    initialize: function(api, state, callback) {
+                    initialize: function (api, state, callback) {
                         console.log("Prayosha Add-In initialized");
-                        
+
                         // Set up event listeners
                         setupEventListeners();
-                        
+
                         // Load drivers on initialization
                         loadDrivers();
-                        
+
                         callback();
                     },
 
-                    focus: function(api, state) {
+                    focus: function (api, state) {
                         console.log("Prayosha Add-In focused");
                         // Update references
                         currentApi = api;
                         currentState = state;
-                        
+
                         // Refresh drivers when focused
                         loadDrivers();
                     },
 
-                    blur: function() {
+                    blur: function () {
                         console.log("Prayosha Add-In blurred");
                     }
                 };
@@ -113,7 +115,7 @@
         function setupEventListeners() {
             const refreshBtn = document.getElementById("refreshBtn");
             if (refreshBtn) {
-                refreshBtn.addEventListener("click", function() {
+                refreshBtn.addEventListener("click", function () {
                     loadDrivers();
                 });
             }
@@ -122,7 +124,7 @@
         // Load drivers from MyGeotab
         function loadDrivers() {
             const list = document.getElementById("driver-list");
-            
+
             if (!currentApi) {
                 console.error("API not available");
                 list.innerHTML = '<li class="error">API not available</li>';
@@ -132,17 +134,43 @@
             // Show loading state
             list.innerHTML = '<li class="loading">Loading drivers...</li>';
 
-            // Make API call to get drivers
+            // Correct call: fetch all Users
             currentApi.call("Get", {
-                typeName: "Driver",
-                resultsLimit: -1  // Get all drivers
-            }, function(drivers) {
-                console.log("Fetched drivers:", drivers);
+                typeName: "User",
+                resultsLimit: -1
+            }, function (users) {
+                // Filter only users with userType === "Driver"
+                const drivers = users.filter(user => user.userType === "Driver");
+                console.log("Filtered drivers:", drivers);
                 displayDrivers(drivers);
-            }, function(error) {
+            }, function (error) {
                 console.error("Error fetching drivers:", error);
                 list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
             });
+        }
+
+        const list = document.getElementById("driver-list");
+
+        if (!currentApi) {
+            console.error("API not available");
+            list.innerHTML = '<li class="error">API not available</li>';
+            return;
+        }
+
+        // Show loading state
+        list.innerHTML = '<li class="loading">Loading drivers...</li>';
+
+        // Make API call to get drivers
+        currentApi.call("Get", {
+            typeName: "Driver",
+            resultsLimit: -1  // Get all drivers
+        }, function (drivers) {
+            console.log("Fetched drivers:", drivers);
+            displayDrivers(drivers);
+        }, function (error) {
+            console.error("Error fetching drivers:", error);
+            list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
+        });
         }
 
         // Display drivers in the UI
@@ -155,9 +183,9 @@
                 return;
             }
 
-            drivers.forEach(function(driver) {
+            drivers.forEach(function (driver) {
                 const li = document.createElement("li");
-                
+
                 // Build driver info
                 let driverInfo = driver.name || "Unnamed driver";
                 if (driver.licenseNumber) {
@@ -166,10 +194,10 @@
                 if (driver.employeeNo) {
                     driverInfo += " - Employee #" + driver.employeeNo;
                 }
-                
+
                 li.textContent = driverInfo;
                 li.title = "Driver ID: " + driver.id;
-                
+
                 list.appendChild(li);
             });
 
@@ -177,4 +205,5 @@
         }
     </script>
 </body>
+
 </html>
