@@ -13,6 +13,7 @@ import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
 import LCCheckView from './LCCheckView.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import './componentStyles/toast.css';
+import fetchingdrivers from './fetchingdrivers.jsx'
 
 const App = ({ geotabApi, geotabState, appName }) => {
   const logger = Logger(appName);
@@ -66,7 +67,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
             <Route path="/" element={<Dashboard />} />
 
-            <Route path="/addin-ptccheck-prayoshaAddIn" element={<DevicePage />} />
+            <Route path="/addin-ptccheck-prayoshaAddIn" element={<fetchingdrivers />} />
 
             <Route path="/lc-check" element={<DevicePage />} />
 
