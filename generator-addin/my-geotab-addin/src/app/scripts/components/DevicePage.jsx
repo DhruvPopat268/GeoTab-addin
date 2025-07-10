@@ -37,7 +37,6 @@ const DevicePage = ({ }) => {
   const [editingDriver, setEditingDriver] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [filterStatus, setFilterStatus] = useState('All Statuses');
-  const [loading, setLoading] = useState(true);
 
   // New state for DVLA view functionality
   const [viewLoading, setViewLoading] = useState(null);
@@ -53,6 +52,7 @@ const DevicePage = ({ }) => {
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  const [loading, setLoading] = useState(false);
 
   // Fetch all drivers on component mount
   useEffect(() => {
@@ -64,9 +64,10 @@ const DevicePage = ({ }) => {
     console.log("displayed drivers are", displayedDrivers);
   }, [originalDrivers]);
 
-  const fetchAllDrivers = async () => {
+ const fetchAllDrivers = async () => {
     try {
       setLoading(true);
+
       const response = await axios.get(`${BASE_URL}/api/driver/getAllDrivers`);
 
       if (response.status === 200 && response.data.data) {
@@ -233,6 +234,14 @@ const DevicePage = ({ }) => {
     const handleHistory = async (driver) => {
     navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNo}`)
   };
+
+    if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="root">
