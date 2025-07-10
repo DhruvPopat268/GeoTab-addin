@@ -252,7 +252,7 @@ const DevicePage = ({ }) => {
         <div className='main-con'>
           <div className="filter-container">
             <div className="filter-header">
-              <h2 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case">Filter by Driver Status</h2>
+              <h3 className="text-[28px] font font-light leading-[36px] not-italic tracking-[0] normal-case">Filter by Driver Status</h3>
 
               <select
                 className="status-dropdown"

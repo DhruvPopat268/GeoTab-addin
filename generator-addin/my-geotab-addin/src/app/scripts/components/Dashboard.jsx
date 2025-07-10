@@ -131,8 +131,7 @@ const Dashboard = () => {
               <p>**if you will not use credits till expiry date credits will 0</p>
             </div>
           </div>
-
-
+          
         </div>
 
         <div className="dashboard-sections">

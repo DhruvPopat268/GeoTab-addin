@@ -6,15 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <!-- Geotab requires your Add-In div to match the Add-In name and be top-level -->
+    <!-- Required top-level div with the Add-In ID -->
     <div id="prayoshaAddIn" class="addon page">
-      <!-- Optional loading spinner or text -->
-       <h1>Welcome to the prayosha add-in</h1>
+      <h1>Welcome to the Prayosha Add-In</h1>
+      <ul id="driver-list">Loading drivers...</ul> <!-- Added -->
     </div>
 
-    <!-- This script tag must point to your bundled JS -->
-    <!-- <script src="main.js"></script> -->
-     <script src="https://www.paypal.com/sdk/js?client-id=AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn&currency=GBP"></script>
+    <!-- Optional: Keep PayPal script if you use it -->
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
 
+    <!-- 🔧 Add this script at the end to register your Add-In -->
+    <script>
+      geotab.addin.prayoshaAddIn = function(api, state) {
+        return {
+          initialize(api, state, callback) {
+            console.log("Prayosha Add-In initialized");
+            callback();
+          },
+
+          focus(api, state) {
+            console.log("Prayosha Add-In focused");
+
+            api.call("Get", { typeName: "Driver" }, function(drivers) {
+              console.log("Fetched drivers:", drivers);
+              const list = document.getElementById("driver-list");
+              list.innerHTML = "";
+
+              if (drivers.length === 0) {
+                list.innerHTML = "<li>No drivers found</li>";
+              } else {
+                drivers.forEach(driver => {
+                  const li = document.createElement("li");
+                  li.textContent = driver.name || "Unnamed driver";
+                  list.appendChild(li);
+                });
+              }
+            }, function(error) {
+              console.error("Error fetching drivers:", error);
+              alert("Failed to fetch drivers");
+            });
+          },
+
+          blur() {
+            console.log("Prayosha Add-In blurred");
+          }
+        };
+      };
+    </script>
   </body>
 </html>

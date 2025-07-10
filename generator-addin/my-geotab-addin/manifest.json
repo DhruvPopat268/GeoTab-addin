@@ -1,0 +1,15 @@
+{
+    "name": "ptccheck",
+    "supportEmail": "it@ptctransport.co.uk",
+    "version": "1.0",
+    "items": [
+        {
+            "url": "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html",
+            "path": "",
+            "menuName": {
+                "en": ""
+            }
+        }
+    ],
+    "isSigned": false
+}
