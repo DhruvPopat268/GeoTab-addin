@@ -73,7 +73,8 @@
         let currentState = null;
 
         // Register the add-in with MyGeotab
-        geotab.addin.prayoshaAddIn = function(api, state) {
+        if (typeof geotab !== 'undefined' && geotab.addin) {
+            geotab.addin.prayoshaAddIn = function(api, state) {
             // Store references
             currentApi = api;
             currentState = state;
