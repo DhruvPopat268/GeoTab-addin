@@ -75,38 +75,39 @@
         // Register the add-in with MyGeotab
         if (typeof geotab !== 'undefined' && geotab.addin) {
             geotab.addin.prayoshaAddIn = function(api, state) {
-            // Store references
-            currentApi = api;
-            currentState = state;
-            
-            return {
-                initialize: function(api, state, callback) {
-                    console.log("Prayosha Add-In initialized");
-                    
-                    // Set up event listeners
-                    setupEventListeners();
-                    
-                    // Load drivers on initialization
-                    loadDrivers();
-                    
-                    callback();
-                },
+                // Store references
+                currentApi = api;
+                currentState = state;
+                
+                return {
+                    initialize: function(api, state, callback) {
+                        console.log("Prayosha Add-In initialized");
+                        
+                        // Set up event listeners
+                        setupEventListeners();
+                        
+                        // Load drivers on initialization
+                        loadDrivers();
+                        
+                        callback();
+                    },
 
-                focus: function(api, state) {
-                    console.log("Prayosha Add-In focused");
-                    // Update references
-                    currentApi = api;
-                    currentState = state;
-                    
-                    // Refresh drivers when focused
-                    loadDrivers();
-                },
+                    focus: function(api, state) {
+                        console.log("Prayosha Add-In focused");
+                        // Update references
+                        currentApi = api;
+                        currentState = state;
+                        
+                        // Refresh drivers when focused
+                        loadDrivers();
+                    },
 
-                blur: function() {
-                    console.log("Prayosha Add-In blurred");
-                }
+                    blur: function() {
+                        console.log("Prayosha Add-In blurred");
+                    }
+                };
             };
-        };
+        }
 
         // Set up event listeners
         function setupEventListeners() {
@@ -173,36 +174,6 @@
             });
 
             console.log("Displayed " + drivers.length + " drivers");
-        }
-
-        // Alternative function using modern async/await (if you prefer)
-        async function loadDriversAsync() {
-            const list = document.getElementById("driver-list");
-            
-            if (!currentApi) {
-                console.error("API not available");
-                list.innerHTML = '<li class="error">API not available</li>';
-                return;
-            }
-
-            try {
-                list.innerHTML = '<li class="loading">Loading drivers...</li>';
-                
-                // Convert callback-based API to Promise
-                const drivers = await new Promise((resolve, reject) => {
-                    currentApi.call("Get", {
-                        typeName: "Driver",
-                        resultsLimit: -1
-                    }, resolve, reject);
-                });
-
-                console.log("Fetched drivers:", drivers);
-                displayDrivers(drivers);
-                
-            } catch (error) {
-                console.error("Error fetching drivers:", error);
-                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
-            }
         }
     </script>
 </body>
