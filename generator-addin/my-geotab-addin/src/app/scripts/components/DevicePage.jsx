@@ -251,13 +251,14 @@ const DevicePage = ({ }) => {
         <div className='main-con'>
           <div className="filter-container">
             <div className="filter-header">
-              <h2>Filter by Driver Status</h2>
+              <h2 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case">Filter by Driver Status</h2>
+
               <select
                 className="status-dropdown"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
-                <option value="All Statuses">All Statuses</option>
+                <option value="All Statuses">All Status</option>
                 {statusOptions.map(option => (
                   <option key={option} value={option}>{option}</option>
                 ))}
@@ -484,15 +485,15 @@ const DevicePage = ({ }) => {
           <table className="drivers-table">
             <thead>
               <tr>
-                <th>ACTION</th>
-                <th>DRIVER NUMBER</th>
-                <th>DRIVER NAME</th>
-                <th>COMPANY</th>
-                <th>DRIVER STATUS</th>
-                <th>LICENCE NO</th>
-                <th>CONTACT NUMBER</th>
-                <th>EMAIL</th>
-                <th>DEPOT</th>
+                <th>Action</th>
+                <th>Driver Number</th>
+                <th>Driver Name</th>
+                <th>Company</th>
+                <th>Driver Status</th>
+                <th>Licence No</th>
+                <th>Contact Number</th>
+                <th>Email</th>
+                <th>Depot</th>
                 {/* <th>DOB</th> */}
               </tr>
             </thead>
@@ -512,14 +513,14 @@ const DevicePage = ({ }) => {
                       onClick={() => handleView(driver)}
                       disabled={viewLoading === driver.id}
                     >
-                      {viewLoading === driver.id ? 'Loading...' : 'view'}
+                      {viewLoading === driver.id ? 'Loading...' : 'View'}
                     </button>
                       <button
                       className="table-action-btn view"
                       onClick={() => handleHistory(driver)}
                       disabled={viewLoading === driver.id}
                     >
-                      {viewLoading === driver.id ? 'Loading...' : 'history'}
+                      {viewLoading === driver.id ? 'Loading...' : 'History'}
                     </button>
                     <button
                       className="table-action-btn"

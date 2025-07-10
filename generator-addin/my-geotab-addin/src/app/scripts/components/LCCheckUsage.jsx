@@ -252,7 +252,13 @@ const LCCheckUsage = () => {
 
       <div className="content">
         <section className="section">
-          <h1 className="section-title">API Logs</h1>
+          <h1
+            className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+            style={{ fontFamily: "var(--main-font)" }}
+          >
+            API Logs
+          </h1>
+
           <p className="section-description">Monitor API activity and troubleshoot issues</p>
 
           <div className="card">
@@ -306,13 +312,25 @@ const LCCheckUsage = () => {
         </section>
 
         <section className="section">
-          <h2 className="section-title">Usage Statistics</h2>
+          <h1
+            className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+            style={{ fontFamily: "var(--main-font)" }}
+          >
+            Usage Statistics
+          </h1>
+
           <p className="section-description">Monitor your API usage metrics and patterns</p>
 
-          <div className="stats-grid">
+          <div className="stats-grid h-3 ">
             <div className="stat-card">
               <p>Total API Calls (Last 7 Days)</p>
-              <h3>{statsLoading ? 'Loading...' : usageStats.totalCalls}</h3>
+              <h3
+                className=""
+
+              >
+                {statsLoading ? 'Loading...' : usageStats.totalCalls}
+              </h3>
+
             </div>
             <div className="stat-card">
               <p>Average Daily Calls</p>
@@ -329,7 +347,14 @@ const LCCheckUsage = () => {
           </div>
 
           <div className="card chart-card">
-            <h3>Daily API Usage (Last 7 Days)</h3>
+            <h3
+              className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+              style={{ fontFamily: 'var(--main-font)' }}
+            >
+              Daily API Usage (Last 7 Days)
+            </h3>
+
+
             {chartLoading ? (
               <div className="chart-placeholder">Loading chart...</div>
             ) : (

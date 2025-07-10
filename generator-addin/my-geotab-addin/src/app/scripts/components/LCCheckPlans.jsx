@@ -5,7 +5,7 @@ import Navbar from './Navbar.jsx';
 
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
-import { API_URL , BASE_URL } from '../../../env.js';
+import { API_URL, BASE_URL } from '../../../env.js';
 import { toast } from 'react-toastify';
 
 
@@ -116,8 +116,9 @@ const LCCheckPlans = () => {
           <div className="lc-header-content">
             <h1 className="lc-main-title">LC Check API Plans</h1>
             <p className="lc-main-description">
-              Choose the perfect plan for your LC (Letter of Credit) verification needs.
-              Our API provides comprehensive document validation and compliance checking.
+              {/* Simplify Your LC Check Verifications – Choose the Perfect Plan Today */}
+              {/* Choose the perfect plan for your LC Check verification needs. */}
+              {/* Our API provides comprehensive document validation and compliance checking. */}
             </p>
           </div>
         </div>
@@ -196,11 +197,11 @@ const LCCheckPlans = () => {
           </div>
         )}
 
-        <div className="lc-info-section">
+        {/* <div className="lc-info-section">
           <div className="lc-info-header">
             <h2 className="lc-info-title">What is LC Check API?</h2>
             <p className="lc-info-description">
-              Our LC Check API provides comprehensive Letter of Credit verification and validation services.
+              Our LC Check API provides comprehensive LC Check verification and validation services.
               It helps financial institutions, banks, and businesses verify the authenticity and compliance
               of trade documents in international commerce.
             </p>
@@ -257,7 +258,7 @@ const LCCheckPlans = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Confirmation Modal */}

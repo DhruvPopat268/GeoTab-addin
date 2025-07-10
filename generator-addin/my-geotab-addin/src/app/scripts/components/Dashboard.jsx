@@ -66,7 +66,10 @@ const Dashboard = () => {
         <Navbar />
         <div className="dashboard-container">
           <div className="dashboard-header">
-            <h1 className="dashboard-title">Dashboard</h1>
+            <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
+              Dashboard
+            </h1>
+
             <p className="dashboard-subtitle">Loading your account data...</p>
           </div>
         </div>
@@ -80,7 +83,9 @@ const Dashboard = () => {
         <Navbar />
         <div className="dashboard-container">
           <div className="dashboard-header">
-            <h1 className="dashboard-title">Dashboard</h1>
+            <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
+              Dashboard
+            </h1>
             <p className="dashboard-subtitle">Error loading data: {error}</p>
           </div>
         </div>
@@ -93,7 +98,9 @@ const Dashboard = () => {
       <Navbar />
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1 className="dashboard-title">Dashboard</h1>
+          <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
+            Dashboard
+          </h1>
           <p className="dashboard-subtitle">Overview of your API usage and account activity</p>
         </div>
 
@@ -130,7 +137,13 @@ const Dashboard = () => {
           {/* Active Subscription */}
           {walletData?.currentPlan && (
             <div className="section">
-              <h2 className="section-title">Active Subscription</h2>
+              <h2
+                className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+                style={{ fontFamily: "var(--main-font)" }}
+              >
+                Active Subscription
+              </h2>
+
               <div className="subscription">
                 <div className="subscription-header">
                   <div>
@@ -150,7 +163,13 @@ const Dashboard = () => {
           {/* Show message if no active plan */}
           {!walletData?.currentPlan && (
             <div className="section">
-              <h2 className="section-title">Active Subscription</h2>
+              <h2
+  className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+  style={{ fontFamily: "var(--main-font)" }}
+>
+  Active Subscription
+</h2>
+
               <div className="subscription">
                 <div className="subscription-header">
                   <div>
