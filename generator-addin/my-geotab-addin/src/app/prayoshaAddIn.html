@@ -1,57 +1,208 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>prayosha add-in</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <!-- Required top-level div with the Add-In ID -->
+<head>
+    <meta charset="utf-8">
+    <title>Prayosha Add-in</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .addon {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        #driver-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #driver-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
     <div id="prayoshaAddIn" class="addon page">
-      <h1>Welcome to the Prayosha Add-In</h1>
-      <ul id="driver-list">Loading drivers...</ul> <!-- Added -->
+        <h1>Welcome to the Prayosha Add-In</h1>
+        <button id="refreshBtn" class="btn">Refresh Drivers</button>
+        <ul id="driver-list" class="loading">Loading drivers...</ul>
     </div>
 
-    <!-- Optional: Keep PayPal script if you use it -->
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
-
-    <!-- 🔧 Add this script at the end to register your Add-In -->
     <script>
-      geotab.addin.prayoshaAddIn = function(api, state) {
-        return {
-          initialize(api, state, callback) {
-            console.log("Prayosha Add-In initialized");
-            callback();
-          },
+        // Global variables
+        let currentApi = null;
+        let currentState = null;
 
-          focus(api, state) {
-            console.log("Prayosha Add-In focused");
+        // Register the add-in with MyGeotab
+        geotab.addin.prayoshaAddIn = function(api, state) {
+            // Store references
+            currentApi = api;
+            currentState = state;
+            
+            return {
+                initialize: function(api, state, callback) {
+                    console.log("Prayosha Add-In initialized");
+                    
+                    // Set up event listeners
+                    setupEventListeners();
+                    
+                    // Load drivers on initialization
+                    loadDrivers();
+                    
+                    callback();
+                },
 
-            api.call("Get", { typeName: "Driver" }, function(drivers) {
-              console.log("Fetched drivers:", drivers);
-              const list = document.getElementById("driver-list");
-              list.innerHTML = "";
+                focus: function(api, state) {
+                    console.log("Prayosha Add-In focused");
+                    // Update references
+                    currentApi = api;
+                    currentState = state;
+                    
+                    // Refresh drivers when focused
+                    loadDrivers();
+                },
 
-              if (drivers.length === 0) {
-                list.innerHTML = "<li>No drivers found</li>";
-              } else {
-                drivers.forEach(driver => {
-                  const li = document.createElement("li");
-                  li.textContent = driver.name || "Unnamed driver";
-                  list.appendChild(li);
-                });
-              }
-            }, function(error) {
-              console.error("Error fetching drivers:", error);
-              alert("Failed to fetch drivers");
-            });
-          },
-
-          blur() {
-            console.log("Prayosha Add-In blurred");
-          }
+                blur: function() {
+                    console.log("Prayosha Add-In blurred");
+                }
+            };
         };
-      };
+
+        // Set up event listeners
+        function setupEventListeners() {
+            const refreshBtn = document.getElementById("refreshBtn");
+            if (refreshBtn) {
+                refreshBtn.addEventListener("click", function() {
+                    loadDrivers();
+                });
+            }
+        }
+
+        // Load drivers from MyGeotab
+        function loadDrivers() {
+            const list = document.getElementById("driver-list");
+            
+            if (!currentApi) {
+                console.error("API not available");
+                list.innerHTML = '<li class="error">API not available</li>';
+                return;
+            }
+
+            // Show loading state
+            list.innerHTML = '<li class="loading">Loading drivers...</li>';
+
+            // Make API call to get drivers
+            currentApi.call("Get", {
+                typeName: "Driver",
+                resultsLimit: -1  // Get all drivers
+            }, function(drivers) {
+                console.log("Fetched drivers:", drivers);
+                displayDrivers(drivers);
+            }, function(error) {
+                console.error("Error fetching drivers:", error);
+                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
+            });
+        }
+
+        // Display drivers in the UI
+        function displayDrivers(drivers) {
+            const list = document.getElementById("driver-list");
+            list.innerHTML = "";
+
+            if (!drivers || drivers.length === 0) {
+                list.innerHTML = '<li class="error">No drivers found</li>';
+                return;
+            }
+
+            drivers.forEach(function(driver) {
+                const li = document.createElement("li");
+                
+                // Build driver info
+                let driverInfo = driver.name || "Unnamed driver";
+                if (driver.licenseNumber) {
+                    driverInfo += " (License: " + driver.licenseNumber + ")";
+                }
+                if (driver.employeeNo) {
+                    driverInfo += " - Employee #" + driver.employeeNo;
+                }
+                
+                li.textContent = driverInfo;
+                li.title = "Driver ID: " + driver.id;
+                
+                list.appendChild(li);
+            });
+
+            console.log("Displayed " + drivers.length + " drivers");
+        }
+
+        // Alternative function using modern async/await (if you prefer)
+        async function loadDriversAsync() {
+            const list = document.getElementById("driver-list");
+            
+            if (!currentApi) {
+                console.error("API not available");
+                list.innerHTML = '<li class="error">API not available</li>';
+                return;
+            }
+
+            try {
+                list.innerHTML = '<li class="loading">Loading drivers...</li>';
+                
+                // Convert callback-based API to Promise
+                const drivers = await new Promise((resolve, reject) => {
+                    currentApi.call("Get", {
+                        typeName: "Driver",
+                        resultsLimit: -1
+                    }, resolve, reject);
+                });
+
+                console.log("Fetched drivers:", drivers);
+                displayDrivers(drivers);
+                
+            } catch (error) {
+                console.error("Error fetching drivers:", error);
+                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
+            }
+        }
     </script>
-  </body>
+</body>
 </html>

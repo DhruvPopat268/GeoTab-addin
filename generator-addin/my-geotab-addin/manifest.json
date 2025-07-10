@@ -1,14 +1,15 @@
 {
     "name": "ptccheck",
     "supportEmail": "it@ptctransport.co.uk",
-    "version": "1.0",
+    "version": "1.0.0",
     "items": [
         {
             "url": "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html",
-            "path": "",
+            "path": "ActivityLink/",
             "menuName": {
-                "en": ""
-            }
+                "en": "Prayosha Drivers"
+            },
+            "icon": "https://mygeotab-addin-frontend.onrender.com/icon.svg"
         }
     ],
     "isSigned": false
