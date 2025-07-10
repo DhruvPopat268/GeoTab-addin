@@ -114,7 +114,13 @@ const LCCheckPlans = () => {
       <div className="lc-header-section">
         <div className="lc-header-container">
           <div className="lc-header-content">
-            <h1 className="lc-main-title">LC Check API Plans</h1>
+            <h1
+              className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+              style={{ fontFamily: "var(--main-font)" }}
+            >
+              LC Check API Plans
+            </h1>
+
             <p className="lc-main-description">
               {/* Simplify Your LC Check Verifications – Choose the Perfect Plan Today */}
               {/* Choose the perfect plan for your LC Check verification needs. */}
@@ -127,10 +133,9 @@ const LCCheckPlans = () => {
       <div className="lc-container">
         {loading ? (
           <div className="lc-loading">
-            <div className="lc-loading-content">
-              <div className="lc-spinner"></div>
-              <p className="lc-loading-text">Loading plans...</p>
-            </div>
+                <div className="spinner-container">
+                  <div className="spinner" />
+                </div>
           </div>
         ) : (
           <div className="lc-grid">

@@ -273,7 +273,10 @@ const LCCheckUsage = () => {
 
             <div className="card-content">
               {loading ? (
-                <div className="loading-message">Loading API logs...</div>
+                <div className="spinner-container">
+                  <div className="spinner" />
+                </div>
+
               ) : error ? (
                 <div className="error-message">Error loading logs: {error}</div>
               ) : (
@@ -321,11 +324,11 @@ const LCCheckUsage = () => {
 
           <p className="section-description">Monitor your API usage metrics and patterns</p>
 
-          <div className="stats-grid h-3 ">
-            <div className="stat-card">
+          <div className="stats-grid ">
+            <div className="stat-card font-light">
               <p>Total API Calls (Last 7 Days)</p>
               <h3
-                className=""
+                className="font-light"
 
               >
                 {statsLoading ? 'Loading...' : usageStats.totalCalls}

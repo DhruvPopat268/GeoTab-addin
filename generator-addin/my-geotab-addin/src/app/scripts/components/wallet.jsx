@@ -115,7 +115,10 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
       <div className="wallet">
         <Navbar />
         <div className="wallet-container">
-          <div className="loading">Loading wallet data...</div>
+<div className="spinner-container">
+  <div className="spinner" />
+</div>
+
         </div>
       </div>
     );

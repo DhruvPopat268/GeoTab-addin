@@ -64,7 +64,7 @@ const DevicePage = ({ }) => {
     console.log("displayed drivers are", displayedDrivers);
   }, [originalDrivers]);
 
- const fetchAllDrivers = async () => {
+  const fetchAllDrivers = async () => {
     try {
       setLoading(true);
 
@@ -231,15 +231,16 @@ const DevicePage = ({ }) => {
     navigate(`/viewDriverDetailData/?${driver.licenseNo}`)
   };
 
-    const handleHistory = async (driver) => {
+  const handleHistory = async (driver) => {
     navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNo}`)
   };
 
-    if (loading) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[200px]">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+      <div className="spinner-container">
+        <div className="spinner" />
       </div>
+
     );
   }
 
@@ -508,14 +509,14 @@ const DevicePage = ({ }) => {
                     >
                       {viewLoading === driver.id ? 'Loading...' : 'Sync'}
                     </button>
-                     <button
+                    <button
                       className="table-action-btn view"
                       onClick={() => handleView(driver)}
                       disabled={viewLoading === driver.id}
                     >
                       {viewLoading === driver.id ? 'Loading...' : 'View'}
                     </button>
-                      <button
+                    <button
                       className="table-action-btn view"
                       onClick={() => handleHistory(driver)}
                       disabled={viewLoading === driver.id}

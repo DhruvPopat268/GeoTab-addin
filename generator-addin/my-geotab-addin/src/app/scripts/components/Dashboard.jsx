@@ -70,7 +70,10 @@ const Dashboard = () => {
               Dashboard
             </h1>
 
-            <p className="dashboard-subtitle">Loading your account data...</p>
+            <div className="spinner-container">
+              <div className="spinner" />
+            </div>
+
           </div>
         </div>
       </div>
@@ -164,11 +167,11 @@ const Dashboard = () => {
           {!walletData?.currentPlan && (
             <div className="section">
               <h2
-  className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
-  style={{ fontFamily: "var(--main-font)" }}
->
-  Active Subscription
-</h2>
+                className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+                style={{ fontFamily: "var(--main-font)" }}
+              >
+                Active Subscription
+              </h2>
 
               <div className="subscription">
                 <div className="subscription-header">
