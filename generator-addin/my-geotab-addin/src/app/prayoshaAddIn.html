@@ -70,9 +70,11 @@
     </div>
 
     <script>
+        // Global API/state holders
         let currentApi = null;
         let currentState = null;
 
+        // Register Add-In with MyGeotab
         if (typeof geotab !== 'undefined' && geotab.addin) {
             geotab.addin.prayoshaAddIn = function (api, state) {
                 currentApi = api;
@@ -85,14 +87,12 @@
                         loadDrivers();
                         callback();
                     },
-
                     focus: function (api, state) {
                         console.log("Prayosha Add-In focused");
                         currentApi = api;
                         currentState = state;
                         loadDrivers();
                     },
-
                     blur: function () {
                         console.log("Prayosha Add-In blurred");
                     }
@@ -100,6 +100,7 @@
             };
         }
 
+        // Refresh button listener
         function setupEventListeners() {
             const refreshBtn = document.getElementById("refreshBtn");
             if (refreshBtn) {
@@ -109,6 +110,7 @@
             }
         }
 
+        // Load and filter only driver users
         function loadDrivers() {
             const list = document.getElementById("driver-list");
 
@@ -126,9 +128,9 @@
             }, function (users) {
                 console.log("All users:", users);
 
-                // You can add filtering logic here if needed
-                // const drivers = users.filter(user => user.userType === "Driver");
-                const drivers = users; // Show all users as drivers for now
+                // ✅ Filter users with isDriver === true
+                const drivers = users.filter(user => user.isDriver === true);
+                console.log("Filtered drivers:", drivers);
 
                 displayDrivers(drivers);
             }, function (error) {
@@ -137,6 +139,7 @@
             });
         }
 
+        // Display driver emails in the list
         function displayDrivers(drivers) {
             const list = document.getElementById("driver-list");
             list.innerHTML = "";
@@ -148,15 +151,8 @@
 
             drivers.forEach(function (driver) {
                 const li = document.createElement("li");
-
-                let driverInfo = driver.name || "Unnamed driver";
-                if (driver.userName) {
-                    driverInfo += " (" + driver.userName + ")";
-                }
-
-                li.textContent = driverInfo;
-                li.title = "User ID: " + driver.id;
-
+                li.textContent = driver.name || driver.userName || "Unnamed driver";
+                li.title = "Driver ID: " + driver.id;
                 list.appendChild(li);
             });
 
