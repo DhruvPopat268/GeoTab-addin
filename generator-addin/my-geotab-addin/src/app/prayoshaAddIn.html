@@ -122,16 +122,10 @@
 
             list.innerHTML = '<li class="loading">Loading drivers...</li>';
 
-            currentApi.call("Get", {
-                typeName: "User",
-                resultsLimit: -1
-            }, function (users) {
-                const drivers = users.filter(user => user.userType === "Driver");
-                console.log("Filtered drivers:", drivers);
-                displayDrivers(drivers);
+            currentApi.call("Get", { typeName: "Device" }, function (devices) {
+                console.log("Devices:", devices);
             }, function (error) {
-                console.error("Error fetching drivers:", error);
-                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
+                console.error("Error fetching devices:", error);
             });
         }
 
