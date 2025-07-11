@@ -122,10 +122,19 @@
 
             list.innerHTML = '<li class="loading">Loading drivers...</li>';
 
-            currentApi.call("Get", { typeName: "Device" }, function (devices) {
-                console.log("Devices:", devices);
+            currentApi.call("Get", {
+                typeName: "User",
+                resultsLimit: 100,
+                search: {
+                    name: "*"
+                }
+            }, function (users) {
+                const drivers = users.filter(user => user.userType === "Driver");
+                console.log("Filtered drivers:", drivers);
+                displayDrivers(drivers);
             }, function (error) {
-                console.error("Error fetching devices:", error);
+                console.error("Error fetching drivers:", error);
+                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
             });
         }
 
@@ -141,12 +150,10 @@
             drivers.forEach(function (driver) {
                 const li = document.createElement("li");
 
+                // Build driver display: name (email)
                 let driverInfo = driver.name || "Unnamed driver";
-                if (driver.licenseNumber) {
-                    driverInfo += " (License: " + driver.licenseNumber + ")";
-                }
-                if (driver.employeeNo) {
-                    driverInfo += " - Employee #" + driver.employeeNo;
+                if (driver.userName && driver.userName !== driver.name) {
+                    driverInfo += " (" + driver.userName + ")";
                 }
 
                 li.textContent = driverInfo;
