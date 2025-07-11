@@ -70,11 +70,9 @@
     </div>
 
     <script>
-        // Global variables
         let currentApi = null;
         let currentState = null;
 
-        // Register the add-in with MyGeotab
         if (typeof geotab !== 'undefined' && geotab.addin) {
             geotab.addin.prayoshaAddIn = function (api, state) {
                 currentApi = api;
@@ -124,17 +122,18 @@
 
             currentApi.call("Get", {
                 typeName: "User",
-                resultsLimit: 100,
-                search: {
-                    name: "*"
-                }
+                resultsLimit: 100
             }, function (users) {
-                const drivers = users.filter(user => user.userType === "Driver");
-                console.log("Filtered drivers:", drivers);
+                console.log("All users:", users);
+
+                // You can add filtering logic here if needed
+                // const drivers = users.filter(user => user.userType === "Driver");
+                const drivers = users; // Show all users as drivers for now
+
                 displayDrivers(drivers);
             }, function (error) {
-                console.error("Error fetching drivers:", error);
-                list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
+                console.error("Error fetching users:", error);
+                list.innerHTML = '<li class="error">Failed to fetch users: ' + error.message + '</li>';
             });
         }
 
@@ -150,14 +149,13 @@
             drivers.forEach(function (driver) {
                 const li = document.createElement("li");
 
-                // Build driver display: name (email)
                 let driverInfo = driver.name || "Unnamed driver";
-                if (driver.userName && driver.userName !== driver.name) {
+                if (driver.userName) {
                     driverInfo += " (" + driver.userName + ")";
                 }
 
                 li.textContent = driverInfo;
-                li.title = "Driver ID: " + driver.id;
+                li.title = "User ID: " + driver.id;
 
                 list.appendChild(li);
             });
