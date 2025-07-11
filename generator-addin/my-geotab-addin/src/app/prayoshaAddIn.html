@@ -77,30 +77,21 @@
         // Register the add-in with MyGeotab
         if (typeof geotab !== 'undefined' && geotab.addin) {
             geotab.addin.prayoshaAddIn = function (api, state) {
-                // Store references
                 currentApi = api;
                 currentState = state;
 
                 return {
                     initialize: function (api, state, callback) {
                         console.log("Prayosha Add-In initialized");
-
-                        // Set up event listeners
                         setupEventListeners();
-
-                        // Load drivers on initialization
                         loadDrivers();
-
                         callback();
                     },
 
                     focus: function (api, state) {
                         console.log("Prayosha Add-In focused");
-                        // Update references
                         currentApi = api;
                         currentState = state;
-
-                        // Refresh drivers when focused
                         loadDrivers();
                     },
 
@@ -111,7 +102,6 @@
             };
         }
 
-        // Set up event listeners
         function setupEventListeners() {
             const refreshBtn = document.getElementById("refreshBtn");
             if (refreshBtn) {
@@ -121,7 +111,6 @@
             }
         }
 
-        // Load drivers from MyGeotab
         function loadDrivers() {
             const list = document.getElementById("driver-list");
 
@@ -131,15 +120,12 @@
                 return;
             }
 
-            // Show loading state
             list.innerHTML = '<li class="loading">Loading drivers...</li>';
 
-            // Correct call: fetch all Users
             currentApi.call("Get", {
                 typeName: "User",
                 resultsLimit: -1
             }, function (users) {
-                // Filter only users with userType === "Driver"
                 const drivers = users.filter(user => user.userType === "Driver");
                 console.log("Filtered drivers:", drivers);
                 displayDrivers(drivers);
@@ -149,31 +135,6 @@
             });
         }
 
-        const list = document.getElementById("driver-list");
-
-        if (!currentApi) {
-            console.error("API not available");
-            list.innerHTML = '<li class="error">API not available</li>';
-            return;
-        }
-
-        // Show loading state
-        list.innerHTML = '<li class="loading">Loading drivers...</li>';
-
-        // Make API call to get drivers
-        currentApi.call("Get", {
-            typeName: "Driver",
-            resultsLimit: -1  // Get all drivers
-        }, function (drivers) {
-            console.log("Fetched drivers:", drivers);
-            displayDrivers(drivers);
-        }, function (error) {
-            console.error("Error fetching drivers:", error);
-            list.innerHTML = '<li class="error">Failed to fetch drivers: ' + error.message + '</li>';
-        });
-        }
-
-        // Display drivers in the UI
         function displayDrivers(drivers) {
             const list = document.getElementById("driver-list");
             list.innerHTML = "";
@@ -186,7 +147,6 @@
             drivers.forEach(function (driver) {
                 const li = document.createElement("li");
 
-                // Build driver info
                 let driverInfo = driver.name || "Unnamed driver";
                 if (driver.licenseNumber) {
                     driverInfo += " (License: " + driver.licenseNumber + ")";
