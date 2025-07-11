@@ -128,7 +128,8 @@
 
                 // You can add filtering logic here if needed
                 // const drivers = users.filter(user => user.userType === "Driver");
-                const drivers = users; // Show all users as drivers for now
+                const drivers = users.filter(user => user.clearance === "Default");
+// Show all users as drivers for now
 
                 displayDrivers(drivers);
             }, function (error) {
