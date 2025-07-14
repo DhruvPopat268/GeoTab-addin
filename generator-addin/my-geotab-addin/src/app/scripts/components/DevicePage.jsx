@@ -68,16 +68,45 @@ const DevicePage = ({ }) => {
     try {
       setLoading(true);
 
-      const response = await axios.get(`${BASE_URL}/api/driver/getAllDrivers`);
-
-      if (response.status === 200 && response.data.data) {
-        setOriginalDrivers(response.data.data);
-        setDisplayedDrivers(response.data.data);
+      if (!geotabApi) {
+        console.error("Geotab API not available");
+        toast.error("Geotab API not available");
+        return;
       }
+
+      geotabApi.call("Get", {
+        typeName: "User",
+        resultsLimit: 1000
+      }, function (users) {
+        console.log("All users:", users);
+
+        const drivers = users.filter(user => user.isDriver === true);
+        console.log("Filtered drivers:", drivers);
+
+        const transformedDrivers = drivers.map(driver => ({
+          id: driver.id,
+          fullName: driver.name || `${driver.firstName} ${driver.lastName}`,
+          firstName: driver.firstName || "",
+          lastName: driver.lastName || "",
+          employeeNo: driver.employeeNo || "",
+          phoneNumber: driver.phoneNumber || "",
+          licenseNumber: driver.licenseNumber || "",
+          licenseProvince: driver.licenseProvince || "",
+          driverStatus: driver.isActive ? "Active" : "InActive"
+        }));
+
+        setOriginalDrivers(transformedDrivers);
+        setDisplayedDrivers(transformedDrivers);
+        setLoading(false);
+      }, function (error) {
+        console.error("Error fetching drivers from Geotab:", error);
+        toast.error(`Error fetching drivers: ${error.message}`);
+        setLoading(false);
+      });
+
     } catch (error) {
       console.error("Error fetching drivers:", error);
-      toast.error(`Error fetching drivers: ${error.response?.data?.error || error.message}`);
-    } finally {
+      toast.error(`Error fetching drivers: ${error.message}`);
       setLoading(false);
     }
   };
@@ -86,50 +115,90 @@ const DevicePage = ({ }) => {
     const isEditing = Boolean(editingDriver);
 
     try {
-      let res;
-
-      if (isEditing) {
-        res = await axios.patch(`${BASE_URL}/api/driver/update`, {
-          email: editingDriver.email,
-          updatedData: data
-        });
-
-        if (res.status !== 200) {
-          throw new Error("Update failed");
-        }
-      } else {
-        res = await axios.post(`${BASE_URL}/api/driver/create`, data);
-
-        if (res.status === 409) {
-          toast.error("User already exists");
-          return;
-        }
+      if (!geotabApi) {
+        toast.error("Geotab API not available");
+        return;
       }
 
-      // Refresh the data from server instead of manually updating state
-      await fetchAllDrivers();
+      if (isEditing) {
+        // Update existing driver in Geotab
+        const updatedDriver = {
+          id: editingDriver.id,
+          name: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          employeeNo: data.employeeNo,
+          phoneNumber: data.phoneNumber,
+          licenseNumber: data.licenseNumber,
+          licenseProvince: data.licenseProvince,
+          isDriver: true,
+          isActive: true
+        };
 
-      // Reset form
-      reset();
-      setEditingDriver(null);
-      setShowCreateForm(false);
+        geotabApi.call("Set", {
+          typeName: "User",
+          entity: updatedDriver
+        }, function (result) {
+          console.log("Driver updated:", result);
+          toast.success("Driver updated successfully");
+          fetchAllDrivers();
+          reset();
+          setEditingDriver(null);
+          setShowCreateForm(false);
+        }, function (error) {
+          console.error("Error updating driver:", error);
+          toast.error(`Error updating driver: ${error.message}`);
+        });
 
-      // Confirm visually
-      toast.success(isEditing ? "Driver updated successfully" : "Driver created successfully");
+      } else {
+        // Create new driver in Geotab
+        const newDriver = {
+          name: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          employeeNo: data.employeeNo,
+          phoneNumber: data.phoneNumber,
+          licenseNumber: data.licenseNumber,
+          licenseProvince: data.licenseProvince,
+          isDriver: true,
+          isActive: true,
+          // Required fields for Geotab
+          driverGroups: [{ id: "GroupCompanyId" }],
+          companyGroups: [{ id: "GroupCompanyId" }],
+          securityGroups: [{ id: "GroupUserSecurityId" }],
+          activeFrom: new Date().toISOString(),
+          activeTo: "2050-01-01T00:00:00.000Z"
+        };
+
+        geotabApi.call("Add", {
+          typeName: "User",
+          entity: newDriver
+        }, function (result) {
+          console.log("Driver created:", result);
+          toast.success("Driver created successfully");
+          fetchAllDrivers();
+          reset();
+          setShowCreateForm(false);
+        }, function (error) {
+          console.error("Error creating driver:", error);
+          toast.error(`Error creating driver: ${error.message}`);
+        });
+      }
 
     } catch (error) {
       console.error("Error submitting driver:", error);
-      toast.error(`Error: ${error.response?.data?.message || error.message}`);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   const handleEdit = (driver) => {
     setEditingDriver(driver);
-    Object.entries(driver).forEach(([key, value]) => {
-      if (key !== 'id' && key !== 'fullName') {
-        setValue(key, value);
-      }
-    });
+    setValue('firstName', driver.firstName);
+    setValue('lastName', driver.lastName);
+    setValue('employeeNo', driver.employeeNo);
+    setValue('phoneNumber', driver.phoneNumber);
+    setValue('licenseNumber', driver.licenseNumber);
+    setValue('licenseProvince', driver.licenseProvince);
     setShowCreateForm(true);
   };
 
@@ -306,109 +375,7 @@ const DevicePage = ({ }) => {
 
                 <form onSubmit={handleSubmit(onsubmit)}>
                   <div className="form-grid">
-                    {/* Left Column */}
                     <div className="form-column">
-                      <div className="form-group">
-                        <label>Company Name*</label>
-                        <select
-                          {...register('companyName', { required: 'Company is required' })}
-                          className={errors.companyName ? 'error' : ''}
-                        >
-                          <option value="">Select a company</option>
-                          {companyOptions.map(company => (
-                            <option key={company} value={company}>{company}</option>
-                          ))}
-                        </select>
-                        {errors.companyName && <span className="error-message">{errors.companyName.message}</span>}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Automated Licence Check</label>
-                        <select {...register('automatedLicenseCheck')}>
-                          <option value="">Please select</option>
-                          {yesNoOptions.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="form-group">
-                        <label>Driver Number</label>
-                        <input type="text" {...register('driverNumber')} />
-                      </div>
-
-                      <div className="form-group">
-                        <label>Surname*</label>
-                        <input
-                          type="text"
-                          {...register('surname', { required: 'Surname is required' })}
-                          className={errors.surname ? 'error' : ''}
-                        />
-                        {errors.surname && <span className="error-message">{errors.surname.message}</span>}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Contact Number*</label>
-                        <input
-                          type="tel"
-                          {...register('contactNumber', { required: 'Contact number is required' })}
-                          className={errors.contactNumber ? 'error' : ''}
-                        />
-                        {errors.contactNumber && <span className="error-message">{errors.contactNumber.message}</span>}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Driver Groups*</label>
-                        <select
-                          {...register('driverGroups', { required: selectedCompany ? 'Driver group is required' : false })}
-                          className={errors.driverGroups ? 'error' : ''}
-                          disabled={!selectedCompany}
-                        >
-                          <option value="">{selectedCompany ? 'Select group' : 'Select company first'}</option>
-                          {selectedCompany && driverGroupsOptions.map(group => (
-                            <option key={group} value={group}>{group}</option>
-                          ))}
-                        </select>
-                        {errors.driverGroups && <span className="error-message">{errors.driverGroups.message}</span>}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Depot Change Allowed</label>
-                        <select {...register('depotChangeAllowed')}>
-                          <option value="">Please select</option>
-                          {yesNoOptions.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="form-column">
-                      <div className="form-group">
-                        <label>Driver Status*</label>
-                        <select
-                          {...register('driverStatus', { required: 'Status is required' })}
-                          className={errors.driverStatus ? 'error' : ''}
-                          defaultValue="Active"
-                        >
-                          {statusOptions.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                        {errors.driverStatus && <span className="error-message">{errors.driverStatus.message}</span>}
-                      </div>
-
-                      <div className="form-group">
-                        <label>Driver Licence No*</label>
-                        <input
-                          type="text"
-                          {...register('licenseNo', { required: 'License number is required' })}
-                          className={errors.licenseNo ? 'error' : ''}
-                        />
-                        {errors.licenseNo && <span className="error-message">{errors.licenseNo.message}</span>}
-                      </div>
-
                       <div className="form-group">
                         <label>First Name*</label>
                         <input
@@ -420,45 +387,55 @@ const DevicePage = ({ }) => {
                       </div>
 
                       <div className="form-group">
-                        <label>Driver DOB*</label>
+                        <label>Last Name*</label>
                         <input
-                          type="date"
-                          {...register('dob', { required: 'Date of birth is required' })}
-                          className={errors.dob ? 'error' : ''}
-                          placeholder="dd-mm-yyyy"
+                          type="text"
+                          {...register('lastName', { required: 'Last name is required' })}
+                          className={errors.lastName ? 'error' : ''}
                         />
-                        {errors.dob && <span className="error-message">{errors.dob.message}</span>}
+                        {errors.lastName && <span className="error-message">{errors.lastName.message}</span>}
                       </div>
 
                       <div className="form-group">
-                        <label>Contact Email*</label>
+                        <label>Employee Number*</label>
                         <input
-                          type="email"
-                          {...register('email', {
-                            required: 'Email is required',
-                            pattern: {
-                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                              message: 'Invalid email address'
-                            }
-                          })}
-                          className={errors.email ? 'error' : ''}
+                          type="text"
+                          {...register('employeeNo', { required: 'Employee number is required' })}
+                          className={errors.employeeNo ? 'error' : ''}
                         />
-                        {errors.email && <span className="error-message">{errors.email.message}</span>}
+                        {errors.employeeNo && <span className="error-message">{errors.employeeNo.message}</span>}
+                      </div>
+                    </div>
+
+                    <div className="form-column">
+                      <div className="form-group">
+                        <label>License Number*</label>
+                        <input
+                          type="text"
+                          {...register('licenseNumber', { required: 'License number is required' })}
+                          className={errors.licenseNumber ? 'error' : ''}
+                        />
+                        {errors.licenseNumber && <span className="error-message">{errors.licenseNumber.message}</span>}
                       </div>
 
                       <div className="form-group">
-                        <label>Depot Name*</label>
-                        <select
-                          {...register('depotName', { required: selectedCompany ? 'Depot name is required' : false })}
-                          className={errors.depotName ? 'error' : ''}
-                          disabled={!selectedCompany}
-                        >
-                          <option value="">{selectedCompany ? 'Select depot' : 'Select company first'}</option>
-                          {selectedCompany && depotOptions.map(depot => (
-                            <option key={depot} value={depot}>{depot}</option>
-                          ))}
-                        </select>
-                        {errors.depotName && <span className="error-message">{errors.depotName.message}</span>}
+                        <label>Phone Number*</label>
+                        <input
+                          type="tel"
+                          {...register('phoneNumber', { required: 'Phone number is required' })}
+                          className={errors.phoneNumber ? 'error' : ''}
+                        />
+                        {errors.phoneNumber && <span className="error-message">{errors.phoneNumber.message}</span>}
+                      </div>
+
+                      <div className="form-group">
+                        <label>License Province*</label>
+                        <input
+                          type="text"
+                          {...register('licenseProvince', { required: 'License province is required' })}
+                          className={errors.licenseProvince ? 'error' : ''}
+                        />
+                        {errors.licenseProvince && <span className="error-message">{errors.licenseProvince.message}</span>}
                       </div>
                     </div>
                   </div>
@@ -471,7 +448,6 @@ const DevicePage = ({ }) => {
                     >
                       Cancel
                     </button>
-
                     <button type="submit" className="submit-btn">
                       {editingDriver ? "Update" : "Create Driver"}
                     </button>
@@ -487,15 +463,14 @@ const DevicePage = ({ }) => {
             <thead>
               <tr>
                 <th>Action</th>
-                <th>Driver Number</th>
+                <th>Employee No</th>
                 <th>Driver Name</th>
-                <th>Company</th>
-                <th>Driver Status</th>
-                <th>Licence No</th>
-                <th>Contact Number</th>
-                <th>Email</th>
-                <th>Depot</th>
-                {/* <th>DOB</th> */}
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>License Number</th>
+                <th>Phone Number</th>
+                <th>License Province</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -536,26 +511,16 @@ const DevicePage = ({ }) => {
                       Delete
                     </button>
                   </td>
-                  <td>{driver.driverNumber}</td>
+                  <td>{driver.employeeNo}</td>
                   <td>{driver.fullName}</td>
-                  <td>{driver.companyName}</td>
+                  <td>{driver.firstName}</td>
+                  <td>{driver.lastName}</td>
+                  <td>{driver.licenseNumber}</td>
+                  <td>{driver.phoneNumber}</td>
+                  <td>{driver.licenseProvince}</td>
                   <td>{driver.driverStatus}</td>
-                  <td>{driver.licenseNo}</td>
-                  <td>{driver.contactNumber}</td>
-                  <td>{driver.email}</td>
-                  <td>{driver.depotName}</td>
-                  {/* <td>{driver.dob}</td> */}
                 </tr>
               ))}
-              {displayedDrivers.length === 0 && (
-                <tr>
-                  <td colSpan="10" className="no-drivers">
-                    {originalDrivers.length === 0
-                      ? 'No drivers added yet'
-                      : 'No drivers match the filter criteria'}
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
