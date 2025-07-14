@@ -132,6 +132,13 @@
                 const drivers = users.filter(user => user.isDriver === true);
                 console.log("Filtered drivers:", drivers);
 
+                console.log("Filtered drivers (stringified):", JSON.stringify(drivers, null, 2));
+
+drivers.forEach((driver, i) => {
+  console.log(`Driver ${i + 1}:`, driver);
+});
+
+
                 displayDrivers(drivers);
             }, function (error) {
                 console.error("Error fetching users:", error);
