@@ -187,7 +187,7 @@ const DriverLicenceSummary = () => {
                         'Authorization': token
                     },
                     body: JSON.stringify({
-                        drivingLicenceNumber: licenceNo,
+                        drivingLicenceNumber: drivingLicenceNumber,
                         userId: userName
                     })
                 }
