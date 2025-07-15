@@ -3,6 +3,8 @@ import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
 import './componentStyles/DriverDetail.css';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const DriverLicenceSummary = () => {
@@ -11,11 +13,14 @@ const DriverLicenceSummary = () => {
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
+
     const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
 
     const targetRef = useRef();
+    const navigate = useNavigate();
+
 
     // PDF Generation function using browser's print functionality
     const generatePDF = async () => {
@@ -174,8 +179,11 @@ const DriverLicenceSummary = () => {
             if (!authResponse.ok) {
                 throw new Error('Failed to get authentication token');
             }
+
             const authData = await authResponse.json();
             const token = authData.token;
+
+            setLoading(true);
 
             const driverResponse = await fetch(
                 'https://api-monitoring-and-purchasing-platform-df9e.onrender.com/proxy/6864c95bcf7c6ae928c398c9',
@@ -193,8 +201,14 @@ const DriverLicenceSummary = () => {
                 }
             );
 
+            if (driverResponse.status === 404) {
+                navigate('/lc-check')
+                toast.error("Driver not found for this licenceNumber");
+                return null;
+            }
+
             if (!driverResponse.ok) {
-                throw new Error(`API request failed: ${driverResponse.status}`);
+                toast.error(`API request failed: ${driverResponse.status}`);
             }
 
             const driverData = await driverResponse.json();
@@ -210,7 +224,7 @@ const DriverLicenceSummary = () => {
                         },
                         body: JSON.stringify({
                             data: driverData.data,
-                            userId:userName
+                            userId: userName
                         })
                     });
 
@@ -265,61 +279,25 @@ const DriverLicenceSummary = () => {
 
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '50vh',
-                fontSize: '18px'
-            }}>
-                Loading driver information...
+            <div className="spinner-container">
+                <div className="spinner" />
             </div>
         );
     }
 
-    if (error) {
-        return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '50vh',
-                fontSize: '18px',
-                color: 'red'
-            }}>
-                <p>{error}</p>
-                <button
-                    onClick={fetchDriverData}
-                    style={{
-                        marginTop: '20px',
-                        padding: '10px 20px',
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Retry
-                </button>
-            </div>
-        );
-    }
-
-    if (!driverData) {
-        return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '50vh',
-                fontSize: '18px'
-            }}>
-                No driver data available
-            </div>
-        );
-    }
+    // if (!driverData) {
+    //     return (
+    //         <div style={{
+    //             display: 'flex',
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //             height: '50vh',
+    //             fontSize: '18px'
+    //         }}>
+    //             No driver data available
+    //         </div>
+    //     );
+    // }
 
     const formatDate = (dateString) => {
         if (!dateString || dateString === '----') return '----';

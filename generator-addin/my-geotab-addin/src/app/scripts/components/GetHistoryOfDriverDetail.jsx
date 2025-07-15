@@ -15,7 +15,7 @@ const DriverLicenseTable = () => {
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const handleSort = (key) => {
@@ -34,7 +34,7 @@ const DriverLicenseTable = () => {
   };
 
   const handleView = (data) => {
-    navigate (`/LCCheckView/?/${drivingLicenceNumber}/${data._id}`)
+    navigate(`/LCCheckView/?/${drivingLicenceNumber}/${data._id}`)
   };
 
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
@@ -69,7 +69,7 @@ const DriverLicenseTable = () => {
 
     return licenceNo;
   };
-  
+
   const fetchDriverData = async () => {
     try {
       setLoading(true);
@@ -85,7 +85,7 @@ const DriverLicenseTable = () => {
 
       const response = await axios.post(`${BASE_URL}/api/driverData/getAllDriversByLicence`, {
         drivingLicenceNumber,
-        userId:userName
+        userId: userName
       });
 
       if (response.data?.data) {
@@ -93,16 +93,25 @@ const DriverLicenseTable = () => {
         setData(response.data.data?.details);
         console.log("Driver fetched successfully");
       } else {
-        throw new Error("Driver not found");
+        // If data is empty or null, simulate 404
+        navigate('/lc-check');
+        toast.error("Driver not found for this licence number");
       }
 
     } catch (err) {
-      console.error("Error fetching driver data:", err);
-      setError(`Error: ${err.message}`);
+      if (err.response?.status === 404) {
+        // This handles true 404 responses from the server
+        navigate('/lc-check');
+        toast.error("Driver not found for this licence number");
+      } else {
+        console.error("Error fetching driver data:", err);
+        setError(`Error: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchDriverData();
@@ -338,26 +347,26 @@ const DriverLicenseTable = () => {
   // const handleDownload = (recordData) => {
   //   try {
   //     console.log('Downloading record:', recordData);
-      
+
   //     // Generate PDF-like HTML content
   //     const pdfContent = generatePDF(recordData);
-      
+
   //     // Create blob and download
   //     const blob = new Blob([pdfContent], { type: 'text/html;charset=utf-8' });
   //     const link = document.createElement('a');
   //     const url = URL.createObjectURL(blob);
-      
+
   //     link.setAttribute('href', url);
   //     link.setAttribute('download', `driver-license-report-${drivingLicenceNumber}-${Date.now()}.html`);
   //     link.style.visibility = 'hidden';
-      
+
   //     document.body.appendChild(link);
   //     link.click();
   //     document.body.removeChild(link);
-      
+
   //     // Clean up
   //     URL.revokeObjectURL(url);
-      
+
   //     toast.success('Report downloaded successfully!');
   //   } catch (error) {
   //     console.error('Download error:', error);
@@ -382,27 +391,8 @@ const DriverLicenseTable = () => {
 
   if (loading) {
     return (
-      <div className="driver-license-container">
-        <Navbar />
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          minHeight: '60vh',
-          color: '#6b7280'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid #f3f3f3',
-            borderTop: '4px solid #3b82f6',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            marginBottom: '20px'
-          }}></div>
-          <p>Loading driver data...</p>
-        </div>
+      <div className="spinner-container">
+        <div className="spinner" />
       </div>
     );
   }
@@ -429,8 +419,8 @@ const DriverLicenseTable = () => {
             borderRadius: '8px',
             maxWidth: '500px'
           }}>{error}</p>
-          <button 
-            onClick={fetchDriverData} 
+          <button
+            onClick={fetchDriverData}
             style={{
               padding: '10px 20px',
               background: '#3b82f6',

@@ -69,7 +69,6 @@ const Dashboard = () => {
             <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
               Dashboard
             </h1>
-
             <div className="spinner-container">
               <div className="spinner" />
             </div>
@@ -131,7 +130,7 @@ const Dashboard = () => {
               <p>**if you will not use credits till expiry date credits will 0</p>
             </div>
           </div>
-          
+
         </div>
 
         <div className="dashboard-sections">

@@ -3,6 +3,10 @@ import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
 import './componentStyles/viewDriverDetailData.css';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
+import { useNavigate } from 'react-router-dom';
+
 
 const ViewDriverLicenceSummary = () => {
     const [driverData, setDriverData] = useState(null);
@@ -15,6 +19,8 @@ const ViewDriverLicenceSummary = () => {
     const userName = sessionData?.userName || "unknown@user.com";
 
     const targetRef = useRef();
+    const navigate = useNavigate();
+
 
     // PDF Generation function using browser's print functionality
     const generatePDF = async () => {
@@ -167,25 +173,36 @@ const ViewDriverLicenceSummary = () => {
 
             console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
-            const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
+            const response = await axios.post(`${BASE_URL}/api/driverData/getAllDriversByLicence`, {
                 drivingLicenceNumber,
                 userId: userName
             });
 
             if (response.data?.data) {
-                setDriverData(response.data.data);
+                setDrivingLicenceNumber(drivingLicenceNumber);
+                setData(response.data.data?.details);
                 console.log("Driver fetched successfully");
             } else {
-                throw new Error("Driver not found");
+                // If data is empty or null, simulate 404
+                navigate('/lc-check');
+                toast.error("Driver not found for this licence number");
             }
 
         } catch (err) {
-            console.error("Error fetching driver data:", err);
-            setError(`Error: ${err.message}`);
+            if (err.response?.status === 404) {
+                // This handles true 404 responses from the server
+                navigate('/lc-check');
+                toast.error("Driver not found for this licence number");
+            } else {
+                console.error("Error fetching driver data:", err);
+                setError(`Error: ${err.message}`);
+            }
         } finally {
             setLoading(false);
         }
     };
+
+
 
     useEffect(() => {
         fetchDriverData();
@@ -193,14 +210,8 @@ const ViewDriverLicenceSummary = () => {
 
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '50vh',
-                fontSize: '18px'
-            }}>
-                Loading driver information...
+            <div className="spinner-container">
+                <div className="spinner" />
             </div>
         );
     }
