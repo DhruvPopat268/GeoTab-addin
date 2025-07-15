@@ -149,7 +149,7 @@ const LCCheckView = () => {
         return { licenceNo, lcCheckId };
     };
 
-    const drivingLicenceNumber = getLicenceAndLcCheckIdFromUrl();
+    const {licenceNo} = getLicenceAndLcCheckIdFromUrl();
 
     // Fetch driver data from API
     const fetchDriverData = async () => {
@@ -159,7 +159,7 @@ const LCCheckView = () => {
 
             const { licenceNo, lcCheckId } = getLicenceAndLcCheckIdFromUrl();
 
-            if (!licenceNo || !lcCheckId ) {
+            if (!licenceNo || !lcCheckId) {
                 throw new Error('Driving licence or lc check id is not found in URL');
             }
 
@@ -299,12 +299,12 @@ const LCCheckView = () => {
                             {`${safeGet(driverData, 'driver.firstNames')} ${safeGet(driverData, 'driver.lastName')}`}
                         </h1>
                         {/* <p><strong>Company Name:</strong> prayosha</p> */}
-                        <p><strong>Driver Licence No:</strong> {drivingLicenceNumber}</p>
-                        <p><strong>Issue Number:</strong> {safeGet(driverData, 'token.issueNumber')}</p>
-                        <p><strong>Licence Valid From:</strong> {formatDate(safeGet(driverData, 'token.validFromDate'))}</p>
-                        <p><strong>Licence Valid To:</strong> {formatDate(safeGet(driverData, 'token.validToDate'))}</p>
-                        <p><strong>Gender:</strong> {safeGet(driverData, 'driver.gender')}</p>
-                        <p><strong>Date Of Birth:</strong> {formatDate(safeGet(driverData, 'driver.dateOfBirth'))}</p>
+                        <p><strong>Driver Licence No:</strong> {licenceNo}</p>
+                        <p><strong>Issue Number:</strong> {driverData.token?.issueNumber}</p>
+                        <p><strong>Licence Valid From:</strong> {driverData.token?.validFromDate}</p>
+                        <p><strong>Licence Valid To:</strong> {driverData.token?.validToDate}</p>
+                        <p><strong>Gender:</strong> {driverData.driver?.gender}</p>
+                        <p><strong>Date Of Birth:</strong> {driverData.driver?.dateOfBirth}</p>
                         <p><strong>Address:</strong> {[
                             safeGet(driverData, 'driver.address.unstructuredAddress.line1'),
                             safeGet(driverData, 'driver.address.unstructuredAddress.line2'),
@@ -493,7 +493,7 @@ const LCCheckView = () => {
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft:"100px"
+                    marginLeft: "100px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
