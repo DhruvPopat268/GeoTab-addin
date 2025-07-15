@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 const ViewDriverLicenceSummary = () => {
-    const [driverData, setDriverData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -17,6 +16,10 @@ const ViewDriverLicenceSummary = () => {
     const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
+    // const [drivingLicenceNumber, setDrivingLicenceNumber] = useState()
+    const [driverData, setDriverData] = useState(null);
+
+    // const [data, setData] = useState([])
 
     const targetRef = useRef();
     const navigate = useNavigate();
@@ -159,6 +162,8 @@ const ViewDriverLicenceSummary = () => {
         return licenceNo;
     };
 
+    const drivingLicenceNumber = getDrivingLicenceFromUrl();
+
     // Fetch driver data from API
     const fetchDriverData = async () => {
         try {
@@ -173,13 +178,15 @@ const ViewDriverLicenceSummary = () => {
 
             console.log("Fetching driver from backend using:", drivingLicenceNumber);
 
-            const response = await axios.post(`${BASE_URL}/api/driverData/getAllDriversByLicence`, {
+            const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
                 drivingLicenceNumber,
                 userId: userName
             });
 
             if (response.data?.data) {
-                setData(response.data.data?.details);
+                // setDrivingLicenceNumber(drivingLicenceNumber);
+                console.log(response.data?.data)
+                setDriverData(response.data?.data);
                 console.log("Driver fetched successfully");
             } else {
                 // If data is empty or null, simulate 404
@@ -200,8 +207,6 @@ const ViewDriverLicenceSummary = () => {
             setLoading(false);
         }
     };
-
-
 
     useEffect(() => {
         fetchDriverData();
@@ -245,19 +250,9 @@ const ViewDriverLicenceSummary = () => {
         );
     }
 
-    if (!driverData) {
-        return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '50vh',
-                fontSize: '18px'
-            }}>
-                No driver data available
-            </div>
-        );
-    }
+    // if (!driverData) {
+    //     toast.error("No driver data available")
+    // }
 
     const formatDate = (dateString) => {
         if (!dateString || dateString === '----') return '----';
@@ -309,7 +304,7 @@ const ViewDriverLicenceSummary = () => {
                             {`${safeGet(driverData, 'driver.firstNames')} ${safeGet(driverData, 'driver.lastName')}`}
                         </h1>
                         {/* <p><strong>Company Name:</strong> prayosha</p> */}
-                        <p><strong>Driver Licence No:</strong> {safeGet(driverData, 'driver.drivingLicenceNumber')}</p>
+                        <p><strong>Driver Licence No:</strong> {drivingLicenceNumber}</p>
                         <p><strong>Issue Number:</strong> {safeGet(driverData, 'token.issueNumber')}</p>
                         <p><strong>Licence Valid From:</strong> {formatDate(safeGet(driverData, 'token.validFromDate'))}</p>
                         <p><strong>Licence Valid To:</strong> {formatDate(safeGet(driverData, 'token.validToDate'))}</p>
@@ -496,13 +491,14 @@ const ViewDriverLicenceSummary = () => {
                     </div>
                 </div>
 
-                <h2 className='vehicle' style={{ color: '#333', marginBottom: '15px' }}>Vehicle You Can Drive</h2>
+                <h2 className='vehiclee' style={{ color: '#333', marginBottom: '15px' }}>Vehicle You Can Drive</h2>
 
                 <table className="vehicle-table" style={{
-                    width: '100%',
+                    width: '90%',
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
-                    marginBottom: '30px'
+                    marginBottom: '30px',
+                    marginLeft:"100px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -543,7 +539,7 @@ const ViewDriverLicenceSummary = () => {
                     </tbody>
                 </table>
 
-                <div className="disclaimer" style={{
+                <div className="disclaimerr" style={{
                     backgroundColor: '#fff3cd',
                     border: '1px solid #ffeaa7',
                     padding: '20px',

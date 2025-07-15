@@ -539,10 +539,11 @@ const DriverLicenceSummary = () => {
                 <h2 className='vehicle' style={{ color: '#333', marginBottom: '15px' }}>Vehicle You Can Drive</h2>
 
                 <table className="vehicle-table" style={{
-                    width: '100%',
+                    width: '90%',
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
-                    marginBottom: '30px'
+                    marginBottom: '30px',
+                    marginLeft:"100px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -587,13 +588,15 @@ const DriverLicenceSummary = () => {
                     backgroundColor: '#fff3cd',
                     border: '1px solid #ffeaa7',
                     padding: '20px',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    marginLeft:"100px"
                 }}>
                     <h2 style={{ color: '#856404', marginTop: 0 }}>Disclaimer</h2>
                     <p style={{
                         lineHeight: '1.6',
                         color: '#856404',
-                        margin: 0
+                        margin: 0,
+                        
                     }}>
                         This disclaimer clarifies that PTC (Paramount Transport Consultants Ltd) is not accountable for the accuracy of the provided data since it originates from the DVLA (Driver and Vehicle Licensing Agency). By including this statement, PTC aims to inform users that any discrepancies or errors in the data are beyond their control and responsibility. If users encounter any issues or inaccuracies within the data, they are encouraged to reach out to PTC's technical team for assistance. The contact information for the technical team is provided, specifically an email address (it@ptctransport.co.uk), to ensure users have a direct line of communication to report problems or seek further information. This approach helps manage user expectations and directs them to the appropriate support channel for resolution, maintaining transparency and accountability in data handling.
                     </p>

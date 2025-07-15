@@ -122,10 +122,7 @@ module.exports.getDriverDetailByLcCheckId = async (req, res) => {
       return res.status(404).json({ status: false, message: "LC Check ID not found in driver details" });
     }
 
-    return res.status(200).json({
-      status: true,
-      data: detail
-    });
+    return res.status(200).json([detail]);
 
   } catch (error) {
     console.error("Error fetching driver detail:", error);

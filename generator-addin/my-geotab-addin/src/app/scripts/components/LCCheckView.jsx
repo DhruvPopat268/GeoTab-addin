@@ -149,6 +149,7 @@ const LCCheckView = () => {
         return { licenceNo, lcCheckId };
     };
 
+    const drivingLicenceNumber = getLicenceAndLcCheckIdFromUrl();
 
     // Fetch driver data from API
     const fetchDriverData = async () => {
@@ -171,7 +172,8 @@ const LCCheckView = () => {
             });
 
             if (response.data?.data) {
-                setDriverData(response.data.data);
+                console.log(response.data?.data)
+                setDriverData(response.data?.data);
                 console.log("Driver fetched successfully");
             } else {
                 throw new Error("Driver not found");
@@ -297,7 +299,7 @@ const LCCheckView = () => {
                             {`${safeGet(driverData, 'driver.firstNames')} ${safeGet(driverData, 'driver.lastName')}`}
                         </h1>
                         {/* <p><strong>Company Name:</strong> prayosha</p> */}
-                        <p><strong>Driver Licence No:</strong> {safeGet(driverData, 'driver.drivingLicenceNumber')}</p>
+                        <p><strong>Driver Licence No:</strong> {drivingLicenceNumber}</p>
                         <p><strong>Issue Number:</strong> {safeGet(driverData, 'token.issueNumber')}</p>
                         <p><strong>Licence Valid From:</strong> {formatDate(safeGet(driverData, 'token.validFromDate'))}</p>
                         <p><strong>Licence Valid To:</strong> {formatDate(safeGet(driverData, 'token.validToDate'))}</p>
@@ -487,10 +489,11 @@ const LCCheckView = () => {
                 <h2 className='vehicle' style={{ color: '#333', marginBottom: '15px' }}>Vehicle You Can Drive</h2>
 
                 <table className="vehicle-table" style={{
-                    width: '100%',
+                    width: '90%',
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
-                    marginBottom: '30px'
+                    marginBottom: '30px',
+                    marginLeft:"100px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -531,7 +534,7 @@ const LCCheckView = () => {
                     </tbody>
                 </table>
 
-                <div className="disclaimer" style={{
+                <div className="disclaimerr" style={{
                     backgroundColor: '#fff3cd',
                     border: '1px solid #ffeaa7',
                     padding: '20px',
