@@ -112,7 +112,6 @@ const DriverLicenseTable = () => {
     }
   };
 
-
   useEffect(() => {
     fetchDriverData();
   }, []);

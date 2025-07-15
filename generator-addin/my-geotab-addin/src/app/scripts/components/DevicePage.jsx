@@ -52,6 +52,7 @@ const DevicePage = ({ }) => {
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  const database = sessionData?.database
   const [loading, setLoading] = useState(false);
 
   // Fetch all drivers on component mount
@@ -191,15 +192,19 @@ const DevicePage = ({ }) => {
     }
   };
 
+  // const handleEdit = (driver) => {
+  //   setEditingDriver(driver);
+  //   setValue('firstName', driver.firstName);
+  //   setValue('lastName', driver.lastName);
+  //   setValue('employeeNo', driver.employeeNo);
+  //   setValue('phoneNumber', driver.phoneNumber);
+  //   setValue('licenseNumber', driver.licenseNumber);
+  //   setValue('licenseProvince', driver.licenseProvince);
+  //   setShowCreateForm(true);
+  // };
+
   const handleEdit = (driver) => {
-    setEditingDriver(driver);
-    setValue('firstName', driver.firstName);
-    setValue('lastName', driver.lastName);
-    setValue('employeeNo', driver.employeeNo);
-    setValue('phoneNumber', driver.phoneNumber);
-    setValue('licenseNumber', driver.licenseNumber);
-    setValue('licenseProvince', driver.licenseProvince);
-    setShowCreateForm(true);
+    window.location.href = `https://my.geotab.com/${database}/#users,sortMode:byName`
   };
 
   const handleDelete = (driver) => {
