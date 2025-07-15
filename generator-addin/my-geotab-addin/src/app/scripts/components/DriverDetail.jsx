@@ -187,7 +187,7 @@ const DriverLicenceSummary = () => {
                         'Authorization': token
                     },
                     body: JSON.stringify({
-                        drivingLicenceNumber: drivingLicenceNumber,
+                        drivingLicenceNumber: licenceNo,
                         userId: userName
                     })
                 }
@@ -198,8 +198,6 @@ const DriverLicenceSummary = () => {
             }
 
             const driverData = await driverResponse.json();
-
-
 
             if (driverData.status && driverData.data) {
                 setDriverData(driverData.data);
