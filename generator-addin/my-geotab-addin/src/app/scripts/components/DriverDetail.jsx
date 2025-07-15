@@ -348,7 +348,7 @@ const DriverLicenceSummary = () => {
                         <h1 style={{ color: '#333', marginBottom: '20px' }}>
                             {`${safeGet(driverData, 'driver.firstNames')} ${safeGet(driverData, 'driver.lastName')}`}
                         </h1>
-                        <p><strong>Company Name:</strong> prayosha</p>
+                        {/* <p><strong>Company Name:</strong> prayosha</p> */}
                         <p><strong>Driver Licence No:</strong> {safeGet(driverData, 'driver.drivingLicenceNumber')}</p>
                         <p><strong>Issue Number:</strong> {safeGet(driverData, 'token.issueNumber')}</p>
                         <p><strong>Licence Valid From:</strong> {formatDate(safeGet(driverData, 'token.validFromDate'))}</p>
