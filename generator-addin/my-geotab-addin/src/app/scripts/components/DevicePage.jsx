@@ -254,6 +254,7 @@ const DevicePage = ({ }) => {
 
   // Handle sync button click - show confirmation popup
   const handleSync = (driver) => {
+    console.log(driver)
     setShowSyncConfirm(driver);
   };
 
@@ -266,6 +267,9 @@ const DevicePage = ({ }) => {
   const confirmSync = async () => {
     try {
       if (!showSyncConfirm) return;
+
+      console.log(showSyncConfirm)
+      console.log(showSyncConfirm.licenseNumber)
 
       setViewLoading(showSyncConfirm.id);
 
@@ -284,7 +288,7 @@ const DevicePage = ({ }) => {
         }
 
         // If both are true, navigate to driver detail page
-        navigate(`/driverDetail/?${showSyncConfirm.licenseNo}`);
+        navigate(`/driverDetail/?${showSyncConfirm.licenseNumber}`);
         setShowSyncConfirm(null);
       }
     } catch (error) {
@@ -297,11 +301,11 @@ const DevicePage = ({ }) => {
 
   // Updated handleView function (keeping the original for backward compatibility)
   const handleView = async (driver) => {
-    navigate(`/viewDriverDetailData/?${driver.licenseNo}`)
+    navigate(`/viewDriverDetailData/?${driver.licenseNumber}`)
   };
 
   const handleHistory = async (driver) => {
-    navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNo}`)
+    navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNumber}`)
   };
 
   if (loading) {
