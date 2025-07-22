@@ -118,7 +118,7 @@ const LCCheckPlans = () => {
               className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
               style={{ fontFamily: "var(--main-font)" }}
             >
-              LC Check API Plans
+              License Check API Plans
             </h1>
 
             <p className="lc-main-description">

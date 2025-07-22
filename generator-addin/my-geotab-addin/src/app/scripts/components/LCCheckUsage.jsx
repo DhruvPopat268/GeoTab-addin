@@ -217,13 +217,18 @@ const LCCheckUsage = () => {
 
   const getStatusBadge = (status) => {
     if (status >= 200 && status < 300) {
-      return <span className="badge green">{status}</span>;
+      return <span className="badge green">Success</span>;
+    } else if (status === 404) {
+      return <span className="badge red">Fail</span>;
     } else if (status >= 400 && status < 500) {
-      return <span className="badge red">{status}</span>;
+      return <span className="badge red">Client Error</span>;
+    } else if (status >= 500) {
+      return <span className="badge yellow">Server Error</span>;
     } else {
-      return <span className="badge yellow">{status}</span>;
+      return <span className="badge gray">Status: {status}</span>;
     }
   };
+
 
   // Custom tooltip for the chart
   const CustomTooltip = ({ active, payload, label }) => {
@@ -299,6 +304,8 @@ const LCCheckUsage = () => {
                           <td><span className="badge outline">{log.method}</span></td>
                           {/* <td className="endpoint">{log.endpoint}</td> */}
                           <td>{getStatusBadge(log.status)}</td>
+
+
                           <td>{log.responseTime}</td>
                           <td className="timestamp">{log.timestamp}</td>
                         </tr>

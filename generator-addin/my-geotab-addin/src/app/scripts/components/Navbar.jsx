@@ -8,9 +8,9 @@ const Navbar = () => {
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: Home },
-  { path: '/lc-check', label: 'LC Check', icon: CheckCircle },
+  { path: '/lc-check', label: 'License Check', icon: CheckCircle },
   { path: '/lc-check-usage', label: 'API Usage', icon: Activity },
-  { path: '/lc-check-api-plans', label: 'LC Check API Plans', icon: Package },
+  { path: '/lc-check-api-plans', label: 'License Check API Plans', icon: Package },
   { path: '/wallet', label: 'Wallet', icon: Wallet },
 ];
 
