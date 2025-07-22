@@ -4,4 +4,6 @@ const driverConsentController = require('../Controllers/DriverConsent')
 
 router.post('/', driverConsentController.createDriverConsent);
 
+router.post('/sendEmail', driverConsentController.sendEmail);
+
 module.exports = router;

@@ -58,6 +58,9 @@ const DevicePage = ({ }) => {
   // Fetch all drivers on component mount
   useEffect(() => {
     fetchAllDrivers();
+    console.log("original drivers are", originalDrivers)
+    console.log("displayed drivers are", displayedDrivers)
+
   }, []);
 
   useEffect(() => {
@@ -86,7 +89,7 @@ const DevicePage = ({ }) => {
 
         const transformedDrivers = drivers.map(driver => ({
           id: driver.id,
-          fullName: driver.name || `${driver.firstName} ${driver.lastName}`,
+          Email: driver.name || `${driver.firstName} ${driver.lastName}`,
           firstName: driver.firstName || "",
           lastName: driver.lastName || "",
           employeeNo: driver.employeeNo || "",
@@ -110,6 +113,29 @@ const DevicePage = ({ }) => {
       toast.error(`Error fetching drivers: ${error.message}`);
       setLoading(false);
     }
+  };
+
+  // Update sendConsentEmails to handle a single driver
+  const sendConsentEmails = async (driver) => {
+    if (driver.firstName && driver.lastName && driver.licenseNumber && driver.Email) {
+      try {
+        const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
+          firstName: driver.firstName,
+          lastName: driver.lastName,
+          licenceNo: driver.licenseNumber,
+          email: driver.Email
+        });
+        // Show backend message in toast
+        toast.success(res.data?.message || 'Consent email sent');
+        return res.data;
+      } catch (err) {
+        // Show backend error message if available
+        const msg = err.response?.data?.message || err.message || 'Failed to send consent email';
+        toast.error(msg);
+        return err.response?.data || { success: false };
+      }
+    }
+    return { success: false };
   };
 
   const onsubmit = async (data) => {
@@ -258,7 +284,9 @@ const DevicePage = ({ }) => {
   };
 
   // Handle sync button click - show confirmation popup
-  const handleSync = (driver) => {
+  const handleSync = async (driver) => {
+    const emailRes = await sendConsentEmails(driver);
+    if (!emailRes.success) return;
     console.log(driver)
     setShowSyncConfirm(driver);
   };
@@ -306,10 +334,14 @@ const DevicePage = ({ }) => {
 
   // Updated handleView function (keeping the original for backward compatibility)
   const handleView = async (driver) => {
+    const emailRes = await sendConsentEmails(driver);
+    if (!emailRes.success) return;
     navigate(`/viewDriverDetailData/?${driver.licenseNumber}`)
   };
 
   const handleHistory = async (driver) => {
+    const emailRes = await sendConsentEmails(driver);
+    if (!emailRes.success) return;
     navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNumber}`)
   };
 
@@ -473,7 +505,7 @@ const DevicePage = ({ }) => {
               <tr>
                 <th>Action</th>
                 <th>Employee No</th>
-                <th>Driver Email</th>
+                <th>Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>License Number</th>
@@ -521,7 +553,7 @@ const DevicePage = ({ }) => {
                     </button>
                   </td>
                   <td>{driver.employeeNo}</td>
-                  <td>{driver.fullName}</td>
+                  <td>{driver.Email}</td>
                   <td>{driver.firstName}</td>
                   <td>{driver.lastName}</td>
                   <td>{driver.licenseNumber}</td>
@@ -540,7 +572,7 @@ const DevicePage = ({ }) => {
         <div className="form-popup-overlay">
           <div className="confirm-popup-content">
             <h3>Confirm Sync</h3>
-            <p>This action is chargeable. Do you want to proceed with syncing driver {showSyncConfirm.fullName}?</p>
+            <p>This action is chargeable. Do you want to proceed with syncing driver {showSyncConfirm.Email}?</p>
             <div className="confirm-buttons">
               <button onClick={cancelSync} className="cancel-btn">
                 Cancel
@@ -557,7 +589,7 @@ const DevicePage = ({ }) => {
       {showDriverDetails && driverDetails && (
         <div className="form-popup-overlay">
           <div className="form-popup-content driver-details-modal">
-            <h2>Driver Details - {driverDetails.driver.fullName}</h2>
+            <h2>Driver Details - {driverDetails.driver.Email}</h2>
             <button
               className="close-btn"
               onClick={() => {
@@ -572,7 +604,7 @@ const DevicePage = ({ }) => {
               <div className="details-section">
                 <h3>Local Driver Information</h3>
                 <div className="details-grid">
-                  <div><strong>Name:</strong> {driverDetails.driver.fullName}</div>
+                  <div><strong>Name:</strong> {driverDetails.driver.Email}</div>
                   <div><strong>License No:</strong> {driverDetails.driver.licenseNo}</div>
                   <div><strong>Email:</strong> {driverDetails.driver.email}</div>
                   <div><strong>Contact:</strong> {driverDetails.driver.contactNumber}</div>
@@ -609,7 +641,7 @@ const DevicePage = ({ }) => {
         <div className="delete-confirm-modal">
           <div className="delete-confirm-content">
             <h3>Confirm Delete</h3>
-            <p>Are you sure you want to delete driver {showDeleteConfirm.fullName}?</p>
+            <p>Are you sure you want to delete driver {showDeleteConfirm.Email}?</p>
             <div className="delete-confirm-buttons">
               <button onClick={cancelDelete} className="cancel-btn">
                 Cancel
