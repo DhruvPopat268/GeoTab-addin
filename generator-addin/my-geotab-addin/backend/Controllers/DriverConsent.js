@@ -28,13 +28,14 @@ module.exports.createDriverConsent = async (req, res, next) => {
   }
 };
 
-
 module.exports.sendEmail = async (req, res, next) => {
   const { firstName, lastName, licenceNo, email } = req.body;
   const toEmail = email;
 
   try {
-    const driver = await DriverConsent.findOne({ licenceNo });
+    console.log(licenceNo)
+    const driver = await DriverConsent.findOne({ licenseNo: licenceNo });
+    console.log(driver)
 
     if (!driver) {
       // send form email
