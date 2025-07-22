@@ -152,6 +152,48 @@ module.exports.getAllDrivers = async (req, res, next) => {
   }
 };
 
+// Controller to sync drivers from Geotab
+module.exports.syncDrivers = async (req, res, next) => {
+  try {
+    const incomingDrivers = req.body.drivers; // Array of driver objects from Geotab
+    if (!Array.isArray(incomingDrivers)) {
+      return res.status(400).json({ message: 'drivers array required' });
+    }
+
+    // Get all current drivers from DB
+    const dbDrivers = await driverModel.find({});
+    const dbLicenseNos = dbDrivers.map(d => d.licenseNo);
+    const incomingLicenseNos = incomingDrivers.map(d => d.licenseNo);
+
+    // Upsert all incoming drivers
+    const upserted = [];
+    for (const driver of incomingDrivers) {
+      const result = await driverModel.upsertDriver(driver);
+      upserted.push(result);
+    }
+
+    // Delete (or mark inactive) drivers not in incoming list
+    const toDelete = dbDrivers.filter(d => !incomingLicenseNos.includes(d.licenseNo));
+    const deleted = [];
+    for (const driver of toDelete) {
+      // Hard delete:
+      await driverModel.deleteOne({ licenseNo: driver.licenseNo });
+      deleted.push(driver);
+      // Or for soft delete, use:
+      // await driverModel.updateOne({ licenseNo: driver.licenseNo }, { $set: { isActive: false } });
+    }
+
+    res.status(200).json({
+      message: 'Drivers synced',
+      upserted: upserted.length,
+      deleted: deleted.length
+    });
+  } catch (error) {
+    console.error('Error syncing drivers:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 
 
 

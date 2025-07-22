@@ -11,4 +11,7 @@ router.patch('/update', driverController.updateDriver)
 
 router.delete('/delete', driverController.deleteDriver)
 
+// Add sync route
+router.post('/sync', driverController.syncDrivers)
+
 module.exports = router;

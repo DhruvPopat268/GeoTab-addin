@@ -69,8 +69,23 @@ const driverSchema = new mongoose.Schema({
   firstName: {  // Added computed full name
     type: String,
     required: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
-},);
+}, { timestamps: true });
+
+// Static upsert method for syncing
+// Usage: Driver.upsertDriver(driverData)
+driverSchema.statics.upsertDriver = async function(driverData) {
+  // Use licenseNo or email as unique identifier
+  return this.findOneAndUpdate(
+    { licenseNo: driverData.licenseNo },
+    { $set: driverData },
+    { upsert: true, new: true }
+  );
+};
 
 const Driver = mongoose.model("Driver", driverSchema);
 

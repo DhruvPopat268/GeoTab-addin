@@ -115,6 +115,31 @@ const DevicePage = ({ }) => {
     }
   };
 
+  // Add this function after fetchAllDrivers
+  const syncDriversToMongo = async (drivers) => {
+    if (!drivers || drivers.length === 0) return;
+    // Map licenseNumber to licenseNo for backend compatibility
+    const mappedDrivers = drivers.map(driver => ({
+      ...driver,
+      licenseNo: driver.licenseNumber,
+    }));
+    try {
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers });
+      toast.success(res.data?.message || 'Drivers synced');
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
+      toast.error(msg);
+    }
+  };
+
+  // Add this useEffect after the fetchAllDrivers useEffect
+  useEffect(() => {
+    if (originalDrivers.length > 0) {
+      syncDriversToMongo(originalDrivers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [originalDrivers]);
+
   // Update sendConsentEmails to handle a single driver
   const sendConsentEmails = async (driver) => {
     if (driver.firstName && driver.lastName && driver.licenseNumber && driver.Email) {
@@ -545,12 +570,12 @@ const DevicePage = ({ }) => {
                     >
                       Edit
                     </button>
-                    <button
+                    {/* <button
                       className="table-action-btn danger"
                       onClick={() => handleDelete(driver)}
                     >
                       Delete
-                    </button>
+                    </button> */}
                   </td>
                   <td>{driver.employeeNo}</td>
                   <td>{driver.Email}</td>
