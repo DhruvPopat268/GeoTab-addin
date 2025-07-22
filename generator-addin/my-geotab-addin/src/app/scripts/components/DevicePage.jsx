@@ -473,7 +473,7 @@ const DevicePage = ({ }) => {
               <tr>
                 <th>Action</th>
                 <th>Employee No</th>
-                <th>Driver Name</th>
+                <th>Driver Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>License Number</th>

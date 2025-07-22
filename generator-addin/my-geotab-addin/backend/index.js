@@ -8,6 +8,7 @@ const connectToDb = require('./database/db');
 const driverRoute = require('./routes/driverRoute')
 const driverDataRoute = require('./routes/driverDataRoute')
 const UserWallet = require('./routes/UserWallet')
+const DriverConsent = require('./routes/DriverConsent')
 
 connectToDb();
 
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/driver', driverRoute)
 app.use('/api/driverData', driverDataRoute)
 app.use('/api/UserWallet', UserWallet)
+app.use('/api/DriverConsent', DriverConsent)
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);
