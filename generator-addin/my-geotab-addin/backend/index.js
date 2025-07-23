@@ -38,7 +38,7 @@ app.use('/api/UserWallet', UserWallet)
 app.use('/api/DriverConsent', DriverConsent)
 
 // Cron job: every 1 minute (for per-driver interval logic)
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
   try {
     console.log('\n⏰ Cron job started at:', new Date().toISOString());
 
@@ -75,7 +75,8 @@ cron.schedule('*/1 * * * *', async () => {
         const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
         let shouldCheck = false;
 
-        if (!lastChecked || ((now - lastChecked) / 60000) >= interval) {
+        if (!lastChecked || ((now - lastChecked) / (1000 * 60 * 60 * 24)) >= interval
+        ) {
           shouldCheck = true;
         }
 

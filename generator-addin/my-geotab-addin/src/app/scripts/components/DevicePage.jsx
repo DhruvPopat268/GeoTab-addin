@@ -588,9 +588,10 @@ const DevicePage = ({ }) => {
                 <th>Last Name</th>
                 <th>License Number</th>
                 <th>Phone Number</th>
+                <th>Interval (Daily)</th>
                 <th>License Province</th>
                 <th>Status</th>
-                <th>Interval (min)</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -643,9 +644,10 @@ const DevicePage = ({ }) => {
                   <td>{driver.lastName}</td>
                   <td>{driver.licenseNumber}</td>
                   <td>{driver.phoneNumber}</td>
+                  <td>{driver.lcCheckInterval || 1}</td>
                   <td>{driver.licenseProvince}</td>
                   <td>{driver.driverStatus}</td>
-                  <td>{driver.lcCheckInterval || 1}</td>
+                 
                 </tr>
               ))}
             </tbody>
