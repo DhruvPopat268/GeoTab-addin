@@ -1,18 +1,8 @@
 const mongoose = require('mongoose');
 
-// Define the driver sub-schema (same as previous driver schema, minus userId)
+// Define the driver sub-schema
 const driverSchema = new mongoose.Schema({
-  companyName: {
-    type: String,
-    enum: ['Company A', 'Company B'],
-    required: true
-  },
-  automatedLicenseCheck: {
-    type: String,
-    enum: ['Yes', 'No'],
-    required: true
-  },
-  driverNumber: {
+  firstName: {
     type: String,
     required: true
   },
@@ -20,25 +10,30 @@ const driverSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  email: {
+    type: String,
+    required: true,
+    lowercase: true,
+    validate: {
+      validator: function (v) {
+        return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v);
+      },
+      message: props => `${props.value} is not a valid email address!`
+    }
+  },
   contactNumber: {
     type: String,
     required: true,
     validate: {
-      validator: function(v) {
-        return /^\d{10}$/.test(v);
+      validator: function (v) {
+        return /^\+?\d{10,15}$/.test(v); // Adjusted to allow country codes
       },
-      message: props => `${props.value} is not a valid 10-digit phone number!`
+      message: props => `${props.value} is not a valid phone number!`
     }
   },
-  driverGroups: {
+  phoneNumber: {
     type: String,
-    enum: ['Group 1', 'Group 2'],
-    required: true
-  },
-  depotChangeAllowed: {
-    type: String,
-    enum: ['Yes', 'No'],
-    required: true
+    default: null // Optional if contactNumber is used
   },
   driverStatus: {
     type: String,
@@ -49,25 +44,21 @@ const driverSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  email: {
+  licenseNumber: {
     type: String,
-    required: true,
-    lowercase: true,
-    validate: {
-      validator: function(v) {
-        return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v);
-      },
-      message: props => `${props.value} is not a valid email address!`
-    }
+    default: null // Optional duplicate field
   },
-  depotName: {
+  licenseProvince: {
     type: String,
-    enum: ['Main Depot', 'North Depot'],
-    required: true
+    default: null
   },
-  firstName: {
+  employeeNo: {
     type: String,
-    required: true
+    default: null
+  },
+  id: {
+    type: String,
+    default: null // External or source ID
   },
   isActive: {
     type: Boolean,
@@ -94,5 +85,4 @@ const userDriversSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const driverModel = mongoose.model('UserDrivers', userDriversSchema);
-
 module.exports = driverModel;
