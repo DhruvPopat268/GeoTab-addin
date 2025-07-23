@@ -543,7 +543,7 @@ const DriverLicenceSummary = () => {
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft:"100px"
+                    marginLeft:"69px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -589,7 +589,7 @@ const DriverLicenceSummary = () => {
                     border: '1px solid #ffeaa7',
                     padding: '20px',
                     borderRadius: '8px',
-                    marginLeft:"58px"
+                    marginLeft:"64px"
                 }}>
                     <h2 style={{ color: '#856404', marginTop: 0 }}>Disclaimer</h2>
                     <p style={{
