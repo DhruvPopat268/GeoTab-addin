@@ -81,6 +81,10 @@ const driverSchema = new mongoose.Schema({
   lastCheckedAt: {
     type: Date,
     default: null
+  },
+  userId: {
+    type: String,
+    required: true
   }
 }, { timestamps: true });
 

@@ -14,7 +14,9 @@ module.exports.createDriver = async (req, res, next) => {
     licenseNo,
     email,
     depotName,
-    firstName
+    firstName,
+    userId, // <-- add userId
+    userName // <-- fallback for userName
   } = req.body;
 
 
@@ -36,7 +38,8 @@ module.exports.createDriver = async (req, res, next) => {
       licenseNo,
       email,
       depotName,
-      firstName
+      firstName,
+      userId: userId || userName // ensure userId is set
     });
 
 
@@ -156,6 +159,7 @@ module.exports.getAllDrivers = async (req, res, next) => {
 module.exports.syncDrivers = async (req, res, next) => {
   try {
     const incomingDrivers = req.body.drivers; // Array of driver objects from Geotab
+    const userName = req.body.userName; // <-- get userName from request
     if (!Array.isArray(incomingDrivers)) {
       return res.status(400).json({ message: 'drivers array required' });
     }
@@ -168,7 +172,8 @@ module.exports.syncDrivers = async (req, res, next) => {
     // Upsert all incoming drivers
     const upserted = [];
     for (const driver of incomingDrivers) {
-      const result = await driverModel.upsertDriver(driver);
+      const driverWithUser = { ...driver, userId: driver.userId || userName };
+      const result = await driverModel.upsertDriver(driverWithUser);
       upserted.push(result);
     }
 

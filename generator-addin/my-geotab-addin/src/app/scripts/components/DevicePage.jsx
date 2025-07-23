@@ -129,7 +129,7 @@ const DevicePage = ({ }) => {
       licenseNo: driver.licenseNumber,
     }));
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers });
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers , userName});
       toast.success(res.data?.message || 'Drivers synced');
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
