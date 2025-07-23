@@ -14,4 +14,7 @@ router.delete('/delete', driverController.deleteDriver)
 // Add sync route
 router.post('/sync', driverController.syncDrivers)
 
+// Add update interval route
+router.patch('/update-interval', driverController.updateDriverInterval)
+
 module.exports = router;

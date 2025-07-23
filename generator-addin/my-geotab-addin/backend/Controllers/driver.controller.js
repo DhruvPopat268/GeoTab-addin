@@ -194,6 +194,28 @@ module.exports.syncDrivers = async (req, res, next) => {
   }
 };
 
+// Update only the interval for a driver
+module.exports.updateDriverInterval = async (req, res, next) => {
+  try {
+    const { licenseNo, lcCheckInterval } = req.body;
+    if (!licenseNo || typeof lcCheckInterval !== 'number') {
+      return res.status(400).json({ message: 'licenseNo and lcCheckInterval (number) are required.' });
+    }
+    const updated = await driverModel.findOneAndUpdate(
+      { licenseNo },
+      { $set: { lcCheckInterval } },
+      { new: true }
+    );
+    if (!updated) {
+      return res.status(404).json({ message: 'Driver not found.' });
+    }
+    return res.status(200).json({ message: 'Interval updated', data: updated });
+  } catch (error) {
+    console.error('Error updating interval:', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
 
 
 

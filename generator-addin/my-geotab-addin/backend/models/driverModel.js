@@ -73,6 +73,14 @@ const driverSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  lcCheckInterval: {
+    type: Number,
+    default: 1 // in minutes
+  },
+  lastCheckedAt: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true });
 

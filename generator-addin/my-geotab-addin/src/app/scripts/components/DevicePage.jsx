@@ -55,6 +55,10 @@ const DevicePage = ({ }) => {
   const database = sessionData?.database
   const [loading, setLoading] = useState(false);
 
+  // Add interval update handler
+  const [intervalPopup, setIntervalPopup] = useState({ open: false, driver: null });
+  const [intervalValue, setIntervalValue] = useState(1);
+
   // Fetch all drivers on component mount
   useEffect(() => {
     fetchAllDrivers();
@@ -96,7 +100,8 @@ const DevicePage = ({ }) => {
           phoneNumber: driver.phoneNumber || "",
           licenseNumber: driver.licenseNumber || "",
           licenseProvince: driver.licenseProvince || "",
-          driverStatus: driver.isActive ? "Active" : "InActive"
+          driverStatus: driver.isActive ? "Active" : "InActive",
+          lcCheckInterval: driver.lcCheckInterval || 1 // Add lcCheckInterval to transformed drivers
         }));
 
         setOriginalDrivers(transformedDrivers);
@@ -370,6 +375,33 @@ const DevicePage = ({ }) => {
     navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNumber}`)
   };
 
+  // Add interval update handler
+  const handleIntervalClick = (driver) => {
+    setIntervalValue(driver.lcCheckInterval || 1);
+    setIntervalPopup({ open: true, driver });
+  };
+
+  const handleIntervalSubmit = async () => {
+    if (!intervalPopup.driver) return;
+    try {
+      await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
+        licenseNo: intervalPopup.driver.licenseNumber,
+        lcCheckInterval: intervalValue
+      });
+      toast.success('Interval updated');
+      // Update local state for immediate UI feedback
+      setOriginalDrivers((prev) => prev.map(d =>
+        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
+      ));
+      setDisplayedDrivers((prev) => prev.map(d =>
+        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
+      ));
+      setIntervalPopup({ open: false, driver: null });
+    } catch (err) {
+      toast.error('Failed to update interval');
+    }
+  };
+
   if (loading) {
     return (
       <div className="spinner-container">
@@ -537,6 +569,7 @@ const DevicePage = ({ }) => {
                 <th>Phone Number</th>
                 <th>License Province</th>
                 <th>Status</th>
+                <th>Interval (min)</th>
               </tr>
             </thead>
             <tbody>
@@ -570,6 +603,12 @@ const DevicePage = ({ }) => {
                     >
                       Edit
                     </button>
+                    <button
+                      className="table-action-btn"
+                      onClick={() => handleIntervalClick(driver)}
+                    >
+                      Interval
+                    </button>
                     {/* <button
                       className="table-action-btn danger"
                       onClick={() => handleDelete(driver)}
@@ -585,6 +624,7 @@ const DevicePage = ({ }) => {
                   <td>{driver.phoneNumber}</td>
                   <td>{driver.licenseProvince}</td>
                   <td>{driver.driverStatus}</td>
+                  <td>{driver.lcCheckInterval || 1}</td>
                 </tr>
               ))}
             </tbody>
@@ -674,6 +714,30 @@ const DevicePage = ({ }) => {
               <button onClick={confirmDelete} className="delete-btn">
                 Delete
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interval Popup */}
+      {intervalPopup.open && (
+        <div className="form-popup-overlay">
+          <div className="form-popup-content">
+            <h3>Set Interval for {intervalPopup.driver.Email}</h3>
+            <label>
+              Interval (minutes):
+              <select
+                value={intervalValue}
+                onChange={e => setIntervalValue(Number(e.target.value))}
+              >
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>{i + 1}</option>
+                ))}
+              </select>
+            </label>
+            <div className="form-actions">
+              <button onClick={() => setIntervalPopup({ open: false, driver: null })} className="cancel-btn">Cancel</button>
+              <button onClick={handleIntervalSubmit} className="submit-btn">Submit</button>
             </div>
           </div>
         </div>
