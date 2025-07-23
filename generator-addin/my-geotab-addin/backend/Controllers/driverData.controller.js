@@ -88,11 +88,14 @@ module.exports.getAllDriversByLicence = async (req, res) => {
       return res.status(404).json({ message: "No driver details found" });
     }
 
+    // 🔽 Sort details array by createdAt descending (-1)
+    const sortedDetails = [...driverDoc.details].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     res.status(200).json({
       message: "Driver details found",
       data: {
         drivingLicenceNumber: driverDoc.drivingLicenceNumber,
-        details: driverDoc.details,
+        details: sortedDetails,
       },
     });
 
@@ -101,6 +104,7 @@ module.exports.getAllDriversByLicence = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 module.exports.getDriverDetailByLcCheckId = async (req, res) => {
   try {
