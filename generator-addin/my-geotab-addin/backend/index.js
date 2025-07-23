@@ -38,42 +38,83 @@ app.use('/api/UserWallet', UserWallet)
 app.use('/api/DriverConsent', DriverConsent)
 
 // Cron job: every 1 minute (for per-driver interval logic)
-// cron.schedule('*/1 * * * *', async () => {
-//   try {
-//     console.log('--- Cron job started: Checking driver licenses (per-driver interval) ---');
-//     const token = await getAuthToken();
-//     const drivers = await Driver.find({ isActive: true }); // Only active drivers
-//     const now = new Date();
-//     if (!drivers.length) {
-//       console.log('No active drivers found for license check.');
-//     }
-//     for (const driver of drivers) {
-//       const interval = driver.lcCheckInterval ; // in minutes
-//       const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
-//       let shouldCheck = false;
-//       if (!lastChecked) {
-//         shouldCheck = true;
-//       } else {
-//         const diffMs = now - lastChecked;
-//         const diffMin = diffMs / (1000 * 60);
-//         if (diffMin >= interval) {
-//           shouldCheck = true;
-//         }
-//       }
-//       if (shouldCheck) {
-//         console.log(`API hit for licenseNo: ${driver.licenseNo} (interval: ${interval} min)`);
-//         await checkDriverLicense(driver, token);
-//         // Update lastCheckedAt
-//         await Driver.updateOne({ _id: driver._id }, { $set: { lastCheckedAt: now } });
-//       } else {
-//         console.log(`Skipped licenseNo: ${driver.licenseNo} (interval: ${interval} min, last checked: ${lastChecked})`);
-//       }
-//     }
-//     console.log('--- License check completed for all drivers at', now, '---');
-//   } catch (err) {
-//     console.error('Cron job error:', err);
-//   }
-// });
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    console.log('\n⏰ Cron job started at:', new Date().toISOString());
+
+    const token = await getAuthToken();
+    console.log('🔐 Token fetched successfully.');
+
+    const allDriverDocs = await Driver.find();
+    if (!allDriverDocs.length) {
+      console.log('⚠️ No driver documents found.');
+      return;
+    }
+
+    const now = new Date();
+
+    for (const doc of allDriverDocs) {
+      console.log(`\n📄 Processing document for userId: ${doc.userId} (MongoID: ${doc._id})`);
+
+      const { drivers = [] } = doc;
+
+      if (!drivers.length) {
+        console.log(`⚠️ No drivers in userId: ${doc.userId}`);
+        continue;
+      }
+
+      for (let i = 0; i < drivers.length; i++) {
+        const driver = drivers[i];
+
+        if (!driver.isActive) {
+          console.log(`🚫 Skipping inactive driver: ${driver.licenseNumber}`);
+          continue;
+        }
+
+        const interval = driver.lcCheckInterval || 0;
+        const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
+        let shouldCheck = false;
+
+        if (!lastChecked || ((now - lastChecked) / 60000) >= interval) {
+          shouldCheck = true;
+        }
+
+        const userId = doc.userId;
+
+        if (shouldCheck) {
+          console.log(`🔄 Hitting API for userId: ${doc.userId}, licenseNumber: ${driver.licenseNumber}`);
+
+          await checkDriverLicense(
+            {
+              licenseNo: driver.licenseNumber,
+              userId: userId
+            },
+            token
+          );
+
+          // Update just this driver's lastCheckedAt
+          await Driver.updateOne(
+            { _id: doc._id, "drivers.licenseNumber": driver.licenseNumber },
+            {
+              $set: {
+                "drivers.$.lastCheckedAt": now,
+                updatedAt: now
+              }
+            }
+          );
+
+          console.log(`✅ Updated lastCheckedAt for licenseNumber: ${driver.licenseNumber}`);
+        } else {
+          console.log(`⏩ Skipped licenseNumber: ${driver.licenseNumber} (interval: ${interval} min, lastCheckedAt: ${lastChecked?.toISOString() || 'Never'})`);
+        }
+      }
+    }
+
+    console.log('\n✅ Cron job completed at:', now.toISOString());
+  } catch (err) {
+    console.error('❌ Cron job error:', err);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);

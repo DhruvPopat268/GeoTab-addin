@@ -125,26 +125,40 @@ module.exports.getAllDrivers = async (req, res, next) => {
 };
 
 
-// Sync drivers for a user (replace all)
+// Sync drivers for a user (replace all, but preserve lcCheckInterval)
 module.exports.syncDrivers = async (req, res, next) => {
   try {
     const incomingDrivers = req.body.drivers;
     const userName = req.body.userName;
     const userId = req.body.userId;
     const resolvedUserId = userId || userName;
-    console.log(incomingDrivers)
     if (!resolvedUserId) return res.status(400).json({ message: 'userId or userName required' });
     if (!Array.isArray(incomingDrivers)) {
       return res.status(400).json({ message: 'drivers array required' });
     }
+
+    // Fetch existing drivers
     let userDoc = await driverModel.findOne({ userId: resolvedUserId });
+    let existingDrivers = userDoc ? userDoc.drivers : [];
+
+    // Merge lcCheckInterval
+    const mergedDrivers = incomingDrivers.map(driver => {
+      // Try both licenseNo and licenseNumber for compatibility
+      const licenseKey = driver.licenseNo || driver.licenseNumber;
+      const existing = existingDrivers.find(d => (d.licenseNo === licenseKey || d.licenseNumber === licenseKey));
+      return {
+        ...driver,
+        lcCheckInterval: existing?.lcCheckInterval || driver.lcCheckInterval || 1 // default to 1 if not set
+      };
+    });
+
     if (userDoc) {
-      userDoc.drivers = incomingDrivers;
+      userDoc.drivers = mergedDrivers;
       await userDoc.save();
     } else {
-      await driverModel.create({ userId: resolvedUserId, drivers: incomingDrivers });
+      await driverModel.create({ userId: resolvedUserId, drivers: mergedDrivers });
     }
-    res.status(200).json({ message: 'Drivers synced', upserted: incomingDrivers.length });
+    res.status(200).json({ message: 'Drivers synced', upserted: mergedDrivers.length });
   } catch (error) {
     console.error('Error syncing drivers:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
@@ -183,5 +197,3 @@ module.exports.updateDriverInterval = async (req, res, next) => {
     return res.status(500).json({ message: 'Internal server error.' });
   }
 };
-
-
