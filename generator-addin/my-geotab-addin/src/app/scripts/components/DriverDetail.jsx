@@ -589,7 +589,7 @@ const DriverLicenceSummary = () => {
                     border: '1px solid #ffeaa7',
                     padding: '20px',
                     borderRadius: '8px',
-                    marginLeft:"100px"
+                    marginLeft:"58px"
                 }}>
                     <h2 style={{ color: '#856404', marginTop: 0 }}>Disclaimer</h2>
                     <p style={{
