@@ -101,7 +101,7 @@ module.exports.getAllDrivers = async (req, res, next) => {
     const resolvedUserId = userId || userName;
     if (!resolvedUserId) return res.status(400).json({ message: 'userId or userName required' });
     const userDoc = await driverModel.findOne({ userId: resolvedUserId });
-    if (!userDoc) return res.status(404).json({ message: 'User not found.' });
+    if (!userDoc) return res.status(200).json({ message: 'User not found.' });
     return res.status(200).json({ message: 'Drivers fetched successfully', data: userDoc.drivers });
   } catch (error) {
     console.log(error);
