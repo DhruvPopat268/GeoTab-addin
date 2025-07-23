@@ -6,11 +6,11 @@ const driverSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  surname: {
+  lastName: {
     type: String,
     required: true
   },
-  email: {
+  Email: {
     type: String,
     required: true,
     lowercase: true,
@@ -21,16 +21,6 @@ const driverSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email address!`
     }
   },
-  contactNumber: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return /^\+?\d{10,15}$/.test(v); // Adjusted to allow country codes
-      },
-      message: props => `${props.value} is not a valid phone number!`
-    }
-  },
   phoneNumber: {
     type: String,
     default: null // Optional if contactNumber is used
@@ -38,10 +28,6 @@ const driverSchema = new mongoose.Schema({
   driverStatus: {
     type: String,
     enum: ['Active', 'InActive', 'Archive'],
-    required: true
-  },
-  licenseNo: {
-    type: String,
     required: true
   },
   licenseNumber: {
@@ -55,10 +41,6 @@ const driverSchema = new mongoose.Schema({
   employeeNo: {
     type: String,
     default: null
-  },
-  id: {
-    type: String,
-    default: null // External or source ID
   },
   isActive: {
     type: Boolean,
