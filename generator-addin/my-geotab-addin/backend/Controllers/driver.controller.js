@@ -154,24 +154,34 @@ module.exports.syncDrivers = async (req, res, next) => {
 // Update only the interval for a driver
 module.exports.updateDriverInterval = async (req, res, next) => {
   try {
-    const { userId, userName, licenseNo, lcCheckInterval } = req.body;
-    const resolvedUserId = userId || userName;
-    if (!resolvedUserId || !licenseNo || typeof lcCheckInterval !== 'number') {
-      return res.status(400).json({ message: 'userId/userName, licenseNo and lcCheckInterval (number) are required.' });
+    const { userName, licenseNo, lcCheckInterval } = req.body;
+    console.log(req.body)
+
+
+    if (!userName || !licenseNo || !lcCheckInterval) {
+      return res.status(400).json({
+        message: 'userId/userName, licenseNo and lcCheckInterval (number) are required.'
+      });
     }
-    const userDoc = await driverModel.findOne({ userId: resolvedUserId });
+
+    const userDoc = await driverModel.findOne({ userId: userName });
+
     if (!userDoc) return res.status(404).json({ message: 'User not found.' });
-    const idx = userDoc.drivers.findIndex(d => d.licenseNo === licenseNo);
+
+    const idx = userDoc.drivers.findIndex(d => d.licenseNumber === licenseNo);
     if (idx === -1) return res.status(404).json({ message: 'Driver not found.' });
+
     userDoc.drivers[idx].lcCheckInterval = lcCheckInterval;
     await userDoc.save();
-    return res.status(200).json({ message: 'Interval updated', data: userDoc.drivers[idx] });
+
+    return res.status(200).json({
+      message: 'Interval updated',
+      data: userDoc.drivers[idx]
+    });
   } catch (error) {
     console.error('Error updating interval:', error);
     return res.status(500).json({ message: 'Internal server error.' });
   }
 };
-
-
 
 
