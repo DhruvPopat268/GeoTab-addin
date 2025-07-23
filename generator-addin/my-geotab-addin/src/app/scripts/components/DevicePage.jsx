@@ -60,6 +60,8 @@ const DevicePage = ({ }) => {
   const [intervalPopup, setIntervalPopup] = useState({ open: false, driver: null });
   const [intervalValue, setIntervalValue] = useState(1);
 
+  const [drivers, setDrivers] = useState([]);
+
   // Fetch all drivers on component mount
   useEffect(() => {
     fetchAllDrivers();
@@ -138,10 +140,27 @@ const DevicePage = ({ }) => {
     }
   };
 
+  const fetchDrivers = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
+        userName
+      });
+      setDrivers(res.data.data || []);
+      setError('');
+    } catch (err) {
+      console.error('Error fetching drivers:', err);
+      setError(err.response?.data?.message || 'Failed to fetch drivers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Add this useEffect after the fetchAllDrivers useEffect
   useEffect(() => {
     if (originalDrivers.length > 0) {
       syncDriversToMongo(originalDrivers);
+      fetchDrivers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [originalDrivers]);
@@ -387,7 +406,8 @@ const DevicePage = ({ }) => {
     try {
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
         licenseNo: intervalPopup.driver.licenseNumber,
-        lcCheckInterval: intervalValue
+        lcCheckInterval: intervalValue,
+        userName
       });
       toast.success('Interval updated');
       // Update local state for immediate UI feedback
@@ -574,7 +594,7 @@ const DevicePage = ({ }) => {
               </tr>
             </thead>
             <tbody>
-              {displayedDrivers.map(driver => (
+              {drivers.map(driver => (
                 <tr key={driver.id}>
                   <td className="action-buttons">
                     <button

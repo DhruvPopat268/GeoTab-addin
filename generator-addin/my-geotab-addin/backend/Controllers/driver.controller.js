@@ -97,17 +97,33 @@ module.exports.deleteDriver = async (req, res, next) => {
 // Get all drivers for a user
 module.exports.getAllDrivers = async (req, res, next) => {
   try {
-    const { userId, userName } = req.query;
+    const { userId, userName } = req.body; // changed from req.query to req.body if you're sending data via POST
+
     const resolvedUserId = userId || userName;
-    if (!resolvedUserId) return res.status(400).json({ message: 'userId or userName required' });
+    if (!resolvedUserId) {
+      return res.status(400).json({ message: 'userId or userName is required' });
+    }
+
     const userDoc = await driverModel.findOne({ userId: resolvedUserId });
-    if (!userDoc) return res.status(200).json({ message: 'User not found.' });
-    return res.status(200).json({ message: 'Drivers fetched successfully', data: userDoc.drivers });
+
+    if (!userDoc) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.status(200).json({
+      message: 'Drivers fetched successfully',
+      data: userDoc.drivers || []
+    });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Failed to fetch drivers', details: error.message });
+    console.error('Error in getAllDrivers:', error);
+    return res.status(500).json({
+      error: 'Failed to fetch drivers',
+      details: error.message
+    });
   }
 };
+
 
 // Sync drivers for a user (replace all)
 module.exports.syncDrivers = async (req, res, next) => {
