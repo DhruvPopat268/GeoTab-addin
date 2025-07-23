@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
+// Define the driver sub-schema (same as previous driver schema, minus userId)
 const driverSchema = new mongoose.Schema({
   companyName: {
-    type: String,  // Added missing type
+    type: String,
     enum: ['Company A', 'Company B'],
     required: true
   },
   automatedLicenseCheck: {
-    type: String,  // Added missing type
+    type: String,
     enum: ['Yes', 'No'],
     required: true
   },
@@ -17,42 +18,40 @@ const driverSchema = new mongoose.Schema({
   },
   surname: {
     type: String,
-    required: true  // Added required if needed
+    required: true
   },
   contactNumber: {
-    type: String,  // Changed from Number to String for phone numbers
+    type: String,
     required: true,
-    validate: {  // Fixed validation (can't have duplicate minlength)
+    validate: {
       validator: function(v) {
-        return /^\d{10}$/.test(v);  // Exactly 10 digits
+        return /^\d{10}$/.test(v);
       },
       message: props => `${props.value} is not a valid 10-digit phone number!`
     }
   },
-  driverGroups: {  // Fixed typo in field name (was driverGoups)
-    type: String,  // Added missing type
-    enum: ['Group 1', 'Group 2'],  // Added actual groups
+  driverGroups: {
+    type: String,
+    enum: ['Group 1', 'Group 2'],
     required: true
   },
   depotChangeAllowed: {
-    type: String,  // Added missing type
+    type: String,
     enum: ['Yes', 'No'],
     required: true
   },
   driverStatus: {
-    type: String,  // Added missing type
-    enum: ['Active', 'InActive', 'Archive'],  // Fixed capitalization
+    type: String,
+    enum: ['Active', 'InActive', 'Archive'],
     required: true
   },
-  licenseNo: {  // Changed from driverLicenceCheck for consistency
+  licenseNo: {
     type: String,
     required: true
   },
- 
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     validate: {
       validator: function(v) {
@@ -62,11 +61,11 @@ const driverSchema = new mongoose.Schema({
     }
   },
   depotName: {
-    type: String,  // Added missing type
-    enum: ['Main Depot', 'North Depot'],  // Added actual depots
+    type: String,
+    enum: ['Main Depot', 'North Depot'],
     required: true
   },
-  firstName: {  // Added computed full name
+  firstName: {
     type: String,
     required: true
   },
@@ -76,29 +75,24 @@ const driverSchema = new mongoose.Schema({
   },
   lcCheckInterval: {
     type: Number,
-    default: 1 // in minutes
+    default: 1
   },
   lastCheckedAt: {
     type: Date,
     default: null
-  },
+  }
+}, { _id: false });
+
+// Main schema: one document per user
+const userDriversSchema = new mongoose.Schema({
   userId: {
     type: String,
-    required: true
-  }
+    required: true,
+    unique: true
+  },
+  drivers: [driverSchema]
 }, { timestamps: true });
 
-// Static upsert method for syncing
-// Usage: Driver.upsertDriver(driverData)
-driverSchema.statics.upsertDriver = async function(driverData) {
-  // Use licenseNo or email as unique identifier
-  return this.findOneAndUpdate(
-    { licenseNo: driverData.licenseNo },
-    { $set: driverData },
-    { upsert: true, new: true }
-  );
-};
+const driverModel = mongoose.model('UserDrivers', userDriversSchema);
 
-const Driver = mongoose.model("Driver", driverSchema);
-
-module.exports = Driver
+module.exports = driverModel;

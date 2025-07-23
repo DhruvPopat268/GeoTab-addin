@@ -52,6 +52,7 @@ const DevicePage = ({ }) => {
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  console.log("userName is", userName)
   const database = sessionData?.database
   const [loading, setLoading] = useState(false);
 
@@ -59,12 +60,23 @@ const DevicePage = ({ }) => {
   const [intervalPopup, setIntervalPopup] = useState({ open: false, driver: null });
   const [intervalValue, setIntervalValue] = useState(1);
 
-  // Fetch all drivers on component mount
-  useEffect(() => {
-    fetchAllDrivers();
-    console.log("original drivers are", originalDrivers)
-    console.log("displayed drivers are", displayedDrivers)
+  // Fetch all drivers from backend (MongoDB)
+  const fetchDriversFromBackend = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${BASE_URL}/api/driver/getAllDrivers`, { params: { userName } });
+      setOriginalDrivers(res.data.data || []);
+      setDisplayedDrivers(res.data.data || []);
+      setLoading(false);
+    } catch (error) {
+      toast.error('Failed to fetch drivers from backend');
+      setLoading(false);
+    }
+  };
 
+  // On initial load, fetch from backend
+  useEffect(() => {
+    fetchDriversFromBackend();
   }, []);
 
   useEffect(() => {
@@ -72,55 +84,7 @@ const DevicePage = ({ }) => {
     console.log("displayed drivers are", displayedDrivers);
   }, [originalDrivers]);
 
-  const fetchAllDrivers = async () => {
-    try {
-      setLoading(true);
-
-      if (!geotabApi) {
-        console.error("Geotab API not available");
-        toast.error("Geotab API not available");
-        return;
-      }
-
-      geotabApi.call("Get", {
-        typeName: "User",
-        resultsLimit: 1000
-      }, function (users) {
-        console.log("All users:", users);
-
-        const drivers = users.filter(user => user.isDriver === true);
-        console.log("Filtered drivers:", drivers);
-
-        const transformedDrivers = drivers.map(driver => ({
-          id: driver.id,
-          Email: driver.name || `${driver.firstName} ${driver.lastName}`,
-          firstName: driver.firstName || "",
-          lastName: driver.lastName || "",
-          employeeNo: driver.employeeNo || "",
-          phoneNumber: driver.phoneNumber || "",
-          licenseNumber: driver.licenseNumber || "",
-          licenseProvince: driver.licenseProvince || "",
-          driverStatus: driver.isActive ? "Active" : "InActive",
-          lcCheckInterval: driver.lcCheckInterval || 1 // Add lcCheckInterval to transformed drivers
-        }));
-
-        setOriginalDrivers(transformedDrivers);
-        setDisplayedDrivers(transformedDrivers);
-        setLoading(false);
-      }, function (error) {
-        console.error("Error fetching drivers from Geotab:", error);
-        toast.error(`Error fetching drivers: ${error.message}`);
-        setLoading(false);
-      });
-
-    } catch (error) {
-      console.error("Error fetching drivers:", error);
-      toast.error(`Error fetching drivers: ${error.message}`);
-      setLoading(false);
-    }
-  };
-
-  // Add this function after fetchAllDrivers
+  // Only call syncDriversToMongo when you want to push new Geotab data to backend (e.g., after manual sync)
   const syncDriversToMongo = async (drivers) => {
     if (!drivers || drivers.length === 0) return;
     // Map licenseNumber to licenseNo for backend compatibility
@@ -131,19 +95,13 @@ const DevicePage = ({ }) => {
     try {
       const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers , userName});
       toast.success(res.data?.message || 'Drivers synced');
+      // After syncing, fetch from backend to update state
+      fetchDriversFromBackend();
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
       toast.error(msg);
     }
   };
-
-  // Add this useEffect after the fetchAllDrivers useEffect
-  useEffect(() => {
-    if (originalDrivers.length > 0) {
-      syncDriversToMongo(originalDrivers);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originalDrivers]);
 
   // Update sendConsentEmails to handle a single driver
   const sendConsentEmails = async (driver) => {
@@ -381,22 +339,19 @@ const DevicePage = ({ }) => {
     setIntervalPopup({ open: true, driver });
   };
 
+  // After interval update, fetch from backend
   const handleIntervalSubmit = async () => {
     if (!intervalPopup.driver) return;
     try {
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
         licenseNo: intervalPopup.driver.licenseNumber,
-        lcCheckInterval: intervalValue
+        lcCheckInterval: intervalValue,
+        userName
       });
       toast.success('Interval updated');
-      // Update local state for immediate UI feedback
-      setOriginalDrivers((prev) => prev.map(d =>
-        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
-      ));
-      setDisplayedDrivers((prev) => prev.map(d =>
-        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
-      ));
       setIntervalPopup({ open: false, driver: null });
+      // Fetch from backend to update state
+      fetchDriversFromBackend();
     } catch (err) {
       toast.error('Failed to update interval');
     }
