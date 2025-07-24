@@ -112,7 +112,7 @@ const Dashboard = () => {
               <span>Wallet Balance</span>
               <CreditCard className="icon green" />
             </div>
-            <div className="stat-value green">£{walletData.balance}</div>
+            <div className="stat-value green">£{walletData.balance || 0} </div>
             <p className="stat-description">Available for purchases</p>
           </div>
 
@@ -121,7 +121,7 @@ const Dashboard = () => {
               <span>Total Credits</span>
               <TrendingUp className="icon blue" />
             </div>
-            <div className="stat-value">{walletData.credits}</div>
+            <div className="stat-value">{walletData.credits || 0}</div>
             <div className="stat-note">
               <p>
                 **plan will Expire at {new Date(walletData.currentPlan?.expiryDate).toLocaleDateString('en-GB')}
