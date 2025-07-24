@@ -38,84 +38,98 @@ app.use('/api/UserWallet', UserWallet)
 app.use('/api/DriverConsent', DriverConsent)
 
 // Cron job: every 1 minute (for per-driver interval logic)
-cron.schedule('0 0 * * *', async () => {
-  try {
-    console.log('\n⏰ Cron job started at:', new Date().toISOString());
+// cron.schedule('* * * * *', async () => {
+//   try {
+//     console.log('\n⏰ Cron job started at:', new Date().toISOString());
 
-    const token = await getAuthToken();
-    console.log('🔐 Token fetched successfully.');
+//     const token = await getAuthToken();
+//     console.log('🔐 Token fetched successfully.');
 
-    const allDriverDocs = await Driver.find();
-    if (!allDriverDocs.length) {
-      console.log('⚠️ No driver documents found.');
-      return;
-    }
+//     const allDriverDocs = await Driver.find();
+//     if (!allDriverDocs.length) {
+//       console.log('⚠️ No driver documents found.');
+//       return;
+//     }
 
-    const now = new Date();
+//     for (const doc of allDriverDocs) {
+//       console.log(`\n📄 Processing userId: ${doc.userId} (MongoID: ${doc._id})`);
+//       const { drivers = [] } = doc;
 
-    for (const doc of allDriverDocs) {
-      console.log(`\n📄 Processing document for userId: ${doc.userId} (MongoID: ${doc._id})`);
+//       if (!drivers.length) {
+//         console.log(`⚠️ No drivers found for userId: ${doc.userId}`);
+//         continue;
+//       }
 
-      const { drivers = [] } = doc;
+//       for (let i = 0; i < drivers.length; i++) {
+//         const driver = drivers[i];
 
-      if (!drivers.length) {
-        console.log(`⚠️ No drivers in userId: ${doc.userId}`);
-        continue;
-      }
+//         if (!driver.isActive) {
+//           console.log(`🚫 Skipping inactive driver: ${driver.licenseNumber}`);
+//           continue;
+//         }
 
-      for (let i = 0; i < drivers.length; i++) {
-        const driver = drivers[i];
+//         const normalizedLicense = driver.licenseNumber?.trim();
+//         const interval = driver.lcCheckInterval || 0; // in minutes
+//         const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
 
-        if (!driver.isActive) {
-          console.log(`🚫 Skipping inactive driver: ${driver.licenseNumber}`);
-          continue;
-        }
+//         let shouldCheck = false;
 
-        const interval = driver.lcCheckInterval || 0;
-        const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
-        let shouldCheck = false;
+//         if (!lastChecked) {
+//           console.log(`📅 No lastCheckedAt for ${normalizedLicense} — will run check.`);
+//           shouldCheck = true;
+//         } else {
+//           const minutesSinceLastCheck = (Date.now() - lastChecked.getTime()) / (1000 * 60);
+//           if (minutesSinceLastCheck >= interval) {
+//             console.log(`📈 ${normalizedLicense} checked ${minutesSinceLastCheck.toFixed(1)} mins ago (interval: ${interval} mins)`);
+//             shouldCheck = true;
+//           }
+//         }
 
-        if (!lastChecked || ((now - lastChecked) / (1000 * 60 * 60 * 24)) >= interval
-        ) {
-          shouldCheck = true;
-        }
+//         if (shouldCheck) {
+//           console.log(`🔄 Hitting API for userId: ${doc.userId}, licenseNumber: ${normalizedLicense}`);
 
-        const userId = doc.userId;
+//           const apiResult = await checkDriverLicense(
+//             {
+//               licenseNo: normalizedLicense,
+//               userId: doc.userId
+//             },
+//             token
+//           );
 
-        if (shouldCheck) {
-          console.log(`🔄 Hitting API for userId: ${doc.userId}, licenseNumber: ${driver.licenseNumber}`);
+//           // Only update if check was successful
+//           if (apiResult?.status === true) {
+//             const updatedAt = new Date();
 
-          await checkDriverLicense(
-            {
-              licenseNo: driver.licenseNumber,
-              userId: userId
-            },
-            token
-          );
+//             const updateResult = await Driver.updateOne(
+//               { _id: doc._id, "drivers.licenseNumber": normalizedLicense },
+//               {
+//                 $set: {
+//                   "drivers.$.lastCheckedAt": updatedAt,
+//                   updatedAt: updatedAt
+//                 }
+//               }
+//             );
 
-          // Update just this driver's lastCheckedAt
-          await Driver.updateOne(
-            { _id: doc._id, "drivers.licenseNumber": driver.licenseNumber },
-            {
-              $set: {
-                "drivers.$.lastCheckedAt": now,
-                updatedAt: now
-              }
-            }
-          );
+//             if (updateResult.matchedCount === 0) {
+//               console.warn(`❌ Failed to match driver for update: ${normalizedLicense}`);
+//               console.log('📋 All licenseNumbers in this doc:', doc.drivers.map(d => d.licenseNumber));
+//             } else {
+//               console.log(`✅ Updated lastCheckedAt for ${normalizedLicense}. Matched: ${updateResult.matchedCount}, Modified: ${updateResult.modifiedCount}`);
+//             }
+//           } else {
+//             console.error(`❌ Error checking license for ${normalizedLicense}:`, apiResult);
+//           }
+//         } else {
+//           console.log(`⏩ Skipped ${normalizedLicense} (interval: ${interval} mins, lastCheckedAt: ${lastChecked?.toISOString() || 'Never'})`);
+//         }
+//       }
+//     }
 
-          console.log(`✅ Updated lastCheckedAt for licenseNumber: ${driver.licenseNumber}`);
-        } else {
-          console.log(`⏩ Skipped licenseNumber: ${driver.licenseNumber} (interval: ${interval} min, lastCheckedAt: ${lastChecked?.toISOString() || 'Never'})`);
-        }
-      }
-    }
-
-    console.log('\n✅ Cron job completed at:', now.toISOString());
-  } catch (err) {
-    console.error('❌ Cron job error:', err);
-  }
-});
+//     console.log('\n✅ Cron job completed at:', new Date().toISOString());
+//   } catch (err) {
+//     console.error('❌ Cron job error:', err);
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server started at ${port}`);

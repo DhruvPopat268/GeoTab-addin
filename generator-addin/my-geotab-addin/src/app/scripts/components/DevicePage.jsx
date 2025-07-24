@@ -620,13 +620,13 @@ const DevicePage = ({ }) => {
                       {viewLoading === driver.id ? 'Loading...' : 'History'}
                     </button>
                     <button
-                      className="table-action-btn"
+                      className="table-action-btn view"
                       onClick={() => handleEdit(driver)}
                     >
                       Edit
                     </button>
                     <button
-                      className="table-action-btn"
+                      className="table-action-btn view"
                       onClick={() => handleIntervalClick(driver)}
                     >
                       Interval
