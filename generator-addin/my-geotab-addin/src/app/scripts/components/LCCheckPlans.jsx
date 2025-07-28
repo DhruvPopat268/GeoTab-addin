@@ -27,7 +27,7 @@ const LCCheckPlans = () => {
         ...plan,
         duration: '1 month',
         features: [
-          `${plan.includedCalls.toLocaleString()} API calls per month`,
+          `${plan.includedCalls.toLocaleString()} License Checks per month`,
           'Basic support',
           'Standard response time',
           'Email notifications',
