@@ -163,7 +163,7 @@ const LCCheckPlans = () => {
                       <div className="lc-api-calls-content">
                         <Zap size={20} className="lc-zap-icon" />
                         <span className="lc-api-calls-text">
-                          {plan.includedCalls.toLocaleString()} API calls
+                          {plan.includedCalls.toLocaleString()} License Checks
                         </span>
                       </div>
                     </div>
@@ -291,7 +291,7 @@ const LCCheckPlans = () => {
                   <span className="lc-modal-detail-value">£{selectedPlan?.price}/month</span>
                 </div>
                 <div className="lc-modal-detail">
-                  <span className="lc-modal-detail-label">API Calls:</span>
+                  <span className="lc-modal-detail-label">License Checks:</span>
                   <span className="lc-modal-detail-value">
                     {selectedPlan?.includedCalls.toLocaleString()} calls
                   </span>
