@@ -1,24 +1,12 @@
 const mongoose = require('mongoose');
 
 const driverSchema = new mongoose.Schema({
-  companyName: {
-    type: String,  // Added missing type
-    enum: ['Company A', 'Company B'],
-    required: true
-  },
-  automatedLicenseCheck: {
-    type: String,  // Added missing type
-    enum: ['Yes', 'No'],
-    required: true
-  },
-  driverNumber: {
-    type: String,
-    // required: true
-  },
-  surname: {
+
+  lastName: {
     type: String,// Added required if needed
   },
-  contactNumber: {
+
+  phoneNumber: {
     type: String,  // Changed from Number to String for phone numbers
     required: true,
     validate: {  // Fixed validation (can't have duplicate minlength)
@@ -28,27 +16,13 @@ const driverSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid 10-digit phone number!`
     }
   },
-  driverGroups: {  // Fixed typo in field name (was driverGoups)
-    type: String,  // Added missing type
-    enum: ['Group 1', 'Group 2'],  // Added actual groups
-    required: true
-  },
-  depotChangeAllowed: {
-    type: String,  // Added missing type
-    enum: ['Yes', 'No'],
-    // required: true
-  },
-  driverStatus: {
-    type: String,  // Added missing type
-    enum: ['Active', 'InActive', 'Archive'],  // Fixed capitalization
-    // required: true
-  },
+
   licenseNo: {  // Changed from driverLicenceCheck for consistency
     type: String,
     required: true
   },
 
-  email: {
+  Email: {
     type: String,
     required: true,
     unique: true,
@@ -60,27 +34,31 @@ const driverSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email address!`
     }
   },
-  depotName: {
-    type: String,  // Added missing type
-    enum: ['Main Depot', 'North Depot'],  // Added actual depots
-    // required: true
-  },
+
   firstName: {  // Added computed full name
     type: String,
     required: true
   },
+
   isActive: {
     type: Boolean,
     default: true
   },
+
   lcCheckInterval: {
     type: Number,
     default: 1 // in minutes
   },
+
   lastCheckedAt: {
     type: Date,
     default: null
+  },
+
+  licenseProvince : {
+    type: String,
   }
+
 }, { timestamps: true });
 
 // Static upsert method for syncing

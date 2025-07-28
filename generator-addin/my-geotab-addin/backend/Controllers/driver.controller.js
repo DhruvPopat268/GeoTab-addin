@@ -119,20 +119,14 @@ module.exports.getAllDrivers = async (req, res, next) => {
     // Transform the data to match your frontend format
     const formattedDrivers = drivers.map(driver => ({
       id: driver._id,
-      companyName: driver.companyName,
-      automatedLicenseCheck: driver.automatedLicenseCheck,
       driverNumber: driver.driverNumber,
-      surname: driver.surname,
       contactNumber: driver.contactNumber,
-      driverGroups: driver.driverGroups,
-      depotChangeAllowed: driver.depotChangeAllowed,
       driverStatus: driver.driverStatus,
       licenseNo: driver.licenseNo,
       email: driver.email,
       depotName: driver.depotName,
       firstName: driver.firstName,
       fullName: `${driver.firstName} ${driver.surname}`,
-      dob: driver.dob ? new Date(driver.dob).toLocaleDateString('en-GB') : ''
     }));
 
     return res.status(200).json({ 
