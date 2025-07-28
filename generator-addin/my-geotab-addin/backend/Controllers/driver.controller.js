@@ -157,6 +157,12 @@ module.exports.syncDrivers = async (req, res, next) => {
     // Upsert all incoming drivers
     const upserted = [];
     for (const driver of incomingDrivers) {
+      // Find existing driver in DB
+      const existing = dbDrivers.find(d => d.licenseNo === driver.licenseNo);
+      if (existing && typeof existing.lcCheckInterval === 'number') {
+        // Preserve lcCheckInterval if it exists in DB
+        driver.lcCheckInterval = existing.lcCheckInterval;
+      }
       const result = await driverModel.upsertDriver(driver);
       upserted.push(result);
     }

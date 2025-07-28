@@ -405,7 +405,7 @@ const DevicePage = ({ }) => {
     if (!intervalPopup.driver) return;
     try {
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
-        licenseNo: intervalPopup.driver.licenseNumber,
+        licenseNo: intervalPopup.driver.licenseNo,
         lcCheckInterval: intervalValue,
         userName
       });
