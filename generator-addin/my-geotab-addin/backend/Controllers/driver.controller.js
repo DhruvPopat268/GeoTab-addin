@@ -126,6 +126,8 @@ module.exports.getAllDrivers = async (req, res, next) => {
       firstName: driver.firstName,
       fullName: `${driver.firstName} ${driver.lastName}`,
       licenseProvince: driver.licenseProvince,
+      lcCheckInterval: driver.lcCheckInterval || 1,
+      driverStatus: driver.driverStatus || 'Active'
     }));
 
     return res.status(200).json({ 
