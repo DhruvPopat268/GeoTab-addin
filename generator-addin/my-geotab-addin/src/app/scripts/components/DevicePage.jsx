@@ -582,7 +582,6 @@ const DevicePage = ({ }) => {
             <thead>
               <tr>
                 <th>Action</th>
-                <th>Employee No</th>
                 <th>Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>

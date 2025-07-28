@@ -119,14 +119,12 @@ module.exports.getAllDrivers = async (req, res, next) => {
     // Transform the data to match your frontend format
     const formattedDrivers = drivers.map(driver => ({
       id: driver._id,
-      driverNumber: driver.driverNumber,
-      contactNumber: driver.contactNumber,
-      driverStatus: driver.driverStatus,
+      phoneNumber: driver.phoneNumber,
       licenseNo: driver.licenseNo,
-      email: driver.email,
-      depotName: driver.depotName,
+      email: driver.Email,
+      lastName: driver.lastName,
       firstName: driver.firstName,
-      fullName: `${driver.firstName} ${driver.surname}`,
+      fullName: `${driver.firstName} ${driver.lastName}`,
     }));
 
     return res.status(200).json({ 
