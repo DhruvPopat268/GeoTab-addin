@@ -127,10 +127,10 @@
 }
 
 .subscription-badge {
-  background: #e0f2fe;
+  /* background: #e0f2fe; */
   color: #2563eb;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  padding: 0.5rem 0.5rem;
+  font-size: 1rem;
   border-radius: 9999px;
 }
 

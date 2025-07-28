@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Wallet, ShoppingCart, User, Home, CreditCard , CheckCircle , Package , Activity } from 'lucide-react';
+import { Wallet, ShoppingCart, User, Home, CreditCard , CheckCircle , Package , Activity , BookOpen  } from 'lucide-react';
 import './componentStyles/navbar.css';
 
 const Navbar = () => {
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/lc-check-usage', label: 'API Usage', icon: Activity },
   { path: '/lc-check-api-plans', label: 'License Check API Plans', icon: Package },
   { path: '/wallet', label: 'Wallet', icon: Wallet },
+  { path: '/user-manual', label: 'User Manual', icon: BookOpen},
 ];
 
 

@@ -38,40 +38,96 @@ app.use('/api/UserWallet', UserWallet)
 app.use('/api/DriverConsent', DriverConsent)
 
 // Cron job: every 1 minute (for per-driver interval logic)
-// cron.schedule('*/1 * * * *', async () => {
+// cron.schedule('* * * * *', async () => {
 //   try {
-//     console.log('--- Cron job started: Checking driver licenses (per-driver interval) ---');
+//     console.log('\n⏰ Cron job started at:', new Date().toISOString());
+
 //     const token = await getAuthToken();
-//     const drivers = await Driver.find({ isActive: true }); // Only active drivers
-//     const now = new Date();
-//     if (!drivers.length) {
-//       console.log('No active drivers found for license check.');
+//     console.log('🔐 Token fetched successfully.');
+
+//     const allDriverDocs = await Driver.find();
+//     if (!allDriverDocs.length) {
+//       console.log('⚠️ No driver documents found.');
+//       return;
 //     }
-//     for (const driver of drivers) {
-//       const interval = driver.lcCheckInterval ; // in minutes
-//       const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
-//       let shouldCheck = false;
-//       if (!lastChecked) {
-//         shouldCheck = true;
-//       } else {
-//         const diffMs = now - lastChecked;
-//         const diffMin = diffMs / (1000 * 60);
-//         if (diffMin >= interval) {
+
+//     for (const doc of allDriverDocs) {
+//       console.log(`\n📄 Processing userId: ${doc.userId} (MongoID: ${doc._id})`);
+//       const { drivers = [] } = doc;
+
+//       if (!drivers.length) {
+//         console.log(`⚠️ No drivers found for userId: ${doc.userId}`);
+//         continue;
+//       }
+
+//       for (let i = 0; i < drivers.length; i++) {
+//         const driver = drivers[i];
+
+//         if (!driver.isActive) {
+//           console.log(`🚫 Skipping inactive driver: ${driver.licenseNumber}`);
+//           continue;
+//         }
+
+//         const normalizedLicense = driver.licenseNumber?.trim();
+//         const interval = driver.lcCheckInterval || 0; // in minutes
+//         const lastChecked = driver.lastCheckedAt ? new Date(driver.lastCheckedAt) : null;
+
+//         let shouldCheck = false;
+
+//         if (!lastChecked) {
+//           console.log(`📅 No lastCheckedAt for ${normalizedLicense} — will run check.`);
 //           shouldCheck = true;
+//         } else {
+//           const minutesSinceLastCheck = (Date.now() - lastChecked.getTime()) / (1000 * 60);
+//           if (minutesSinceLastCheck >= interval) {
+//             console.log(`📈 ${normalizedLicense} checked ${minutesSinceLastCheck.toFixed(1)} mins ago (interval: ${interval} mins)`);
+//             shouldCheck = true;
+//           }
+//         }
+
+//         if (shouldCheck) {
+//           console.log(`🔄 Hitting API for userId: ${doc.userId}, licenseNumber: ${normalizedLicense}`);
+
+//           const apiResult = await checkDriverLicense(
+//             {
+//               licenseNo: normalizedLicense,
+//               userId: doc.userId
+//             },
+//             token
+//           );
+
+//           // Only update if check was successful
+//           if (apiResult?.status === true) {
+//             const updatedAt = new Date();
+
+//             const updateResult = await Driver.updateOne(
+//               { _id: doc._id, "drivers.licenseNumber": normalizedLicense },
+//               {
+//                 $set: {
+//                   "drivers.$.lastCheckedAt": updatedAt,
+//                   updatedAt: updatedAt
+//                 }
+//               }
+//             );
+
+//             if (updateResult.matchedCount === 0) {
+//               console.warn(`❌ Failed to match driver for update: ${normalizedLicense}`);
+//               console.log('📋 All licenseNumbers in this doc:', doc.drivers.map(d => d.licenseNumber));
+//             } else {
+//               console.log(`✅ Updated lastCheckedAt for ${normalizedLicense}. Matched: ${updateResult.matchedCount}, Modified: ${updateResult.modifiedCount}`);
+//             }
+//           } else {
+//             console.error(`❌ Error checking license for ${normalizedLicense}:`, apiResult);
+//           }
+//         } else {
+//           console.log(`⏩ Skipped ${normalizedLicense} (interval: ${interval} mins, lastCheckedAt: ${lastChecked?.toISOString() || 'Never'})`);
 //         }
 //       }
-//       if (shouldCheck) {
-//         console.log(`API hit for licenseNo: ${driver.licenseNo} (interval: ${interval} min)`);
-//         await checkDriverLicense(driver, token);
-//         // Update lastCheckedAt
-//         await Driver.updateOne({ _id: driver._id }, { $set: { lastCheckedAt: now } });
-//       } else {
-//         console.log(`Skipped licenseNo: ${driver.licenseNo} (interval: ${interval} min, last checked: ${lastChecked})`);
-//       }
 //     }
-//     console.log('--- License check completed for all drivers at', now, '---');
+
+//     console.log('\n✅ Cron job completed at:', new Date().toISOString());
 //   } catch (err) {
-//     console.error('Cron job error:', err);
+//     console.error('❌ Cron job error:', err);
 //   }
 // });
 

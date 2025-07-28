@@ -52,12 +52,15 @@ const DevicePage = ({ }) => {
   const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  console.log("userName is", userName)
   const database = sessionData?.database
   const [loading, setLoading] = useState(false);
 
   // Add interval update handler
   const [intervalPopup, setIntervalPopup] = useState({ open: false, driver: null });
   const [intervalValue, setIntervalValue] = useState(1);
+
+  const [drivers, setDrivers] = useState([]);
 
   // Fetch all drivers on component mount
   useEffect(() => {
@@ -129,7 +132,7 @@ const DevicePage = ({ }) => {
       licenseNo: driver.licenseNumber,
     }));
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers });
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers , userName});
       toast.success(res.data?.message || 'Drivers synced');
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
@@ -137,10 +140,27 @@ const DevicePage = ({ }) => {
     }
   };
 
+  const fetchDrivers = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
+        userName
+      });
+      setDrivers(res.data.data || []);
+      setError('');
+    } catch (err) {
+      console.error('Error fetching drivers:', err);
+      setError(err.response?.data?.message || 'Failed to fetch drivers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Add this useEffect after the fetchAllDrivers useEffect
   useEffect(() => {
     if (originalDrivers.length > 0) {
       syncDriversToMongo(originalDrivers);
+      fetchDrivers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [originalDrivers]);
@@ -386,7 +406,8 @@ const DevicePage = ({ }) => {
     try {
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
         licenseNo: intervalPopup.driver.licenseNumber,
-        lcCheckInterval: intervalValue
+        lcCheckInterval: intervalValue,
+        userName
       });
       toast.success('Interval updated');
       // Update local state for immediate UI feedback
@@ -567,13 +588,14 @@ const DevicePage = ({ }) => {
                 <th>Last Name</th>
                 <th>License Number</th>
                 <th>Phone Number</th>
+                <th>Interval (Daily)</th>
                 <th>License Province</th>
                 <th>Status</th>
-                <th>Interval (min)</th>
+                
               </tr>
             </thead>
             <tbody>
-              {displayedDrivers.map(driver => (
+              {drivers.map(driver => (
                 <tr key={driver.id}>
                   <td className="action-buttons">
                     <button
@@ -598,13 +620,13 @@ const DevicePage = ({ }) => {
                       {viewLoading === driver.id ? 'Loading...' : 'History'}
                     </button>
                     <button
-                      className="table-action-btn"
+                      className="table-action-btn view"
                       onClick={() => handleEdit(driver)}
                     >
                       Edit
                     </button>
                     <button
-                      className="table-action-btn"
+                      className="table-action-btn view"
                       onClick={() => handleIntervalClick(driver)}
                     >
                       Interval
@@ -622,9 +644,10 @@ const DevicePage = ({ }) => {
                   <td>{driver.lastName}</td>
                   <td>{driver.licenseNumber}</td>
                   <td>{driver.phoneNumber}</td>
+                  <td>{driver.lcCheckInterval || 1}</td>
                   <td>{driver.licenseProvince}</td>
                   <td>{driver.driverStatus}</td>
-                  <td>{driver.lcCheckInterval || 1}</td>
+                 
                 </tr>
               ))}
             </tbody>

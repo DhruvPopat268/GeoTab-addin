@@ -11,6 +11,7 @@ import Wallet from './wallet.jsx';
 import ViewDriverLicenceSummary from './viewDriverDetailData.jsx';
 import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
 import LCCheckView from './LCCheckView.jsx';
+import MyGeoTabWalletGuide from './userManual.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import './componentStyles/toast.css';
 
@@ -49,8 +50,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
             <Route path="/wallet" element={<Wallet />} />
 
-           
-
+            <Route path="/user-manual" element={<MyGeoTabWalletGuide />} />
 
           </Routes>
 

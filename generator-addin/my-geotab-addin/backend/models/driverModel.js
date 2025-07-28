@@ -1,20 +1,12 @@
 const mongoose = require('mongoose');
 
+// Define the driver sub-schema
 const driverSchema = new mongoose.Schema({
-  companyName: {
-    type: String,  // Added missing type
-    enum: ['Company A', 'Company B'],
-    required: true
-  },
-  automatedLicenseCheck: {
-    type: String,  // Added missing type
-    enum: ['Yes', 'No'],
-    required: true
-  },
-  driverNumber: {
+  firstName: {
     type: String,
     // required: true
   },
+<<<<<<< HEAD
   surname: {
     type: String,// Added required if needed
   },
@@ -44,30 +36,50 @@ const driverSchema = new mongoose.Schema({
     // required: true
   },
   licenseNo: {  // Changed from driverLicenceCheck for consistency
+=======
+  lastName: {
+>>>>>>> df30f5e6b69036ddf0b3d503bac3bb0483349ab7
     type: String,
     required: true
   },
- 
-  email: {
+  Email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v);
       },
       message: props => `${props.value} is not a valid email address!`
     }
   },
+<<<<<<< HEAD
   depotName: {
     type: String,  // Added missing type
     enum: ['Main Depot', 'North Depot'],  // Added actual depots
     // required: true
-  },
-  firstName: {  // Added computed full name
+=======
+  phoneNumber: {
     type: String,
+    default: null // Optional if contactNumber is used
+  },
+  driverStatus: {
+    type: String,
+    enum: ['Active', 'InActive', 'Archive'],
     required: true
+>>>>>>> df30f5e6b69036ddf0b3d503bac3bb0483349ab7
+  },
+  licenseNumber: {
+    type: String,
+    default: null // Optional duplicate field
+  },
+  licenseProvince: {
+    type: String,
+    default: null
+  },
+  employeeNo: {
+    type: String,
+    default: null
   },
   isActive: {
     type: Boolean,
@@ -75,25 +87,23 @@ const driverSchema = new mongoose.Schema({
   },
   lcCheckInterval: {
     type: Number,
-    default: 1 // in minutes
+    default: 1
   },
   lastCheckedAt: {
     type: Date,
     default: null
   }
+}, { _id: false });
+
+// Main schema: one document per user
+const userDriversSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  drivers: [driverSchema]
 }, { timestamps: true });
 
-// Static upsert method for syncing
-// Usage: Driver.upsertDriver(driverData)
-driverSchema.statics.upsertDriver = async function(driverData) {
-  // Use licenseNo or email as unique identifier
-  return this.findOneAndUpdate(
-    { licenseNo: driverData.licenseNo },
-    { $set: driverData },
-    { upsert: true, new: true }
-  );
-};
-
-const Driver = mongoose.model("Driver", driverSchema);
-
-module.exports = Driver
+const driverModel = mongoose.model('UserDrivers', userDriversSchema);
+module.exports = driverModel;
