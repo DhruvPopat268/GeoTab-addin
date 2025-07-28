@@ -13,11 +13,10 @@ const driverSchema = new mongoose.Schema({
   },
   driverNumber: {
     type: String,
-    required: true
+    // required: true
   },
   surname: {
-    type: String,
-    required: true  // Added required if needed
+    type: String,// Added required if needed
   },
   contactNumber: {
     type: String,  // Changed from Number to String for phone numbers
@@ -37,12 +36,12 @@ const driverSchema = new mongoose.Schema({
   depotChangeAllowed: {
     type: String,  // Added missing type
     enum: ['Yes', 'No'],
-    required: true
+    // required: true
   },
   driverStatus: {
     type: String,  // Added missing type
     enum: ['Active', 'InActive', 'Archive'],  // Fixed capitalization
-    required: true
+    // required: true
   },
   licenseNo: {  // Changed from driverLicenceCheck for consistency
     type: String,
@@ -64,7 +63,7 @@ const driverSchema = new mongoose.Schema({
   depotName: {
     type: String,  // Added missing type
     enum: ['Main Depot', 'North Depot'],  // Added actual depots
-    required: true
+    // required: true
   },
   firstName: {  // Added computed full name
     type: String,

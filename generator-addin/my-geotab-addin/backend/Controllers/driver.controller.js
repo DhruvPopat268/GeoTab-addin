@@ -17,12 +17,8 @@ module.exports.createDriver = async (req, res, next) => {
     firstName
   } = req.body;
 
-
-
   try {
     const isDriverAlreadyExists = await driverModel.findOne({ email })
-
-
 
     await driverModel.create({
       companyName,
