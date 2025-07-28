@@ -637,7 +637,7 @@ const DevicePage = ({ }) => {
                       Delete
                     </button> */}
                   </td>
-                  <td>{driver.Email}</td>
+                  <td>{driver.email}</td>
                   <td>{driver.firstName}</td>
                   <td>{driver.lastName}</td>
                   <td>{driver.licenseNo}</td>
