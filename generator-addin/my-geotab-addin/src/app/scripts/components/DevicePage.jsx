@@ -640,7 +640,7 @@ const DevicePage = ({ }) => {
                   <td>{driver.Email}</td>
                   <td>{driver.firstName}</td>
                   <td>{driver.lastName}</td>
-                  <td>{driver.licenseNumber}</td>
+                  <td>{driver.licenseNo}</td>
                   <td>{driver.phoneNumber}</td>
                   <td>{driver.lcCheckInterval || 1}</td>
                   <td>{driver.licenseProvince}</td>
