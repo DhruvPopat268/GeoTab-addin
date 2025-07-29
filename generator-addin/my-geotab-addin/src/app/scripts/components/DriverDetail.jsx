@@ -449,7 +449,7 @@ const DriverLicenceSummary = () => {
                             borderCollapse: 'collapse',
                             border: '1px solid #ddd'
                         }}>
-                            <caption style={{
+                            <caption className='tachograph-table-caption' style={{
                                 fontWeight: 'bold',
                                 marginBottom: '10px',
                                 fontSize: '18px',
@@ -498,7 +498,7 @@ const DriverLicenceSummary = () => {
                             borderCollapse: 'collapse',
                             border: '1px solid #ddd'
                         }}>
-                            <caption style={{
+                            <caption  className='qualification-table-caption' style={{
                                 fontWeight: 'bold',
                                 marginBottom: '10px',
                                 fontSize: '18px',
@@ -547,11 +547,11 @@ const DriverLicenceSummary = () => {
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
-                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>CATEGORY</th>
-                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>START DATE</th>
-                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>UNTIL DATE</th>
-                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>CATEGORY TYPE</th>
-                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>RESTRICTIONS CODE</th>
+                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'center' }}>CATEGORY</th>
+                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'center' }}>START DATE</th>
+                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'center' }}>UNTIL DATE</th>
+                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'center' }}>CATEGORY TYPE</th>
+                            <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'center' }}>RESTRICTIONS CODE</th>
                         </tr>
                     </thead>
                     <tbody>

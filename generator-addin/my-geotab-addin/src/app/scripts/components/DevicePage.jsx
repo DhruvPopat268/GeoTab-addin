@@ -480,7 +480,7 @@ const DevicePage = ({ }) => {
           {showCreateForm && (
             <div className="form-popup-overlay">
               <div className="form-popup-content">
-                <h2>{editingDriver ? "Edit Driver" : "Create New Driver"}</h2>
+                <h2 className='form-title'>{editingDriver ? "Edit Driver" : "Create New Driver"}</h2>
                 <button
                   className="close-btn"
                   onClick={() => setShowCreateForm(false)}
@@ -671,7 +671,7 @@ const DevicePage = ({ }) => {
       {showDriverDetails && driverDetails && (
         <div className="form-popup-overlay">
           <div className="form-popup-content driver-details-modal">
-            <h2>Driver Details - {driverDetails.driver.Email}</h2>
+            <h2 className='Driver-Modal-Title'>Driver Details - {driverDetails.driver.Email}</h2>
             <button
               className="close-btn"
               onClick={() => {

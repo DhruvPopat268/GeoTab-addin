@@ -14,7 +14,7 @@
 
 .details-container {
   width: 100%;
-  text-align: left;
+  /* text-align: left; */
   padding: 20px;
 }
 
@@ -85,7 +85,7 @@
 .offences-table th,
 .offences-table td {
   padding: 10px;
-  text-align: left;
+  text-align: center;
   border: 1px solid #ccc;
 }
 
@@ -118,26 +118,10 @@
 
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
 
-caption {
-  font-size: 18px;
-  font-weight: bold;
-  padding: 10px;
-}
-
-td {
-  padding: 10px;
-  border: 1px solid #ccc;
-}
 
 .additional-info {
-  text-align: left;
+  /* text-align: left; */
   margin-top: 10px;
 }
 
@@ -157,10 +141,67 @@ td {
   border-collapse: collapse;
   border: 1px solid #ccc;
   margin-left: 60px;
-
+  text-align: center;
 }
 
+/* table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+} */
 
+.offences-table{
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.tachograph-table{
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.qualification-table{
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.vehicle-table{
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+/* caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+} */
+
+.tachograph-table-caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.qualification-table-caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+/* td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  height: 40px;
+}
 
 th,
 td {
@@ -169,11 +210,7 @@ td {
   border: 1px solid #ccc;
   text-align: center;
   font-size: small;
-}
-
-td {
-  height: 40px;
-}
+} */
 
 .vehiclee {
   margin-top: 20px;

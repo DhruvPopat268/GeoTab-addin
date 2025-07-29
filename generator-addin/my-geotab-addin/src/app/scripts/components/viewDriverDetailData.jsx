@@ -404,7 +404,7 @@ const ViewDriverLicenceSummary = () => {
                             borderCollapse: 'collapse',
                             border: '1px solid #ddd'
                         }}>
-                            <caption style={{
+                            <caption className='tachograph-table-caption' style={{
                                 fontWeight: 'bold',
                                 marginBottom: '10px',
                                 fontSize: '18px',
@@ -453,7 +453,7 @@ const ViewDriverLicenceSummary = () => {
                             borderCollapse: 'collapse',
                             border: '1px solid #ddd'
                         }}>
-                            <caption style={{
+                            <caption className='qualification-table-caption' style={{
                                 fontWeight: 'bold',
                                 marginBottom: '10px',
                                 fontSize: '18px',
@@ -498,16 +498,17 @@ const ViewDriverLicenceSummary = () => {
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft:"100px"
+                    marginLeft: "100px"
                 }}>
                     <thead>
-                        <tr style={{ backgroundColor: '#f8f9fa' }}>
+                        <tr style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
                             <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>CATEGORY</th>
                             <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>START DATE</th>
                             <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>UNTIL DATE</th>
                             <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>CATEGORY TYPE</th>
                             <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'left' }}>RESTRICTIONS CODE</th>
                         </tr>
+
                     </thead>
                     <tbody>
                         {driverData?.entitlement && driverData.entitlement.length > 0 ? (

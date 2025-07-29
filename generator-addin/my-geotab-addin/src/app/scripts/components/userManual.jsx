@@ -1,4 +1,6 @@
 import React from 'react';
+import Navbar from './Navbar.jsx';
+
 
 const steps = [
     { id: 1, text: 'This is your "Wallet Balance"', img: 'https://res.cloudinary.com/deqab5u6x/image/upload/v1753363380/step1_mmgyx2.jpg' },
@@ -57,12 +59,14 @@ const steps = [
 const MyGeoTabWalletGuide = () => {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
+            <Navbar />
+
             <h2 style={{ textAlign: 'center', fontSize: '2rem', marginBottom: '2rem' }}>
                 🧾 MyGeoTab Add-In User Guide
             </h2>
 
             {steps.map((step) => (
-                <div key={step.id} style={{ marginBottom: '3rem'  }}>
+                <div key={step.id} style={{ marginBottom: '3rem' }}>
                     <div
                         style={{
                             display: 'flex',
@@ -73,7 +77,7 @@ const MyGeoTabWalletGuide = () => {
                         }}
                     >
                         <h3 style={{ margin: 0, fontSize: '1.5rem' }}>Step {step.id}:</h3>
-                        <p style={{ margin: 0 , fontSize: '1.5rem'}}>{step.text}</p>
+                        <p style={{ margin: 0, fontSize: '1.5rem' }}>{step.text}</p>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>

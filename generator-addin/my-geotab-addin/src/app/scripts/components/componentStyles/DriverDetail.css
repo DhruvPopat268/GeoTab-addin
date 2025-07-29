@@ -78,7 +78,8 @@
 .offences-table {
   width: 100%;
   border-collapse: collapse;
-
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 .offences-table th,
@@ -117,23 +118,56 @@
 
 }
 
-table {
+/* table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+} */
+
+/* .offences-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+} */
+
+.qualification-table {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #ccc;
   background-color: #fff;
 }
 
-caption {
+.tachograph-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+/* caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+} */
+
+.tachograph-table-caption {
   font-size: 18px;
   font-weight: bold;
   padding: 10px;
 }
 
-td {
+.qualification-table-caption {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+/* td {
   padding: 10px;
   border: 1px solid #ccc;
-}
+} */
 
 .additional-info {
   text-align: left;
@@ -156,11 +190,11 @@ td {
   border-collapse: collapse;
   border: 1px solid #ccc;
   margin-left: 60px;
-
+  background-color: #fff;
 }
 
 
-
+/* 
 th,
 td {
   background-color: #f2f2f2;
@@ -172,7 +206,7 @@ td {
 
 td {
   height: 40px;
-}
+} */
 
 .vehicle {
   margin-top: 20px;
@@ -182,7 +216,7 @@ td {
   margin-bottom: 10px;
 }
 
-.disclaimer{
+.disclaimer {
   width: 90%;
 }
 
@@ -198,12 +232,12 @@ td {
   font-size: medium;
 }
 
-.download{
+.download {
   height: 50px;
   width: 95%;
 }
 
-.downloadbtn{
+.downloadbtn {
   background-color: #4a4b4e;
   color: white;
   border-radius: 8px;
@@ -230,43 +264,46 @@ td {
 .downloadbtn:hover {
   background-color: #4a4b4e;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Print-specific styles */
 @media print {
   .download {
-      display: none !important;
+    display: none !important;
   }
-  
+
   body {
-      font-size: 12pt !important;
-      line-height: 1.5 !important;
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
   }
-  
+
   table {
-      width: 100% !important;
-      page-break-inside: auto;
+    width: 100% !important;
+    page-break-inside: auto;
   }
-  
+
   tr {
-      page-break-inside: avoid;
+    page-break-inside: avoid;
   }
-  
+
   /* Ensure tables have borders in PDF */
-  table, th, td {
-      border: 1px solid #ddd !important;
-      border-collapse: collapse !important;
+  table,
+  th,
+  td {
+    border: 1px solid #ddd !important;
+    border-collapse: collapse !important;
   }
-  
-  th, td {
-      padding: 8px !important;
+
+  th,
+  td {
+    padding: 8px !important;
   }
-  
+
   /* Force background colors */
   * {
-      -webkit-print-color-adjust: exact !important;
-      color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 }
 
@@ -280,8 +317,10 @@ td {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #d1d5db; /* Tailwind gray-300 */
-  border-top: 4px solid #2563eb; /* Tailwind blue-600 */
+  border: 4px solid #d1d5db;
+  /* Tailwind gray-300 */
+  border-top: 4px solid #2563eb;
+  /* Tailwind blue-600 */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

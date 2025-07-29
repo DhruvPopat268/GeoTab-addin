@@ -154,7 +154,7 @@ const LCCheckPlans = () => {
                         <span className="lc-price-period">/month</span>
                       </div>
                       <div className="lc-price-details">
-                        <p className="lc-price-per-call">£{pricePerCall} per call</p>
+                        <p className="lc-price-per-call">£{pricePerCall} per License Check</p>
                         <p className="lc-validity">Valid for {plan.duration}</p>
                       </div>
                     </div>
