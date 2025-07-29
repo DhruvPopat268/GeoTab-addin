@@ -167,19 +167,22 @@ const DevicePage = ({ }) => {
 
   // Update sendConsentEmails to handle a single driver
   const sendConsentEmails = async (driver) => {
-    if (driver.firstName && driver.lastName && driver.licenseNumber && driver.Email) {
+    const licenseNumber = driver.licenseNumber || driver.licenseNo;
+    const email = driver.Email || driver.email;
+    const firstName = driver.firstName;
+    const lastName = driver.lastName;
+
+    if (firstName && lastName && licenseNumber && email) {
       try {
         const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
-          firstName: driver.firstName,
-          lastName: driver.lastName,
-          licenceNo: driver.licenseNumber,
-          email: driver.Email
+          firstName,
+          lastName,
+          licenceNo: licenseNumber,
+          email
         });
-        // Show backend message in toast
         toast.success(res.data?.message || 'Consent email sent');
         return res.data;
       } catch (err) {
-        // Show backend error message if available
         const msg = err.response?.data?.message || err.message || 'Failed to send consent email';
         toast.error(msg);
         return err.response?.data || { success: false };
@@ -337,7 +340,6 @@ const DevicePage = ({ }) => {
   const handleSync = async (driver) => {
     const emailRes = await sendConsentEmails(driver);
     if (!emailRes.success) return;
-    console.log(driver)
     setShowSyncConfirm(driver);
   };
 
@@ -350,28 +352,20 @@ const DevicePage = ({ }) => {
   const confirmSync = async () => {
     try {
       if (!showSyncConfirm) return;
-
-      console.log(showSyncConfirm)
-      console.log(showSyncConfirm.licenseNumber)
-
       setViewLoading(showSyncConfirm.id);
-
       // Check wallet eligibility
       const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName });
-
       if (eligibilityResponse.status === 200) {
         const { zeroCredit, planExpired } = eligibilityResponse.data;
-
-        // Check if either creditStatus or planExpired is false
         if (zeroCredit || planExpired) {
           toast.error("You don't have enough credits");
           setViewLoading(null);
           setShowSyncConfirm(null);
           return;
         }
-
-        // If both are true, navigate to driver detail page
-        navigate(`/driverDetail/?${showSyncConfirm.licenseNumber}`);
+        // Use fallback for license number
+        const licenseNumber = showSyncConfirm.licenseNumber || showSyncConfirm.licenseNo;
+        navigate(`/driverDetail/?${licenseNumber}`);
         setShowSyncConfirm(null);
       }
     } catch (error) {
@@ -386,13 +380,15 @@ const DevicePage = ({ }) => {
   const handleView = async (driver) => {
     const emailRes = await sendConsentEmails(driver);
     if (!emailRes.success) return;
-    navigate(`/viewDriverDetailData/?${driver.licenseNumber}`)
+    const licenseNumber = driver.licenseNumber || driver.licenseNo;
+    navigate(`/viewDriverDetailData/?${licenseNumber}`)
   };
 
   const handleHistory = async (driver) => {
     const emailRes = await sendConsentEmails(driver);
     if (!emailRes.success) return;
-    navigate(`/GetHistoryOfDriverDetail/?${driver.licenseNumber}`)
+    const licenseNumber = driver.licenseNumber || driver.licenseNo;
+    navigate(`/GetHistoryOfDriverDetail/?${licenseNumber}`)
   };
 
   // Add interval update handler
