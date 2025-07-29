@@ -289,6 +289,8 @@
     width: 100%;
     border-collapse: collapse;
     min-width: 1000px;
+    border: 1px solid #e0e0e0;
+
 }
 
 .drivers-table th {
@@ -304,6 +306,7 @@
 .drivers-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #e0e0e0;
+    border-right: 2px solid #e0e0e0;
 }
 
 .drivers-table tr:hover {
@@ -566,6 +569,8 @@
     .drivers-table td {
         padding: 8px 10px;
         font-size: 14px;
+        border-right: 1px solid #ddd;
+
     }
 
     .table-action-btn {
