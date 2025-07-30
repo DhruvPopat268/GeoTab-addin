@@ -435,7 +435,7 @@ const DevicePage = ({ }) => {
       <div className="page-container">
         <div className='main-con'>
           <div className="filter-container">
-            <div className="filter-header">
+            {/* <div className="filter-header">
               <h3 className="text-[28px] font font-light leading-[36px] not-italic tracking-[0] normal-case">Filter by Driver Status</h3>
 
               <select
@@ -448,10 +448,10 @@ const DevicePage = ({ }) => {
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
             <div className="filter-actions">
-              <button
+              {/* <button
                 className="action-btn filter-btn"
                 onClick={applyFilter}
               >
@@ -462,7 +462,7 @@ const DevicePage = ({ }) => {
                 onClick={resetFilter}
               >
                 Reset Filter
-              </button>
+              </button> */}
               <button
                 onClick={() => {
                   setEditingDriver(null);

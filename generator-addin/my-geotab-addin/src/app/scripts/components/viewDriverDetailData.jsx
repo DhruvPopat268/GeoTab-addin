@@ -498,7 +498,7 @@ const ViewDriverLicenceSummary = () => {
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft: "100px"
+                    marginLeft: "60px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
