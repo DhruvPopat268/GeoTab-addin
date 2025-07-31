@@ -179,17 +179,29 @@ module.exports.syncDrivers = async (req, res, next) => {
     // Upsert all incoming drivers
     const upserted = [];
     for (const driver of incomingDrivers) {
-      // Add userName to each driver
-      driver.userName = userName;
-      
-      // Find existing driver in DB by geotabId
-      const existing = dbDrivers.find(d => d.geotabId === driver.geotabId);
-      if (existing && typeof existing.lcCheckInterval === 'number') {
-        // Preserve lcCheckInterval if it exists in DB
-        driver.lcCheckInterval = existing.lcCheckInterval;
+      try {
+        // Add userName to each driver
+        driver.userName = userName;
+        
+        // Find existing driver in DB by geotabId
+        const existing = dbDrivers.find(d => d.geotabId === driver.geotabId);
+        
+        // Preserve lcCheckInterval if it exists in DB and is valid
+        if (existing && typeof existing.lcCheckInterval === 'number' && existing.lcCheckInterval > 0) {
+          driver.lcCheckInterval = existing.lcCheckInterval;
+        } else if (!driver.lcCheckInterval || typeof driver.lcCheckInterval !== 'number' || driver.lcCheckInterval <= 0) {
+          // Set default interval if none exists or invalid
+          driver.lcCheckInterval = 1;
+        }
+        
+        const result = await driverModel.upsertDriver(driver);
+        upserted.push(result);
+      } catch (error) {
+        console.error(`Error upserting driver ${driver.geotabId}:`, error);
+        if (error.code === 11000) {
+          console.log(`Duplicate key error for driver ${driver.geotabId} - skipping`);
+        }
       }
-      const result = await driverModel.upsertDriver(driver);
-      upserted.push(result);
     }
 
     // Delete (or mark inactive) drivers not in incoming list for this user
