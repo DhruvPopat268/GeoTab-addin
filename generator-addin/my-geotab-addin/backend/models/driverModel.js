@@ -75,10 +75,12 @@ const driverSchema = new mongoose.Schema({
 // Static upsert method for syncing
 // Usage: Driver.upsertDriver(driverData)
 driverSchema.statics.upsertDriver = async function(driverData) {
-  // Use geotabId and userName as unique identifier for syncing
+  // Extract geotabId and userName for filtering, exclude _id from update
+  const { geotabId, userName, _id, ...updateFields } = driverData;
+  
   return this.findOneAndUpdate(
-    { geotabId: driverData.geotabId, userName: driverData.userName },
-    { $set: driverData },
+    { geotabId, userName }, // Filter by geotabId and userName
+    { $set: updateFields }, // Don't include _id in the update
     { upsert: true, new: true }
   );
 };
