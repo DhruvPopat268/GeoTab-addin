@@ -14,11 +14,16 @@ module.exports.createDriver = async (req, res, next) => {
     licenseNo,
     email,
     depotName,
-    firstName
+    firstName,
+    userName
   } = req.body;
 
   try {
-    const isDriverAlreadyExists = await driverModel.findOne({ email })
+    if (!userName) {
+      return res.status(400).json({ message: 'userName is required' });
+    }
+
+    const isDriverAlreadyExists = await driverModel.findOne({ email, userName })
 
     await driverModel.create({
       companyName,
@@ -32,7 +37,8 @@ module.exports.createDriver = async (req, res, next) => {
       licenseNo,
       email,
       depotName,
-      firstName
+      firstName,
+      userName
     });
 
 
@@ -47,16 +53,16 @@ module.exports.createDriver = async (req, res, next) => {
 
 module.exports.updateDriver = async (req, res, next) => {
   try {
-    const { email, updatedData } = req.body;
+    const { email, updatedData, userName } = req.body;
 
     
 
-    if (!email || !updatedData) {
-      return res.status(400).json({ message: 'Email and updatedData are required.' });
+    if (!email || !updatedData || !userName) {
+      return res.status(400).json({ message: 'Email, updatedData, and userName are required.' });
     }
 
     const updatedUser = await driverModel.findOneAndUpdate(
-      { email: email },          // Filter by email
+      { email: email, userName },          // Filter by email and userName
       { $set: updatedData },     // Update fields
       { new: true }              // Return the updated document
     );
@@ -79,16 +85,16 @@ module.exports.updateDriver = async (req, res, next) => {
 module.exports.deleteDriver = async (req, res, next) => {
   
     try {
-      const { email } = req.body;
+      const { email, userName } = req.body;
 
-      if (!email) {
+      if (!email || !userName) {
         return res.status(400).json({
           success: false,
-          message: 'Email is required'
+          message: 'Email and userName are required'
         });
       }
 
-      const driver = await driverModel.findOneAndDelete({ email });
+      const driver = await driverModel.findOneAndDelete({ email, userName });
 
       if (!driver) {
         return res.status(404).json({
@@ -114,11 +120,19 @@ module.exports.deleteDriver = async (req, res, next) => {
 // Controller to get all drivers
 module.exports.getAllDrivers = async (req, res, next) => {
   try {
-    const drivers = await driverModel.find({});
+    const { userName } = req.body;
+    
+    if (!userName) {
+      return res.status(400).json({ message: 'userName is required' });
+    }
+
+    // Get drivers only for the specific user
+    const drivers = await driverModel.find({ userName });
     
     // Transform the data to match your frontend format
     const formattedDrivers = drivers.map(driver => ({
       id: driver._id,
+      geotabId: driver.geotabId,
       phoneNumber: driver.phoneNumber,
       licenseNo: driver.licenseNo,
       email: driver.Email,
@@ -147,20 +161,29 @@ module.exports.getAllDrivers = async (req, res, next) => {
 module.exports.syncDrivers = async (req, res, next) => {
   try {
     const incomingDrivers = req.body.drivers; // Array of driver objects from Geotab
+    const userName = req.body.userName; // Get userName from request body
+    
     if (!Array.isArray(incomingDrivers)) {
       return res.status(400).json({ message: 'drivers array required' });
     }
 
-    // Get all current drivers from DB
-    const dbDrivers = await driverModel.find({});
-    const dbLicenseNos = dbDrivers.map(d => d.licenseNo);
-    const incomingLicenseNos = incomingDrivers.map(d => d.licenseNo);
+    if (!userName) {
+      return res.status(400).json({ message: 'userName is required' });
+    }
+
+    // Get all current drivers from DB for this specific user
+    const dbDrivers = await driverModel.find({ userName });
+    const dbGeotabIds = dbDrivers.map(d => d.geotabId);
+    const incomingGeotabIds = incomingDrivers.map(d => d.geotabId);
 
     // Upsert all incoming drivers
     const upserted = [];
     for (const driver of incomingDrivers) {
-      // Find existing driver in DB
-      const existing = dbDrivers.find(d => d.licenseNo === driver.licenseNo);
+      // Add userName to each driver
+      driver.userName = userName;
+      
+      // Find existing driver in DB by geotabId
+      const existing = dbDrivers.find(d => d.geotabId === driver.geotabId);
       if (existing && typeof existing.lcCheckInterval === 'number') {
         // Preserve lcCheckInterval if it exists in DB
         driver.lcCheckInterval = existing.lcCheckInterval;
@@ -169,15 +192,15 @@ module.exports.syncDrivers = async (req, res, next) => {
       upserted.push(result);
     }
 
-    // Delete (or mark inactive) drivers not in incoming list
-    const toDelete = dbDrivers.filter(d => !incomingLicenseNos.includes(d.licenseNo));
+    // Delete (or mark inactive) drivers not in incoming list for this user
+    const toDelete = dbDrivers.filter(d => !incomingGeotabIds.includes(d.geotabId));
     const deleted = [];
     for (const driver of toDelete) {
       // Hard delete:
-      await driverModel.deleteOne({ licenseNo: driver.licenseNo });
+      await driverModel.deleteOne({ geotabId: driver.geotabId, userName });
       deleted.push(driver);
       // Or for soft delete, use:
-      // await driverModel.updateOne({ licenseNo: driver.licenseNo }, { $set: { isActive: false } });
+      // await driverModel.updateOne({ geotabId: driver.geotabId, userName }, { $set: { isActive: false } });
     }
 
     res.status(200).json({
@@ -194,12 +217,12 @@ module.exports.syncDrivers = async (req, res, next) => {
 // Update only the interval for a driver
 module.exports.updateDriverInterval = async (req, res, next) => {
   try {
-    const { licenseNo, lcCheckInterval } = req.body;
-    if (!licenseNo || typeof lcCheckInterval !== 'number') {
-      return res.status(400).json({ message: 'licenseNo and lcCheckInterval (number) are required.' });
+    const { licenseNo, lcCheckInterval, userName } = req.body;
+    if (!licenseNo || typeof lcCheckInterval !== 'number' || !userName) {
+      return res.status(400).json({ message: 'licenseNo, lcCheckInterval (number), and userName are required.' });
     }
     const updated = await driverModel.findOneAndUpdate(
-      { licenseNo },
+      { licenseNo, userName },
       { $set: { lcCheckInterval } },
       { new: true }
     );

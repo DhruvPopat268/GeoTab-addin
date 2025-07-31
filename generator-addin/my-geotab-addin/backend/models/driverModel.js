@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 const driverSchema = new mongoose.Schema({
 
+  geotabId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+
+  userName: {
+    type: String,
+    required: true
+  },
+
   lastName: {
     type: String,// Added required if needed
   },
@@ -64,9 +75,9 @@ const driverSchema = new mongoose.Schema({
 // Static upsert method for syncing
 // Usage: Driver.upsertDriver(driverData)
 driverSchema.statics.upsertDriver = async function(driverData) {
-  // Use licenseNo or email as unique identifier
+  // Use geotabId and userName as unique identifier for syncing
   return this.findOneAndUpdate(
-    { licenseNo: driverData.licenseNo },
+    { geotabId: driverData.geotabId, userName: driverData.userName },
     { $set: driverData },
     { upsert: true, new: true }
   );

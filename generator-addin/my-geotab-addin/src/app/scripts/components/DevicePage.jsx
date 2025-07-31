@@ -126,10 +126,11 @@ const DevicePage = ({ }) => {
   // Add this function after fetchAllDrivers
   const syncDriversToMongo = async (drivers) => {
     if (!drivers || drivers.length === 0) return;
-    // Map licenseNumber to licenseNo for backend compatibility
+    // Map licenseNumber to licenseNo for backend compatibility and include geotabId
     const mappedDrivers = drivers.map(driver => ({
       ...driver,
       licenseNo: driver.licenseNumber,
+      geotabId: driver.id, // Include the Geotab ID
     }));
     try {
       const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers , userName});
@@ -283,7 +284,7 @@ const DevicePage = ({ }) => {
   // };
 
   const handleEdit = (driver) => {
-    window.location.href = `https://my.geotab.com/${database}/#users,sortMode:byName`
+    window.location.href = `https://my.geotab.com/${database}/#user,currentTab:user,id:${driver.geotabId}`
   };
 
   const handleDelete = (driver) => {
@@ -299,7 +300,7 @@ const DevicePage = ({ }) => {
       if (!showDeleteConfirm) return;
 
       const res = await axios.delete(`${BASE_URL}/api/driver/delete`, {
-        data: { email: showDeleteConfirm.email }
+        data: { email: showDeleteConfirm.email, userName }
       });
 
       if (res.status !== 200) {
@@ -578,6 +579,7 @@ const DevicePage = ({ }) => {
             <thead>
               <tr>
                 <th>Action</th>
+                <th>Id</th>
                 <th>Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>
@@ -585,7 +587,6 @@ const DevicePage = ({ }) => {
                 <th>Phone Number</th>
                 <th>Interval (Daily)</th>
                 <th>License Province</th>
-                <th>Status</th>
                 
               </tr>
             </thead>
@@ -633,6 +634,7 @@ const DevicePage = ({ }) => {
                       Delete
                     </button> */}
                   </td>
+                  <td>{driver.geotabId}</td>
                   <td>{driver.email}</td>
                   <td>{driver.firstName}</td>
                   <td>{driver.lastName}</td>
@@ -640,7 +642,7 @@ const DevicePage = ({ }) => {
                   <td>{driver.phoneNumber}</td>
                   <td>{driver.lcCheckInterval || 1}</td>
                   <td>{driver.licenseProvince}</td>
-                  <td>{driver.driverStatus}</td>
+                 
                  
                 </tr>
               ))}
