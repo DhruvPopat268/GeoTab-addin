@@ -278,7 +278,7 @@
 /* Enhanced Table Styles */
 .drivers-table-container {
     width: 1200px;
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
     overflow-x: auto;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -580,7 +580,7 @@
     }
 
     .page-container {
-        margin: 10px;
+        margin: 0px 10px;
         padding: 15px;
     }
 
