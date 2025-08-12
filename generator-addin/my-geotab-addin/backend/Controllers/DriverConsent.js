@@ -3,28 +3,30 @@ const sendEmail = require('../utills/sendEmail')
 
 module.exports.createDriverConsent = async (req, res, next) => {
   try {
-    const { firstName, lastName, country, licenseNo } = req.body;
+    const { firstName, lastName, licenseNo, signature } = req.body;
 
-    if (!firstName || !lastName || !country || !licenseNo) {
-      return res.status(400).json({
-        success: false,
-        message: 'First name, last name, country, and license number are required.'
-      });
+    if (!firstName || !lastName || !licenseNo || !signature) {
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    const newConsent = new DriverConsent({
-      firstName,
-      lastName,
-      country,
-      licenseNo
+    // Upload Base64 signature to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(signature, {
+      folder: "signatures",
+      resource_type: "image"
     });
 
-    const saved = await newConsent.save();
-    res.status(201).json({ success: true, data: saved });
+    // Save to MongoDB
+    const newDriver = await Driver.create({
+      firstName,
+      lastName,
+      licenseNo,
+      signature: uploadResponse.secure_url
+    });
 
+    res.status(201).json(newDriver);
   } catch (err) {
-    console.error('Error saving driver consent:', err);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Error creating driver:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
