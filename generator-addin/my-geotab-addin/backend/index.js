@@ -12,6 +12,7 @@ const DriverConsent = require('./routes/DriverConsent')
 const Driver = require('./models/driverModel'); // Added for cron job
 const { getAuthToken, checkDriverLicense } = require('./utils/licenseCheck'); // Added for cron job
 const cron = require('node-cron'); // Added for cron job
+const bodyParser = require("body-parser");
 
 connectToDb();
 
