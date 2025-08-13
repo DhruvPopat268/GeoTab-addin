@@ -1,12 +1,20 @@
 const DriverConsent = require('../models/DriverConsent')
 const sendEmail = require('../utills/sendEmail')
+const cloudinary = require('cloudinary').v2;
 
-const collectSequentialInputs = (groupName, req) => {
+// Configure Cloudinary (add this configuration)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const collectSequentialInputs = (groupName, data) => {
   const inputs = [];
   let index = 0;
 
-  while (req.body[`${groupName}_${index}`] !== undefined) {
-    inputs.push(req.body[`${groupName}_${index}`]);
+  while (data[`${groupName}_${index}`] !== undefined) {
+    inputs.push(data[`${groupName}_${index}`]);
     index++;
   }
 
@@ -19,21 +27,19 @@ const validateRequiredFields = (data) => {
 
   // Check company details
   if (!data.companyDetails.companyName) errors.push('Company name is required');
-  if (!data.accountNumber) errors.push('Account number is required');
-  if (!data.reference) errors.push('Reference number is required');
+  if (!data.companyDetails.accountNumber) errors.push('Account number is required');
+  if (!data.companyDetails.reference) errors.push('Reference number is required');
 
   // Check driver details
-  if (!data.surname) errors.push('Driver surname is required');
-  if (!data.firstName) errors.push('Driver first name is required');
-  if (!data.dateOfBirth) errors.push('Date of birth is required');
-  if (!data.currentAddress?.line1) errors.push('Current address line 1 is required');
-  if (!data.currentAddress?.postTown) errors.push('Current address post town is required');
-  if (!data.currentAddress?.postcode) errors.push('Current address postcode is required');
-  if (!data.driverLicenceNumber) errors.push('Driver licence number is required');
+  if (!data.driverDetails.surname) errors.push('Driver surname is required');
+  if (!data.driverDetails.firstName) errors.push('Driver first name is required');
+  if (!data.driverDetails.dateOfBirth) errors.push('Date of birth is required');
+  if (!data.driverDetails.currentAddress?.line1) errors.push('Current address line 1 is required');
+  if (!data.driverDetails.currentAddress?.postTown) errors.push('Current address post town is required');
+  if (!data.driverDetails.currentAddress?.postcode) errors.push('Current address postcode is required');
+  if (!data.driverDetails.driverLicenceNumber) errors.push('Driver licence number is required');
 
-  // Check declaration
-  if (!data.signature) errors.push('Signature is required');
-  if (!data.signatureDate) errors.push('Signature date is required');
+  if (!data.declaration.signatureDate) errors.push('Signature date is required');
 
   return errors;
 };
@@ -42,8 +48,13 @@ const validateRequiredFields = (data) => {
 module.exports.createDriverConsent = async (req, res, next) => {
   try {
     // Check if signature file exists
-    if (!req.files || !req.files.signature) {
+    if (!req.file) {
       return res.status(400).json({ error: "Signature PNG file is required" });
+    }
+
+    // Validate file type
+    if (!req.file.mimetype.startsWith('image/')) {
+      return res.status(400).json({ error: "File must be an image" });
     }
 
     // Parse the JSON payload
@@ -51,6 +62,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
     try {
       formData = JSON.parse(req.body.payload);
     } catch (parseError) {
+      console.error("JSON Parse Error:", parseError);
       return res.status(400).json({ error: "Invalid JSON payload" });
     }
 
@@ -140,7 +152,6 @@ module.exports.createDriverConsent = async (req, res, next) => {
       },
       declaration: {
         description: description || '',
-        signature: '', // Will be updated with Cloudinary URL
         signatureDate: signatureDate || processedData.dateInputs.signatureDate,
         declarationDate: declarationDate ? new Date(declarationDate) : new Date()
       },
@@ -157,13 +168,38 @@ module.exports.createDriverConsent = async (req, res, next) => {
       });
     }
 
-    // Upload PNG signature file to Cloudinary
+    // Upload PNG signature file to Cloudinary with better error handling
     let uploadResponse;
     try {
-      const signatureFile = req.files.signature;
+      const signatureFile = req.file;
       
-      // Convert file buffer to base64 for Cloudinary
-      const base64Signature = `data:${signatureFile.mimetype};base64,${signatureFile.data.toString('base64')}`;
+      // Debug logging
+      console.log("File details:", {
+        originalname: signatureFile.originalname,
+        mimetype: signatureFile.mimetype,
+        size: signatureFile.size,
+        bufferLength: signatureFile.buffer?.length
+      });
+      
+      // Check if buffer exists and has content
+      if (!signatureFile.buffer || signatureFile.buffer.length === 0) {
+        throw new Error("File buffer is empty or undefined");
+      }
+
+      // Verify Cloudinary configuration
+      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+        throw new Error("Cloudinary configuration is missing. Check environment variables.");
+      }
+
+      // Create base64 string with better error handling
+      const base64Signature = `data:${signatureFile.mimetype};base64,${signatureFile.buffer.toString('base64')}`;
+      
+      // Validate base64 string
+      if (!base64Signature || base64Signature.length < 100) { // Basic validation
+        throw new Error("Invalid base64 signature data");
+      }
+
+      console.log("Attempting Cloudinary upload...");
       
       uploadResponse = await cloudinary.uploader.upload(base64Signature, {
         folder: "d906-signatures",
@@ -172,11 +208,54 @@ module.exports.createDriverConsent = async (req, res, next) => {
         transformation: [
           { quality: "auto:good" },
           { format: "png" }
-        ]
+        ],
+        // Add these options for better reliability
+        timeout: 60000, // 60 second timeout
+        use_filename: false,
+        unique_filename: true
       });
+
+      console.log("Cloudinary upload successful:", uploadResponse.secure_url);
+
     } catch (uploadError) {
-      console.error("Cloudinary upload error:", uploadError);
-      return res.status(500).json({ error: "Failed to upload signature to Cloudinary" });
+      console.error("Detailed Cloudinary upload error:", {
+        message: uploadError.message,
+        stack: uploadError.stack,
+        name: uploadError.name,
+        // Add Cloudinary specific error details if available
+        http_code: uploadError.http_code,
+        error: uploadError.error
+      });
+
+      // Return more specific error messages
+      if (uploadError.message?.includes('configuration')) {
+        return res.status(500).json({ 
+          error: "Cloudinary configuration error", 
+          details: "Please check environment variables" 
+        });
+      } else if (uploadError.message?.includes('timeout')) {
+        return res.status(500).json({ 
+          error: "Upload timeout", 
+          details: "File upload took too long" 
+        });
+      } else if (uploadError.http_code === 401) {
+        return res.status(500).json({ 
+          error: "Cloudinary authentication failed", 
+          details: "Invalid API credentials" 
+        });
+      } else {
+        return res.status(500).json({ 
+          error: "Failed to upload signature to Cloudinary",
+          details: uploadError.message 
+        });
+      }
+    }
+
+    // Verify upload response
+    if (!uploadResponse || !uploadResponse.secure_url) {
+      return res.status(500).json({ 
+        error: "Upload completed but no URL received from Cloudinary" 
+      });
     }
 
     // Add signature URL to form data
@@ -242,7 +321,9 @@ module.exports.sendEmail = async (req, res, next) => {
 
   try {
     console.log(licenceNo)
-    const driver = await DriverConsent.findOne({ licenseNo: licenceNo });
+    const driver = await DriverConsent.findOne({ 
+      'driverDetails.driverLicenceNumber': licenceNo 
+    });
     console.log(driver)
 
     if (!driver) {
@@ -255,8 +336,8 @@ module.exports.sendEmail = async (req, res, next) => {
     }
 
     if (
-      driver.firstName.toLowerCase() === firstName.toLowerCase() &&
-      driver.lastName.toLowerCase() === lastName.toLowerCase()
+      driver.driverDetails.firstName.toLowerCase() === firstName.toLowerCase() &&
+      driver.driverDetails.surname.toLowerCase() === lastName.toLowerCase()
     ) {
       return res.json({ success: true, message: 'License and name matched' });
     } else {
