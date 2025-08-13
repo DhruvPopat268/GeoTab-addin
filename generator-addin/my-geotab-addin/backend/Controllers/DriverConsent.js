@@ -128,6 +128,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
       },
       declaration: {
         description: description || '',
+        signature: signature || '',
         signatureDate: signatureDate || processedData.dateInputs.signatureDate,
         declarationDate: declarationDate ? new Date(declarationDate) : new Date()
       },
