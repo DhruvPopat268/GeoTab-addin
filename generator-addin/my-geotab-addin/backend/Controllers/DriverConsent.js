@@ -21,25 +21,26 @@ const collectSequentialInputs = (groupName, data) => {
   return inputs.join('');
 };
 
+
+
 // Helper function to validate required fields
 const validateRequiredFields = (data) => {
   const errors = [];
 
   // Check company details
-  if (!data.companyDetails.companyName) errors.push('Company name is required');
-  if (!data.companyDetails.accountNumber) errors.push('Account number is required');
-  if (!data.companyDetails.reference) errors.push('Reference number is required');
+  if (!data.companyName) errors.push('Company name is required');
+  if (!data.accountNumber) errors.push('Account number is required');
+  if (!data.reference) errors.push('Reference number is required');
 
-  // Check driver details
-  if (!data.driverDetails.surname) errors.push('Driver surname is required');
-  if (!data.driverDetails.firstName) errors.push('Driver first name is required');
-  if (!data.driverDetails.dob_combined) errors.push('Date of birth is required');
-  if (!data.driverDetails.currentAddress?.line1) errors.push('Current address line 1 is required');
-  if (!data.driverDetails.currentAddress?.postTown) errors.push('Current address post town is required');
-  if (!data.driverDetails.currentPostcode_combined) errors.push('Current address postcode is required');
-  if (!data.driverDetails.licenceNumber_combined) errors.push('Driver licence number is required');
+  if (!data.surname) errors.push('Driver surname is required');
+  if (!data.firstName) errors.push('Driver first name is required');
+  if (!data.dob_combined) errors.push('Date of birth is required');
+  if (!data.currentAddress?.line1) errors.push('Current address line 1 is required');
+  if (!data.currentAddress?.postTown) errors.push('Current address post town is required');
+  if (!data.currentPostcode_combined) errors.push('Current address postcode is required');
+  if (!data.licenceNumber_combined) errors.push('Driver licence number is required');
 
-  if (!data.declaration.signatureDate_combined) errors.push('Signature date is required');
+  if (!data.signatureDate_combined) errors.push('Signature date is required');
 
   return errors;
 };
@@ -172,7 +173,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
     let uploadResponse;
     try {
       const signatureFile = req.file;
-      
+
       // Debug logging
       console.log("File details:", {
         originalname: signatureFile.originalname,
@@ -180,7 +181,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
         size: signatureFile.size,
         bufferLength: signatureFile.buffer?.length
       });
-      
+
       // Check if buffer exists and has content
       if (!signatureFile.buffer || signatureFile.buffer.length === 0) {
         throw new Error("File buffer is empty or undefined");
@@ -193,14 +194,14 @@ module.exports.createDriverConsent = async (req, res, next) => {
 
       // Create base64 string with better error handling
       const base64Signature = `data:${signatureFile.mimetype};base64,${signatureFile.buffer.toString('base64')}`;
-      
+
       // Validate base64 string
       if (!base64Signature || base64Signature.length < 100) { // Basic validation
         throw new Error("Invalid base64 signature data");
       }
 
       console.log("Attempting Cloudinary upload...");
-      
+
       uploadResponse = await cloudinary.uploader.upload(base64Signature, {
         folder: "d906-signatures",
         resource_type: "image",
@@ -229,32 +230,32 @@ module.exports.createDriverConsent = async (req, res, next) => {
 
       // Return more specific error messages
       if (uploadError.message?.includes('configuration')) {
-        return res.status(500).json({ 
-          error: "Cloudinary configuration error", 
-          details: "Please check environment variables" 
+        return res.status(500).json({
+          error: "Cloudinary configuration error",
+          details: "Please check environment variables"
         });
       } else if (uploadError.message?.includes('timeout')) {
-        return res.status(500).json({ 
-          error: "Upload timeout", 
-          details: "File upload took too long" 
+        return res.status(500).json({
+          error: "Upload timeout",
+          details: "File upload took too long"
         });
       } else if (uploadError.http_code === 401) {
-        return res.status(500).json({ 
-          error: "Cloudinary authentication failed", 
-          details: "Invalid API credentials" 
+        return res.status(500).json({
+          error: "Cloudinary authentication failed",
+          details: "Invalid API credentials"
         });
       } else {
-        return res.status(500).json({ 
+        return res.status(500).json({
           error: "Failed to upload signature to Cloudinary",
-          details: uploadError.message 
+          details: uploadError.message
         });
       }
     }
 
     // Verify upload response
     if (!uploadResponse || !uploadResponse.secure_url) {
-      return res.status(500).json({ 
-        error: "Upload completed but no URL received from Cloudinary" 
+      return res.status(500).json({
+        error: "Upload completed but no URL received from Cloudinary"
       });
     }
 
@@ -321,8 +322,8 @@ module.exports.sendEmail = async (req, res, next) => {
 
   try {
     console.log(licenceNo)
-    const driver = await DriverConsent.findOne({ 
-      'driverDetails.driverLicenceNumber': licenceNo 
+    const driver = await DriverConsent.findOne({
+      'driverDetails.driverLicenceNumber': licenceNo
     });
     console.log(driver)
 
