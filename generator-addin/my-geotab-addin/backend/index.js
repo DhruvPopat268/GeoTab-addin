@@ -18,6 +18,8 @@ connectToDb();
 
 app.use(cors({
   origin: [
+    "https://driver-consent-form.vercel.app/",
+    "https://driver-consent-form.vercel.app",
     'http://localhost:5173',
     'https://my.geotab.com',
     "http://localhost:3000",
