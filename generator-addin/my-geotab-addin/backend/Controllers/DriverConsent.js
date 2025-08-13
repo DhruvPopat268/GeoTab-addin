@@ -49,7 +49,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
   try {
     // Check if signature file exists
     if (!req.file) {
-      return res.status(400).json({ error: "Signature PNG file is required" });
+      return res.status(400).json({ error: "Signature file is required" });
     }
 
     // Validate file type
