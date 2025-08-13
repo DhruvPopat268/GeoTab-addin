@@ -33,13 +33,13 @@ const validateRequiredFields = (data) => {
   // Check driver details
   if (!data.driverDetails.surname) errors.push('Driver surname is required');
   if (!data.driverDetails.firstName) errors.push('Driver first name is required');
-  if (!data.driverDetails.dateOfBirth) errors.push('Date of birth is required');
+  if (!data.driverDetails.dob_combined) errors.push('Date of birth is required');
   if (!data.driverDetails.currentAddress?.line1) errors.push('Current address line 1 is required');
   if (!data.driverDetails.currentAddress?.postTown) errors.push('Current address post town is required');
-  if (!data.driverDetails.currentAddress?.postcode) errors.push('Current address postcode is required');
-  if (!data.driverDetails.driverLicenceNumber) errors.push('Driver licence number is required');
+  if (!data.driverDetails.currentPostcode_combined) errors.push('Current address postcode is required');
+  if (!data.driverDetails.licenceNumber_combined) errors.push('Driver licence number is required');
 
-  if (!data.declaration.signatureDate) errors.push('Signature date is required');
+  if (!data.declaration.signatureDate_combined) errors.push('Signature date is required');
 
   return errors;
 };
