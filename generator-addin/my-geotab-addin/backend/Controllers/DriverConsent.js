@@ -19,21 +19,21 @@ const validateRequiredFields = (data) => {
 
   // Check company details
   if (!data.companyDetails.companyName) errors.push('Company name is required');
-  if (!data.companyDetails.accountNumber) errors.push('Account number is required');
-  if (!data.companyDetails.reference) errors.push('Reference number is required');
+  if (!data.accountNumber) errors.push('Account number is required');
+  if (!data.reference) errors.push('Reference number is required');
 
   // Check driver details
-  if (!data.driverDetails.surname) errors.push('Driver surname is required');
-  if (!data.driverDetails.firstName) errors.push('Driver first name is required');
-  if (!data.driverDetails.dateOfBirth) errors.push('Date of birth is required');
-  if (!data.driverDetails.currentAddress.line1) errors.push('Current address line 1 is required');
-  if (!data.driverDetails.currentAddress.postTown) errors.push('Current address post town is required');
-  if (!data.driverDetails.currentAddress.postcode) errors.push('Current address postcode is required');
-  if (!data.driverDetails.driverLicenceNumber) errors.push('Driver licence number is required');
+  if (!data.surname) errors.push('Driver surname is required');
+  if (!data.firstName) errors.push('Driver first name is required');
+  if (!data.dateOfBirth) errors.push('Date of birth is required');
+  if (!data.currentAddress?.line1) errors.push('Current address line 1 is required');
+  if (!data.currentAddress?.postTown) errors.push('Current address post town is required');
+  if (!data.currentAddress?.postcode) errors.push('Current address postcode is required');
+  if (!data.driverLicenceNumber) errors.push('Driver licence number is required');
 
   // Check declaration
-  if (!data.declaration.signature) errors.push('Signature is required');
-  if (!data.declaration.signatureDate) errors.push('Signature date is required');
+  if (!data.signature) errors.push('Signature is required');
+  if (!data.signatureDate) errors.push('Signature date is required');
 
   return errors;
 };
@@ -41,6 +41,19 @@ const validateRequiredFields = (data) => {
 // Create new driver consent form
 module.exports.createDriverConsent = async (req, res, next) => {
   try {
+    // Check if signature file exists
+    if (!req.files || !req.files.signature) {
+      return res.status(400).json({ error: "Signature PNG file is required" });
+    }
+
+    // Parse the JSON payload
+    let formData;
+    try {
+      formData = JSON.parse(req.body.payload);
+    } catch (parseError) {
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+
     const {
       // Section 1 - Company Details
       companyName,
@@ -67,30 +80,29 @@ module.exports.createDriverConsent = async (req, res, next) => {
 
       // Section 4 - Declaration
       description,
-      signature,
       signatureDate,
       declarationDate,
 
       // Additional metadata
       submittedBy
-    } = req.body;
+    } = formData;
 
     // Collect sequential input data
     const processedData = {
       postcodes: {
-        company: collectSequentialInputs('postcode1', req),
-        current: collectSequentialInputs('currentPostcode', req),
-        licence: collectSequentialInputs('licencePostcode', req)
+        company: collectSequentialInputs('postcode1', formData),
+        current: collectSequentialInputs('currentPostcode', formData),
+        licence: collectSequentialInputs('licencePostcode', formData)
       },
       dateInputs: {
-        dateOfBirth: collectSequentialInputs('dob', req),
-        signatureDate: collectSequentialInputs('signatureDate', req)
+        dateOfBirth: collectSequentialInputs('dob', formData),
+        signatureDate: collectSequentialInputs('signatureDate', formData)
       },
-      licenceNumber: collectSequentialInputs('licenceNumber', req)
+      licenceNumber: collectSequentialInputs('licenceNumber', formData)
     };
 
     // Structure the data according to schema
-    const formData = {
+    const structuredData = {
       companyDetails: {
         companyName: companyName || '',
         accountNumber: accountNumber || '',
@@ -128,7 +140,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
       },
       declaration: {
         description: description || '',
-        signature: signature || '',
+        signature: '', // Will be updated with Cloudinary URL
         signatureDate: signatureDate || processedData.dateInputs.signatureDate,
         declarationDate: declarationDate ? new Date(declarationDate) : new Date()
       },
@@ -137,7 +149,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
     };
 
     // Validate required fields
-    const validationErrors = validateRequiredFields(formData);
+    const validationErrors = validateRequiredFields(structuredData);
     if (validationErrors.length > 0) {
       return res.status(400).json({
         error: "Validation failed",
@@ -145,18 +157,18 @@ module.exports.createDriverConsent = async (req, res, next) => {
       });
     }
 
-    // Check if signature is provided
-    if (!signature) {
-      return res.status(400).json({ error: "Signature is required" });
-    }
-
-    // Upload Base64 signature to Cloudinary
+    // Upload PNG signature file to Cloudinary
     let uploadResponse;
     try {
-      uploadResponse = await cloudinary.uploader.upload(signature, {
+      const signatureFile = req.files.signature;
+      
+      // Convert file buffer to base64 for Cloudinary
+      const base64Signature = `data:${signatureFile.mimetype};base64,${signatureFile.data.toString('base64')}`;
+      
+      uploadResponse = await cloudinary.uploader.upload(base64Signature, {
         folder: "d906-signatures",
         resource_type: "image",
-        public_id: `signature_${formData.driverDetails.driverLicenceNumber}_${Date.now()}`,
+        public_id: `signature_${structuredData.driverDetails.driverLicenceNumber}_${Date.now()}`,
         transformation: [
           { quality: "auto:good" },
           { format: "png" }
@@ -164,15 +176,15 @@ module.exports.createDriverConsent = async (req, res, next) => {
       });
     } catch (uploadError) {
       console.error("Cloudinary upload error:", uploadError);
-      return res.status(500).json({ error: "Failed to upload signature" });
+      return res.status(500).json({ error: "Failed to upload signature to Cloudinary" });
     }
 
     // Add signature URL to form data
-    formData.declaration.signature = uploadResponse.secure_url;
+    structuredData.declaration.signature = uploadResponse.secure_url;
 
     // Check if driver with this licence number already exists
     const existingDriver = await DriverConsent.findByLicenceNumber(
-      formData.driverDetails.driverLicenceNumber
+      structuredData.driverDetails.driverLicenceNumber
     );
 
     if (existingDriver) {
@@ -183,7 +195,7 @@ module.exports.createDriverConsent = async (req, res, next) => {
     }
 
     // Save to MongoDB
-    const newDriverConsent = await DriverConsent.create(formData);
+    const newDriverConsent = await DriverConsent.create(structuredData);
 
     // Return success response with minimal data (exclude sensitive info)
     const responseData = {
@@ -193,7 +205,8 @@ module.exports.createDriverConsent = async (req, res, next) => {
       formStatus: newDriverConsent.formStatus,
       submissionDate: newDriverConsent.createdAt,
       company: newDriverConsent.companyDetails.companyName,
-      reference: newDriverConsent.companyDetails.reference
+      reference: newDriverConsent.companyDetails.reference,
+      signatureUrl: newDriverConsent.declaration.signature
     };
 
     res.status(201).json({
