@@ -18,6 +18,7 @@ connectToDb();
 
 app.use(cors({
   origin: [
+    'http://localhost:5173',
     'https://my.geotab.com',
     "http://localhost:3000",
     "https://geotab-addin-frontend.onrender.com",
