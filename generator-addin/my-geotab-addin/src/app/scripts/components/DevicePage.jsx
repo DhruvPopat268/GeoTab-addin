@@ -133,7 +133,7 @@ const DevicePage = ({ }) => {
       geotabId: driver.id, // Include the Geotab ID
     }));
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers , userName});
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers, userName });
       toast.success(res.data?.message || 'Drivers synced');
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
@@ -449,7 +449,7 @@ const DevicePage = ({ }) => {
                 <th>Phone Number</th>
                 <th>Interval (Daily)</th>
                 <th>License Province</th>
-                
+
               </tr>
             </thead>
             <tbody>
@@ -504,8 +504,8 @@ const DevicePage = ({ }) => {
                   <td>{driver.phoneNumber}</td>
                   <td>{driver.lcCheckInterval || 1}</td>
                   <td>{driver.licenseProvince}</td>
-                 
-                 
+
+
                 </tr>
               ))}
             </tbody>
@@ -600,25 +600,43 @@ const DevicePage = ({ }) => {
         </div>
       )}
 
-      {/* Interval Popup */}
+      {/* Updated JSX for the interval popup */}
       {intervalPopup.open && (
-        <div className="form-popup-overlay">
-          <div className="form-popup-content">
-            <h3>Set Interval for {intervalPopup.driver.Email}</h3>
-            <label>
-              Interval (minutes):
-              <select
-                value={intervalValue}
-                onChange={e => setIntervalValue(Number(e.target.value))}
+        <div className="modern-popup-overlay">
+          <div className="modern-popup-content">
+            <div className="popup-header">
+              <h3>Set Interval for</h3>
+            </div>
+
+            <div className="popup-body">
+              <div className="form-group">
+                <label htmlFor="interval-select">Interval (minutes):</label>
+                <select
+                  id="interval-select"
+                  value={intervalValue}
+                  onChange={e => setIntervalValue(Number(e.target.value))}
+                  className="modern-select"
+                >
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="popup-footer">
+              <button
+                onClick={() => setIntervalPopup({ open: false, driver: null })}
+                className="btn-secondary"
               >
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>{i + 1}</option>
-                ))}
-              </select>
-            </label>
-            <div className="form-actions">
-              <button onClick={() => setIntervalPopup({ open: false, driver: null })} className="cancel-btn">Cancel</button>
-              <button onClick={handleIntervalSubmit} className="submit-btn">Submit</button>
+                Cancel
+              </button>
+              <button
+                onClick={handleIntervalSubmit}
+                className="btn-primary"
+              >
+                Submit
+              </button>
             </div>
           </div>
         </div>
