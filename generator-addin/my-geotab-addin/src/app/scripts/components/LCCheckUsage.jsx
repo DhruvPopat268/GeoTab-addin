@@ -256,70 +256,6 @@ const LCCheckUsage = () => {
       <Navbar />
 
       <div className="content">
-        <section className="section">
-          <h1
-            className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
-            style={{ fontFamily: "var(--main-font)" }}
-          >
-            API Logs
-          </h1>
-
-          <p className="section-description">Monitor API activity and troubleshoot issues</p>
-
-          <div className="card">
-            <div className="card-header">
-              <h2>Filter Status</h2>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="all">All Logs</option>
-                <option value="success">Success (2xx)</option>
-                <option value="error">Error (4xx, 5xx)</option>
-              </select>
-            </div>
-
-            <div className="card-content">
-              {loading ? (
-                <div className="spinner-container">
-                  <div className="spinner" />
-                </div>
-
-              ) : error ? (
-                <div className="error-message">Error loading logs: {error}</div>
-              ) : (
-                <>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>API Name</th>
-                        <th>Method</th>
-                        {/* <th>Endpoint</th> */}
-                        <th>Status</th>
-                        <th>Response Time</th>
-                        <th>Timestamp</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td>{log.apiName}</td>
-                          <td><span className="badge outline">{log.method}</span></td>
-                          {/* <td className="endpoint">{log.endpoint}</td> */}
-                          <td>{getStatusBadge(log.status)}</td>
-
-
-                          <td>{log.responseTime}</td>
-                          <td className="timestamp">{log.timestamp}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div className="table-footer">
-                    Showing {filteredLogs.length} of {apiLogs.length} logs
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </section>
 
         <section className="section">
           <h1
@@ -403,6 +339,72 @@ const LCCheckUsage = () => {
 
           </div>
         </section>
+
+        <section className="section">
+          <h1
+            className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
+            style={{ fontFamily: "var(--main-font)" }}
+          >
+            API Logs
+          </h1>
+
+          <p className="section-description">Monitor API activity and troubleshoot issues</p>
+
+          <div className="card">
+            <div className="card-header">
+              <h2>Filter Status</h2>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <option value="all">All Logs</option>
+                <option value="success">Success (2xx)</option>
+                <option value="error">Error (4xx, 5xx)</option>
+              </select>
+            </div>
+
+            <div className="card-content">
+              {loading ? (
+                <div className="spinner-container">
+                  <div className="spinner" />
+                </div>
+
+              ) : error ? (
+                <div className="error-message">Error loading logs: {error}</div>
+              ) : (
+                <>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>API Name</th>
+                        <th>Method</th>
+                        {/* <th>Endpoint</th> */}
+                        <th>Status</th>
+                        <th>Response Time</th>
+                        <th>Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredLogs.map((log) => (
+                        <tr key={log.id}>
+                          <td>{log.apiName}</td>
+                          <td><span className="badge outline">{log.method}</span></td>
+                          {/* <td className="endpoint">{log.endpoint}</td> */}
+                          <td>{getStatusBadge(log.status)}</td>
+
+
+                          <td>{log.responseTime}</td>
+                          <td className="timestamp">{log.timestamp}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="table-footer">
+                    Showing {filteredLogs.length} of {apiLogs.length} logs
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   );
