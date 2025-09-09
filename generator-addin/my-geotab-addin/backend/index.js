@@ -12,11 +12,15 @@ const DriverConsent = require('./routes/DriverConsent')
 const Driver = require('./models/driverModel'); // Added for cron job
 const { getAuthToken, checkDriverLicense } = require('./utils/licenseCheck'); // Added for cron job
 const cron = require('node-cron'); // Added for cron job
+const bodyParser = require("body-parser");
 
 connectToDb();
 
 app.use(cors({
   origin: [
+    "https://driver-consent-form.vercel.app/",
+    "https://driver-consent-form.vercel.app",
+    'http://localhost:5173',
     'https://my.geotab.com',
     "http://localhost:3000",
     "https://geotab-addin-frontend.onrender.com",
@@ -31,6 +35,7 @@ app.use(cors({
 // Explicit OPTIONS handler for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: "10mb" }));
 
 app.use('/api/driver', driverRoute)
 app.use('/api/driverData', driverDataRoute)
