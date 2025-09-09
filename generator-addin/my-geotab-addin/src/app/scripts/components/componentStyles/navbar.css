@@ -12,7 +12,7 @@
 
 .navbar-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   height: 64px;
 }
@@ -20,6 +20,7 @@
 .navbar-left {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .navbar-logo {
@@ -27,11 +28,14 @@
   font-weight: bold;
   color: #2563eb;
   text-decoration: none;
+  white-space: nowrap;
+  margin-right: 2rem;
 }
 
 .navbar-links {
   display: flex;
   gap: 2rem;
+  flex: 1;
 }
 
 .navbar-link {
@@ -45,6 +49,7 @@
   color: #4b5563;
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 
 .navbar-link:hover {
