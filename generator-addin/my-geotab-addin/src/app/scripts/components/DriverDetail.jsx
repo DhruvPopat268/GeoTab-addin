@@ -543,7 +543,7 @@ const DriverLicenceSummary = () => {
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft:"69px"
+                    marginLeft:"60px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -584,12 +584,12 @@ const DriverLicenceSummary = () => {
                     </tbody>
                 </table>
 
-                <div className="disclaimer" style={{
+                <div className="disclaimerDriver" style={{
                     backgroundColor: '#fff3cd',
                     border: '1px solid #ffeaa7',
                     padding: '20px',
                     borderRadius: '8px',
-                    marginLeft:"64px"
+                    marginLeft:"60px"
                 }}>
                     <h2 style={{ color: '#856404', marginTop: 0 }}>Disclaimer</h2>
                     <p style={{

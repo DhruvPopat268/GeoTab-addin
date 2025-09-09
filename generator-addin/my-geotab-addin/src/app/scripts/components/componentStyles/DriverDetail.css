@@ -212,22 +212,22 @@ td {
   margin-top: 20px;
   font-size: 30px;
   font-weight: 500;
-  margin-left: 68px;
+  margin-left: 60px;
   margin-bottom: 10px;
 }
 
-.disclaimer {
+.disclaimerDriver {
   width: 90%;
 }
 
-.disclaimer h2 {
+.disclaimerDriver h2 {
   margin-top: 20px;
   margin-left: 60px;
   font-size: 30px;
   font-weight: 500;
 }
 
-.disclaimer p {
+.disclaimerDriver p {
   margin-left: 60px;
   font-size: medium;
 }
