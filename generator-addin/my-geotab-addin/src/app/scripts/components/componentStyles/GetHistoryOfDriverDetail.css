@@ -82,6 +82,7 @@
 .table-cell {
   padding: 1rem 1.5rem;
   white-space: nowrap;
+  text-align: center; /* Add this line */
 }
 
 .act-btns {
@@ -295,6 +296,7 @@
 .act-btns {
   display: flex;
   gap: 0.5rem;
+  justify-content: center; /* Add this line */
 }
 
 .act-btn {
