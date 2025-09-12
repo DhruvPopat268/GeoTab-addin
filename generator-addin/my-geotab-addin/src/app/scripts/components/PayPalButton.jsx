@@ -13,7 +13,13 @@ const PayPalButton = ({ amount, userId, onSuccess }) => {
     let isCancelled = false;
     
     // Get userName from localStorage
-    const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+
+const sessionDataRaw = key ? localStorage.getItem(key) : null;
+
+console.log("Key:", key);
+console.log("Value:", sessionDataRaw);
+
     console.log(sessionDataRaw);
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     console.log(sessionData);

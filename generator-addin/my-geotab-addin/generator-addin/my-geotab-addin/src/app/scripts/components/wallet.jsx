@@ -18,7 +18,13 @@ const Wallet = () => {
   const [activeTab, setActiveTab] = useState('all');
   const userId = 'AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn';
 
-  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+
+const sessionDataRaw = key ? localStorage.getItem(key) : null;
+
+console.log("Key:", key);
+console.log("Value:", sessionDataRaw);
+
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
 

@@ -10,7 +10,13 @@ const LCCheckView = () => {
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-    const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+
+const sessionDataRaw = key ? localStorage.getItem(key) : null;
+
+console.log("Key:", key);
+console.log("Value:", sessionDataRaw);
+
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
 

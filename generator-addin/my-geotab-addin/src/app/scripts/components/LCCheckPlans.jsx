@@ -65,7 +65,13 @@ const LCCheckPlans = () => {
 
     setPurchasing(true);
     try {
-      const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+    const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+
+const sessionDataRaw = key ? localStorage.getItem(key) : null;
+
+console.log("Key:", key);
+console.log("Value:", sessionDataRaw);
+
       const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
       const userName = sessionData?.userName || "unknown@user.com";
 
@@ -100,7 +106,13 @@ const LCCheckPlans = () => {
     setSelectedPlan(null);
   };
 
-  const sessionDataRaw = localStorage.getItem("sTokens_ptcdemo1");
+const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+
+const sessionDataRaw = key ? localStorage.getItem(key) : null;
+
+console.log("Key:", key);
+console.log("Value:", sessionDataRaw);
+
   console.log(sessionDataRaw);
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   console.log(sessionData);
