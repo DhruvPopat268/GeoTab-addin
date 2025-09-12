@@ -3,7 +3,7 @@ import { BASE_URL } from '../../../env.js';
 import { toast } from 'react-toastify';
 
 
-const PayPalButton = ({ amount, userId, onSuccess }) => {
+const PayPalButton = ({ amount, userId, database, onSuccess }) => {
   const paypalRef = useRef(null);
   
   useEffect(() => {
@@ -42,6 +42,7 @@ console.log("Value:", sessionDataRaw);
           
           const payload = {
             userId: userName,
+            database,
             amount,
             paypalId: details.id,
           };

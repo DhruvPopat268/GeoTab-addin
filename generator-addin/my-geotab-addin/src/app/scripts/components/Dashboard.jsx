@@ -20,13 +20,15 @@ console.log("Value:", sessionDataRaw);
 
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  const database = sessionData?.database || "unknown_database";
 
   // Fetch wallet data from API
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
         const response = await axios.post(`${BASE_URL}/api/UserWallet/wallet`, {
-          userId: userName, // send userId in body
+          userId: userName,
+          database
         });
 
         setWalletData(response.data); // response.data holds the returned JSON

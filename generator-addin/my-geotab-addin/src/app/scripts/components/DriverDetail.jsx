@@ -14,15 +14,16 @@ const DriverLicenceSummary = () => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
 
-  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+    const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
 
-const sessionDataRaw = key ? localStorage.getItem(key) : null;
+    const sessionDataRaw = key ? localStorage.getItem(key) : null;
 
-console.log("Key:", key);
-console.log("Value:", sessionDataRaw);
+    console.log("Key:", key);
+    console.log("Value:", sessionDataRaw);
 
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
+    const database = sessionData?.database
 
     const targetRef = useRef();
     const navigate = useNavigate();
@@ -230,7 +231,8 @@ console.log("Value:", sessionDataRaw);
                         },
                         body: JSON.stringify({
                             data: driverData.data,
-                            userId: userName
+                            userId: userName,
+                            database
                         })
                     });
 
@@ -250,7 +252,8 @@ console.log("Value:", sessionDataRaw);
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            userId: userName  // make sure userName is defined
+                            userId: userName,
+                            database
                         })
                     });
 
@@ -504,7 +507,7 @@ console.log("Value:", sessionDataRaw);
                             borderCollapse: 'collapse',
                             border: '1px solid #ddd'
                         }}>
-                            <caption  className='qualification-table-caption' style={{
+                            <caption className='qualification-table-caption' style={{
                                 fontWeight: 'bold',
                                 marginBottom: '10px',
                                 fontSize: '18px',
@@ -549,7 +552,7 @@ console.log("Value:", sessionDataRaw);
                     borderCollapse: 'collapse',
                     border: '1px solid #ddd',
                     marginBottom: '30px',
-                    marginLeft:"60px"
+                    marginLeft: "60px"
                 }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -595,14 +598,14 @@ console.log("Value:", sessionDataRaw);
                     border: '1px solid #ffeaa7',
                     padding: '20px',
                     borderRadius: '8px',
-                    marginLeft:"60px"
+                    marginLeft: "60px"
                 }}>
                     <h2 style={{ color: '#856404', marginTop: 0 }}>Disclaimer</h2>
                     <p style={{
                         lineHeight: '1.6',
                         color: '#856404',
                         margin: 0,
-                        
+
                     }}>
                         This disclaimer clarifies that PTC (Paramount Transport Consultants Ltd) is not accountable for the accuracy of the provided data since it originates from the DVLA (Driver and Vehicle Licensing Agency). By including this statement, PTC aims to inform users that any discrepancies or errors in the data are beyond their control and responsibility. If users encounter any issues or inaccuracies within the data, they are encouraged to reach out to PTC's technical team for assistance. The contact information for the technical team is provided, specifically an email address (it@ptctransport.co.uk), to ensure users have a direct line of communication to report problems or seek further information. This approach helps manage user expectations and directs them to the appropriate support channel for resolution, maintaining transparency and accountability in data handling.
                     </p>

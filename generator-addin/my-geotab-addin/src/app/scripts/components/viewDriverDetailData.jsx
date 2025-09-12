@@ -22,6 +22,7 @@ console.log("Value:", sessionDataRaw);
 
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
+    const database = sessionData?.database || "unknown_database";
     // const [drivingLicenceNumber, setDrivingLicenceNumber] = useState()
     const [driverData, setDriverData] = useState(null);
 
@@ -186,7 +187,8 @@ console.log("Value:", sessionDataRaw);
 
             const response = await axios.post(`${BASE_URL}/api/driverData/getRecentDriverByLicence`, {
                 drivingLicenceNumber,
-                userId: userName
+                userId: userName,
+                database
             });
 
             if (response.data?.data) {

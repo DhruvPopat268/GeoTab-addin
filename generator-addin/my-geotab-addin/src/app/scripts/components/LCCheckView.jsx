@@ -10,15 +10,16 @@ const LCCheckView = () => {
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+    const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
 
-const sessionDataRaw = key ? localStorage.getItem(key) : null;
+    const sessionDataRaw = key ? localStorage.getItem(key) : null;
 
-console.log("Key:", key);
-console.log("Value:", sessionDataRaw);
+    console.log("Key:", key);
+    console.log("Value:", sessionDataRaw);
 
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
+    const database = sessionData?.database || "unknown_database";
 
     const targetRef = useRef();
 
@@ -155,7 +156,7 @@ console.log("Value:", sessionDataRaw);
         return { licenceNo, lcCheckId };
     };
 
-    const {licenceNo} = getLicenceAndLcCheckIdFromUrl();
+    const { licenceNo } = getLicenceAndLcCheckIdFromUrl();
 
     // Fetch driver data from API
     const fetchDriverData = async () => {
@@ -174,7 +175,8 @@ console.log("Value:", sessionDataRaw);
             const response = await axios.post(`${BASE_URL}/api/driverData/getDriverDetailByLcCheckId`, {
                 licenceNo,
                 lcCheckId,
-                userId: userName
+                userId: userName,
+                database
             });
 
             if (response.data?.data) {

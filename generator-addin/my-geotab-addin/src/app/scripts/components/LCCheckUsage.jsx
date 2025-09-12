@@ -31,6 +31,7 @@ const LCCheckUsage = () => {
 
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+  const database = sessionData?.database || "unknown_database";
 
   // Transform data for chart - this is the key fix
   const transformDataForChart = (data) => {

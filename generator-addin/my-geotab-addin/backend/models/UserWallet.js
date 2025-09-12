@@ -28,7 +28,8 @@ const currentPlanSchema = new mongoose.Schema({
 
 
 const userWalletSchema = new mongoose.Schema({
-  userId: { type: String, required: true, unique: true },
+  userId: { type: String, required: true },
+  database: { type: String, required: true },
   payments: [paymentSchema],
   purchases: [purchaseSchema],
   balance: { type: Number, default: 0 },
@@ -36,5 +37,8 @@ const userWalletSchema = new mongoose.Schema({
 
   currentPlan: currentPlanSchema  // <-- Newly added
 });
+
+// Create compound unique index for userId + database
+userWalletSchema.index({ userId: 1, database: 1 }, { unique: true });
 
 module.exports = mongoose.model("UserWallet", userWalletSchema);

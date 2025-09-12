@@ -20,15 +20,17 @@ const Wallet = () => {
   const [activeTab, setActiveTab] = useState('all');
   const userId = 'AdzFLx8B3bT4BvapWjPUh-G4dXzdrvWCkXXmrW0Z6rjMAav5WfrcAMMxxmya4JSB_T-CKiuX_ADEDapn';
 
-const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
 
-const sessionDataRaw = key ? localStorage.getItem(key) : null;
+  const sessionDataRaw = key ? localStorage.getItem(key) : null;
 
-console.log("Key:", key);
-console.log("Value:", sessionDataRaw);
+  console.log("Key:", key);
+  console.log("Value:", sessionDataRaw);
 
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
+
+  const database = sessionData?.database || "unknown_database";
 
   // Fetch wallet data from API
   useEffect(() => {
@@ -38,7 +40,7 @@ console.log("Value:", sessionDataRaw);
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`${BASE_URL}/api/UserWallet/wallet` , {userId:userName});
+      const response = await axios.post(`${BASE_URL}/api/UserWallet/wallet`, { userId: userName, database });
       setWalletData(response.data);
       setError(null);
     } catch (err) {
@@ -53,25 +55,25 @@ console.log("Value:", sessionDataRaw);
   const getAllTransactions = () => {
     if (!walletData) return [];
 
-const payments = (walletData?.payments || []).map(payment => ({
-  id: payment._id,
-  type: 'deposit',
-  amount: payment.amount,
-  description: 'PayPal Deposit',
-  date: payment.date,
-  status: 'completed',
-  paypalId: payment.paypalId
-}));
+    const payments = (walletData?.payments || []).map(payment => ({
+      id: payment._id,
+      type: 'deposit',
+      amount: payment.amount,
+      description: 'PayPal Deposit',
+      date: payment.date,
+      status: 'completed',
+      paypalId: payment.paypalId
+    }));
 
-const purchases = (walletData?.purchases || []).map(purchase => ({
-  id: purchase._id,
-  type: 'purchase',
-  amount: -purchase.amount,
-  name: `${purchase.name} Plan`,
-  date: purchase.date,
-  status: 'completed',
-  credits: purchase.credits
-}));
+    const purchases = (walletData?.purchases || []).map(purchase => ({
+      id: purchase._id,
+      type: 'purchase',
+      amount: -purchase.amount,
+      name: `${purchase.name} Plan`,
+      date: purchase.date,
+      status: 'completed',
+      credits: purchase.credits
+    }));
 
 
     return [...payments, ...purchases].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -80,7 +82,7 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
   // Filter transactions based on active tab
   const getFilteredTransactions = () => {
     const allTransactions = getAllTransactions();
-    
+
     switch (activeTab) {
       case 'deposits':
         return allTransactions.filter(t => t.type === 'deposit');
@@ -114,16 +116,16 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
     });
   };
 
-  
+
 
   if (loading) {
     return (
       <div className="wallet">
         <Navbar />
         <div className="wallet-container">
-<div className="spinner-container">
-  <div className="spinner" />
-</div>
+          <div className="spinner-container">
+            <div className="spinner" />
+          </div>
 
         </div>
       </div>
@@ -215,7 +217,8 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
                   <div className="paypal-button">
                     <PayPalButton
                       amount={parseFloat(depositAmount)}
-                      userId={userId}
+                      userId={userName}
+                      database={database}
                       onSuccess={(data) => {
                         toast.success(`£${depositAmount} deposited successfully!`);
                         setDepositAmount('');
@@ -248,7 +251,7 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
               <div className="card-content">
                 <div className="tabs">
                   {['all', 'deposits', 'purchases'].map(type => (
-                    <button 
+                    <button
                       key={type}
                       className={activeTab === type ? 'active' : ''}
                       onClick={() => setActiveTab(type)}

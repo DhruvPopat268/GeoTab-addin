@@ -4,13 +4,14 @@ module.exports.driverData = async (req, res, next) => {
   try {
     const data = req.body.data;
     const userId = req.body.userId;
+    const database = req.body.database;
     const licenceNumber = data?.driver?.drivingLicenceNumber;
 
-    if (!userId || !licenceNumber) {
-      return res.status(400).json({ message: "Missing userId or drivingLicenceNumber" });
+    if (!userId || !database || !licenceNumber) {
+      return res.status(400).json({ message: "Missing userId, database, or drivingLicenceNumber" });
     }
 
-    const existing = await DriverData.findOne({ userId, drivingLicenceNumber: licenceNumber });
+    const existing = await DriverData.findOne({ userId, database, drivingLicenceNumber: licenceNumber });
 
     const detailEntry = {
       driver: {
@@ -35,6 +36,7 @@ module.exports.driverData = async (req, res, next) => {
     } else {
       const newDriverData = new DriverData({
         userId,
+        database,
         drivingLicenceNumber: licenceNumber,
         details: [detailEntry],
       });
@@ -49,13 +51,13 @@ module.exports.driverData = async (req, res, next) => {
 
 module.exports.getRecentDriverByLicence = async (req, res) => {
   try {
-    const { userId, drivingLicenceNumber } = req.body;
+    const { userId, database, drivingLicenceNumber } = req.body;
 
-    if (!userId || !drivingLicenceNumber) {
-      return res.status(400).json({ status: false, message: "Missing userId or drivingLicenceNumber" });
+    if (!userId || !database || !drivingLicenceNumber) {
+      return res.status(400).json({ status: false, message: "Missing userId, database, or drivingLicenceNumber" });
     }
 
-    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber });
+    const driverDoc = await DriverData.findOne({ userId, database, drivingLicenceNumber });
 
     if (!driverDoc || !driverDoc.details || driverDoc.details.length === 0) {
       return res.status(404).json({ status: false, message: "No driver details found" });
@@ -76,13 +78,13 @@ module.exports.getRecentDriverByLicence = async (req, res) => {
 
 module.exports.getAllDriversByLicence = async (req, res) => {
   try {
-    const { userId, drivingLicenceNumber } = req.body;
+    const { userId, database, drivingLicenceNumber } = req.body;
 
-    if (!userId || !drivingLicenceNumber) {
-      return res.status(400).json({ message: "Missing userId or drivingLicenceNumber" });
+    if (!userId || !database || !drivingLicenceNumber) {
+      return res.status(400).json({ message: "Missing userId, database, or drivingLicenceNumber" });
     }
 
-    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber });
+    const driverDoc = await DriverData.findOne({ userId, database, drivingLicenceNumber });
 
     if (!driverDoc || !driverDoc.details || driverDoc.details.length === 0) {
       return res.status(404).json({ message: "No driver details found" });
@@ -108,13 +110,13 @@ module.exports.getAllDriversByLicence = async (req, res) => {
 
 module.exports.getDriverDetailByLcCheckId = async (req, res) => {
   try {
-    const { userId, licenceNo, lcCheckId } = req.body;
+    const { userId, database, licenceNo, lcCheckId } = req.body;
 
-    if (!userId || !licenceNo || !lcCheckId) {
-      return res.status(400).json({ status: false, message: "Missing userId, licenceNo or lcCheckId" });
+    if (!userId || !database || !licenceNo || !lcCheckId) {
+      return res.status(400).json({ status: false, message: "Missing userId, database, licenceNo or lcCheckId" });
     }
 
-    const driverDoc = await DriverData.findOne({ userId, drivingLicenceNumber: licenceNo });
+    const driverDoc = await DriverData.findOne({ userId, database, drivingLicenceNumber: licenceNo });
 
     if (!driverDoc || !Array.isArray(driverDoc.details)) {
       return res.status(404).json({ status: false, message: "Driver or details not found" });

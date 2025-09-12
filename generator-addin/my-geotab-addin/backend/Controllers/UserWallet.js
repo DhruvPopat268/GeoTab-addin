@@ -3,17 +3,17 @@ const generatePaymentId = require('../utils/generateId');
 
 module.exports.deposit = async (req, res) => {
   try {
-    const { userId, paypalId, amount } = req.body;
+    const { userId, database, paypalId, amount } = req.body;
 
     const paymentId = generatePaymentId(); // generate server-side
 
     // Step 1: Check if wallet exists
-    const existingWallet = await UserWallet.findOne({ userId });
+    const existingWallet = await UserWallet.findOne({ userId, database });
 
     if (existingWallet) {
       // Step 2: Wallet exists – update balance and push payment
       const updatedWallet = await UserWallet.findOneAndUpdate(
-        { userId },
+        { userId, database },
         {
           $inc: { balance: amount },
           $push: {
@@ -33,6 +33,7 @@ module.exports.deposit = async (req, res) => {
       // Step 3: First-time deposit – create new wallet
       const newWallet = new UserWallet({
         userId,
+        database,
         balance: amount,
         credits: 0,
         purchases: [],
@@ -57,7 +58,7 @@ module.exports.deposit = async (req, res) => {
 
 module.exports.purchase = async (req, res) => {
   try {
-    const { userId, planId, planDetails } = req.body;
+    const { userId, database, planId, planDetails } = req.body;
     
     // Validate that planDetails are provided
     if (!planDetails || !planDetails.price || !planDetails.includedCalls || !planDetails.name) {
@@ -68,7 +69,7 @@ module.exports.purchase = async (req, res) => {
     const credits = planDetails.includedCalls;
     const name = planDetails.name;
     
-    const wallet = await UserWallet.findOne({ userId });
+    const wallet = await UserWallet.findOne({ userId, database });
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
@@ -115,9 +116,9 @@ module.exports.purchase = async (req, res) => {
 
 module.exports.wallet = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, database } = req.body;
 
-    const wallet = await UserWallet.findOne({ userId });
+    const wallet = await UserWallet.findOne({ userId, database });
 
     if (!wallet) {
       return res.status(200).json([]);
@@ -139,16 +140,16 @@ module.exports.wallet = async (req, res) => {
 
 module.exports.checksEligibility = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, database } = req.body;
 
-    if (!userId) {
+    if (!userId || !database) {
       return res.status(400).json({
         success: false,
-        message: 'userId is required'
+        message: 'userId and database are required'
       });
     }
 
-    const wallet = await UserWallet.findOne({ userId });
+    const wallet = await UserWallet.findOne({ userId, database });
 
     if (!wallet) {
       return res.status(200).json({
@@ -202,13 +203,13 @@ module.exports.checksEligibility = async (req, res) => {
 
 
 module.exports.deductCredit = async(req,res) => {
-  const { userId } = req.body;
+  const { userId, database } = req.body;
 
   try {
     // 👉 Your main API logic here (e.g., fetching weather, sending SMS, etc.)
     
     // Only if API logic succeeded, now deduct 1 credit:
-    const wallet = await UserWallet.findOne({ userId });
+    const wallet = await UserWallet.findOne({ userId, database });
 
     wallet.credits -= 1;
     await wallet.save();

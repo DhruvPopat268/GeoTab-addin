@@ -13,6 +13,11 @@ const driverSchema = new mongoose.Schema({
     required: true
   },
 
+  database: {
+    type: String,
+    required: true
+  },
+
   lastName: {
     type: String,// Added required if needed
   },
@@ -75,11 +80,11 @@ const driverSchema = new mongoose.Schema({
 // Static upsert method for syncing
 // Usage: Driver.upsertDriver(driverData)
 driverSchema.statics.upsertDriver = async function(driverData) {
-  // Extract geotabId and userName for filtering, exclude _id from update
-  const { geotabId, userName, _id, ...updateFields } = driverData;
+  // Extract geotabId, userName, and database for filtering, exclude _id from update
+  const { geotabId, userName, database, _id, ...updateFields } = driverData;
   
   return this.findOneAndUpdate(
-    { geotabId, userName }, // Filter by geotabId and userName
+    { geotabId, userName, database }, // Filter by geotabId, userName, and database
     { $set: updateFields }, // Don't include _id in the update
     { upsert: true, new: true }
   );

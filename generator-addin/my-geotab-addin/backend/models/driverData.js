@@ -72,8 +72,12 @@ const detailSchema = new mongoose.Schema({
 
 const DriverDataSchema = new mongoose.Schema({
   userId:{type: String, required: true},
+  database: {type: String, required: true},
   drivingLicenceNumber: { type: String, required: true },
   details: [detailSchema]
 }, { timestamps: true });
+
+// Create compound unique index for userId + database + drivingLicenceNumber
+DriverDataSchema.index({ userId: 1, database: 1, drivingLicenceNumber: 1 }, { unique: true });
 
 module.exports = mongoose.model('DriverData', DriverDataSchema);
