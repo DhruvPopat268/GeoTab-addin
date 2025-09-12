@@ -184,30 +184,37 @@ const DevicePage = ({ }) => {
   }, [originalDrivers]);
 
   // Update sendConsentEmails to handle a single driver
-  const sendConsentEmails = async (driver) => {
-    const licenseNumber = driver.licenseNumber || driver.licenseNo;
-    const email = driver.Email || driver.email;
-    const firstName = driver.firstName;
-    const lastName = driver.lastName;
+const sendConsentEmails = async (driver) => {
+  const licenseNumber = driver.licenseNumber || driver.licenseNo;
+  const email = driver.Email || driver.email;
+  const firstName = driver.firstName;
+  const lastName = driver.lastName;
 
-    if (firstName && lastName && licenseNumber && email) {
-      try {
-        const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
-          firstName,
-          lastName,
-          licenceNo: licenseNumber,
-          email
-        });
-        toast.success(res.data?.message || 'Consent email sent');
-        return res.data;
-      } catch (err) {
-        const msg = err.response?.data?.message || err.message || 'Failed to send consent email';
-        toast.error(msg);
-        return err.response?.data || { success: false };
-      }
-    }
+  // Validation check
+  if (!firstName || !lastName || !licenseNumber || !email) {
+    toast.error("First Name, Last Name, License Number, and Email are required");
     return { success: false };
-  };
+  }
+
+  try {
+    const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
+      firstName,
+      lastName,
+      licenceNo: licenseNumber,
+      email
+    });
+    toast.success(res.data?.message || 'Consent email sent');
+    return res.data;
+  } catch (err) {
+    const msg =
+      err.response?.data?.message ||
+      err.message ||
+      'Failed to send consent email';
+    toast.error(msg);
+    return err.response?.data || { success: false };
+  }
+};
+
 
   const onsubmit = async (data) => {
     const isEditing = Boolean(editingDriver);
