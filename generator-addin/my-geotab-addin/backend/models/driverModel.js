@@ -5,7 +5,7 @@ const driverSchema = new mongoose.Schema({
   geotabId: {
     type: String,
     required: true,
-    unique: true
+    // unique: true
   },
 
   userName: {
@@ -36,7 +36,7 @@ const driverSchema = new mongoose.Schema({
   Email: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
     lowercase: true,
     validate: {
       validator: function(v) {
