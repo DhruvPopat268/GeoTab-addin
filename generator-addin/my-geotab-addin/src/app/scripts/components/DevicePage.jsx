@@ -144,19 +144,28 @@ const DevicePage = ({ }) => {
   };
 
   const fetchDrivers = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
-        userName
-      });
-      setDrivers(res.data.data || []);
-      setError('');
-    } catch (err) {
-      console.error('Error fetching drivers:', err);
-      setError(err.response?.data?.message || 'Failed to fetch drivers');
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    let success = false;
+    
+    while (!success) {
+      try {
+        const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
+          userName
+        });
+        
+        if (res.status === 200) {
+          setDrivers(res.data.data || []);
+          setError('');
+          success = true;
+        }
+      } catch (err) {
+        console.error('Error fetching drivers:', err);
+        setError(err.response?.data?.message || 'Failed to fetch drivers');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
+    
+    setLoading(false);
   };
 
   // Add this useEffect after the fetchAllDrivers useEffect
