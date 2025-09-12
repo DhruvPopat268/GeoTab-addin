@@ -134,26 +134,39 @@ const DevicePage = ({ }) => {
   // Add this function after fetchAllDrivers
   const syncDriversToMongo = async (drivers) => {
     if (!drivers || drivers.length === 0) return;
+    
+    setLoading(true);
     // Map licenseNumber to licenseNo for backend compatibility and include geotabId
     const mappedDrivers = drivers.map(driver => ({
       ...driver,
       licenseNo: driver.licenseNumber,
       geotabId: driver.id, // Include the Geotab ID
     }));
+    
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers, userName , database });
-      toast.success(res.data?.message || 'Drivers synced');
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { 
+        drivers: mappedDrivers, 
+        userName, 
+        database 
+      });
+      if (res.status === 200) {
+        toast.success(res.data?.message || 'Drivers synced');
+      }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
       toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchDrivers = async () => {
     setLoading(true);
     let success = false;
+    let retryCount = 0;
+    const maxRetries = 5;
 
-    while (!success) {
+    while (!success && retryCount < maxRetries) {
       try {
         const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
           userName,
@@ -168,8 +181,15 @@ const DevicePage = ({ }) => {
       } catch (err) {
         console.error('Error fetching drivers:', err);
         setError(err.response?.data?.message || 'Failed to fetch drivers');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
+    }
+
+    if (!success) {
+      toast.error('Failed to fetch drivers after multiple attempts');
     }
 
     setLoading(false);
@@ -380,7 +400,10 @@ const sendConsentEmails = async (driver) => {
       if (!showSyncConfirm) return;
       setViewLoading(showSyncConfirm.id);
       // Check wallet eligibility
-      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName , database });
+      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { 
+        userId: userName, 
+        database 
+      });
       if (eligibilityResponse.status === 200) {
         const { zeroCredit, planExpired } = eligibilityResponse.data;
         if (zeroCredit || planExpired) {
@@ -451,7 +474,6 @@ const sendConsentEmails = async (driver) => {
       <div className="spinner-container">
         <div className="spinner" />
       </div>
-
     );
   }
 
