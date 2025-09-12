@@ -273,30 +273,32 @@ console.log("Value:", sessionDataRaw);
 
           <p className="section-description">Monitor your API usage metrics and patterns</p>
 
-          <div className="stats-grid ">
-            <div className="stat-card font-light">
-              <p>Total API Calls (Last 7 Days)</p>
-              <h3
-                className="font-light"
-
-              >
-                {statsLoading ? 'Loading...' : usageStats.totalCalls}
-              </h3>
-
+          {statsLoading ? (
+            <div className="spinner-container">
+              <div className="spinner" />
             </div>
-            <div className="stat-card">
-              <p>Average Daily Calls</p>
-              <h3>{statsLoading ? 'Loading...' : usageStats.averageDailyCalls}</h3>
+          ) : (
+            <div className="stats-grid">
+              <div className="stat-card font-light">
+                <p>Total API Calls (Last 7 Days)</p>
+                <h3 className="font-light">
+                  {usageStats.totalCalls}
+                </h3>
+              </div>
+              <div className="stat-card">
+                <p>Average Daily Calls</p>
+                <h3>{usageStats.averageDailyCalls}</h3>
+              </div>
+              <div className="stat-card">
+                <p>Peak Usage Day</p>
+                <h3>{usageStats.peakUsageDay}</h3>
+              </div>
+              <div className="stat-card">
+                <p>Peak Day Calls</p>
+                <h3>{usageStats.peakDayCalls}</h3>
+              </div>
             </div>
-            <div className="stat-card">
-              <p>Peak Usage Day</p>
-              <h3>{statsLoading ? 'Loading...' : usageStats.peakUsageDay}</h3>
-            </div>
-            <div className="stat-card">
-              <p>Peak Day Calls</p>
-              <h3>{statsLoading ? 'Loading...' : usageStats.peakDayCalls}</h3>
-            </div>
-          </div>
+          )}
 
           <div className="card chart-card">
             <h3
