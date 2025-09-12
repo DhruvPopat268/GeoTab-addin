@@ -141,7 +141,7 @@ const DevicePage = ({ }) => {
       geotabId: driver.id, // Include the Geotab ID
     }));
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers, userName });
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { drivers: mappedDrivers, userName , database });
       toast.success(res.data?.message || 'Drivers synced');
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
@@ -156,7 +156,8 @@ const DevicePage = ({ }) => {
     while (!success) {
       try {
         const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
-          userName
+          userName,
+          database
         });
 
         if (res.status === 200) {
@@ -324,7 +325,7 @@ const sendConsentEmails = async (driver) => {
       if (!showDeleteConfirm) return;
 
       const res = await axios.delete(`${BASE_URL}/api/driver/delete`, {
-        data: { email: showDeleteConfirm.email, userName }
+        data: { email: showDeleteConfirm.email, userName  }
       });
 
       if (res.status !== 200) {
@@ -379,7 +380,7 @@ const sendConsentEmails = async (driver) => {
       if (!showSyncConfirm) return;
       setViewLoading(showSyncConfirm.id);
       // Check wallet eligibility
-      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName });
+      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { userId: userName , database });
       if (eligibilityResponse.status === 200) {
         const { zeroCredit, planExpired } = eligibilityResponse.data;
         if (zeroCredit || planExpired) {
@@ -428,7 +429,8 @@ const sendConsentEmails = async (driver) => {
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
         licenseNo: intervalPopup.driver.licenseNo,
         lcCheckInterval: intervalValue,
-        userName
+        userName,
+        database
       });
       toast.success('Interval updated');
       // Update local state for immediate UI feedback

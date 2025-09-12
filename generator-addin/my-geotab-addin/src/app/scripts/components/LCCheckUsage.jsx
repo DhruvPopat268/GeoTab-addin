@@ -104,7 +104,8 @@ const LCCheckUsage = () => {
         setError(null);
 
         const response = await axios.post(`${API_URL}/proxy/logs`, {
-          userId: userName // Make sure this is defined in your component
+          userId: userName,
+          database: database
         });
 
         const data = response.data;
@@ -140,7 +141,8 @@ const LCCheckUsage = () => {
         setStatsLoading(true);
 
         const response = await axios.post(`${API_URL}/proxy/logs/stats`, {
-          userId: userName // Replace with the logged-in user ID
+          userId: userName,
+          database: database
         });
 
         const data = response.data;
@@ -168,7 +170,8 @@ const LCCheckUsage = () => {
         setChartLoading(true);
 
         const response = await axios.post(`${API_URL}/proxy/logs/daily-usage`, {
-          userId: userName // Same here
+          userId: userName,
+          database: database // Same here
         });
 
         const data = response.data;

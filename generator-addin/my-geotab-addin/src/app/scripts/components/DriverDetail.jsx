@@ -203,7 +203,8 @@ const DriverLicenceSummary = () => {
                     },
                     body: JSON.stringify({
                         drivingLicenceNumber: drivingLicenceNumber,
-                        userId: userName
+                        userId: userName,
+                        database: database
                     })
                 }
             );
