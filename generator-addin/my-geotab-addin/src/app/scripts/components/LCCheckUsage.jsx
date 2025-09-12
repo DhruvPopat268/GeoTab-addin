@@ -213,6 +213,10 @@ console.log("Value:", sessionDataRaw);
     return last7Days;
   };
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+
   // Filter logs based on status
   const filteredLogs = apiLogs.filter(log => {
     if (statusFilter === 'all') return true;
@@ -220,6 +224,16 @@ console.log("Value:", sessionDataRaw);
     if (statusFilter === 'error') return log.status >= 400;
     return true;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredLogs.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const paginatedLogs = filteredLogs.slice(startIndex, startIndex + recordsPerPage);
+
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, recordsPerPage]);
 
   const getStatusBadge = (status) => {
     if (status >= 200 && status < 300) {
@@ -360,12 +374,23 @@ console.log("Value:", sessionDataRaw);
 
           <div className="card">
             <div className="card-header">
-              <h2>Filter Status</h2>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="all">All Logs</option>
-                <option value="success">Success (2xx)</option>
-                <option value="error">Error (4xx, 5xx)</option>
-              </select>
+              <div>
+                <h2>Filter Status</h2>
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <option value="all">All Logs</option>
+                  <option value="success">Success (2xx)</option>
+                  <option value="error">Error (4xx, 5xx)</option>
+                </select>
+              </div>
+              <div>
+                <label>Records per page:</label>
+                <select value={recordsPerPage} onChange={(e) => setRecordsPerPage(Number(e.target.value))}>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
             </div>
 
             <div className="card-content">
@@ -390,14 +415,11 @@ console.log("Value:", sessionDataRaw);
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredLogs.map((log) => (
+                      {paginatedLogs.map((log) => (
                         <tr key={log.id}>
                           <td>{log.apiName}</td>
                           <td><span className="badge outline">{log.method}</span></td>
-                          {/* <td className="endpoint">{log.endpoint}</td> */}
                           <td>{getStatusBadge(log.status)}</td>
-
-
                           <td>{log.responseTime}</td>
                           <td className="timestamp">{log.timestamp}</td>
                         </tr>
@@ -405,7 +427,34 @@ console.log("Value:", sessionDataRaw);
                     </tbody>
                   </table>
                   <div className="table-footer">
-                    Showing {filteredLogs.length} of {apiLogs.length} logs
+                    <div className="pagination-info">
+                      Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, filteredLogs.length)} of {filteredLogs.length} logs
+                    </div>
+                    {totalPages > 1 && (
+                      <div className="pagination">
+                        <button 
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={currentPage === page ? 'active' : ''}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                        <button 
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          disabled={currentPage === totalPages}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
