@@ -42,6 +42,8 @@ const DevicePage = ({ }) => {
   const [viewLoading, setViewLoading] = useState(null);
   const [driverDetails, setDriverDetails] = useState(null);
   const [showDriverDetails, setShowDriverDetails] = useState(false);
+  const [error, setError] = useState('');
+
 
   // New state for sync confirmation
   const [showSyncConfirm, setShowSyncConfirm] = useState(null);
