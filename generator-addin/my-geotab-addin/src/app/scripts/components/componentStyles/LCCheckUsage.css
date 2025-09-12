@@ -45,7 +45,7 @@
   gap: 1rem;
 }
 
-.card-header > div {
+.card-header>div {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -206,9 +206,25 @@
 }
 
 /* Pagination Navigation Buttons */
-.pagination button:first-child,
-.pagination button:last-child {
+.pagination button.pagination-nav {
   padding: 0.5rem 0.875rem;
+  font-weight: 500;
+}
+
+/* Pagination Ellipsis */
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: transparent;
+  cursor: default;
+  user-select: none;
 }
 
 .stats-grid {
@@ -348,17 +364,17 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
-  .card-header > div {
+
+  .card-header>div {
     justify-content: space-between;
   }
-  
+
   .table-footer {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
-  
+
   .pagination {
     flex-wrap: wrap;
     justify-content: center;
