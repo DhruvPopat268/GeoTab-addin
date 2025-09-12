@@ -451,67 +451,67 @@ const DevicePage = ({ }) => {
                 <th>Phone Number</th>
                 <th>Interval (Daily)</th>
                 <th>License Province</th>
-
               </tr>
             </thead>
             <tbody>
-              {drivers.map(driver => (
-                <tr key={driver.id}>
-                  <td className="action-buttons">
-                    <button
-                      className="table-action-btn view"
-                      onClick={() => handleSync(driver)}
-                      disabled={viewLoading === driver.id}
-                    >
-                      {viewLoading === driver.id ? 'Loading...' : 'Sync'}
-                    </button>
-                    <button
-                      className="table-action-btn view"
-                      onClick={() => handleView(driver)}
-                      disabled={viewLoading === driver.id}
-                    >
-                      {viewLoading === driver.id ? 'Loading...' : 'View'}
-                    </button>
-                    <button
-                      className="table-action-btn view"
-                      onClick={() => handleHistory(driver)}
-                      disabled={viewLoading === driver.id}
-                    >
-                      {viewLoading === driver.id ? 'Loading...' : 'History'}
-                    </button>
-                    <button
-                      className="table-action-btn view"
-                      onClick={() => handleEdit(driver)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="table-action-btn view"
-                      onClick={() => handleIntervalClick(driver)}
-                    >
-                      Interval
-                    </button>
-                    {/* <button
-                      className="table-action-btn danger"
-                      onClick={() => handleDelete(driver)}
-                    >
-                      Delete
-                    </button> */}
+              {drivers.length === 0 ? (
+                <tr>
+                  <td colSpan="9" style={{ textAlign: "center", padding: "12px" }}>
+                    No drivers found
                   </td>
-                  <td>{driver.geotabId}</td>
-                  <td>{driver.email}</td>
-                  <td>{driver.firstName}</td>
-                  <td>{driver.lastName}</td>
-                  <td>{driver.licenseNo}</td>
-                  <td>{driver.phoneNumber}</td>
-                  <td>{driver.lcCheckInterval || 1}</td>
-                  <td>{driver.licenseProvince}</td>
-
-
                 </tr>
-              ))}
+              ) : (
+                drivers.map((driver) => (
+                  <tr key={driver.id}>
+                    <td className="action-buttons">
+                      <button
+                        className="table-action-btn view"
+                        onClick={() => handleSync(driver)}
+                        disabled={viewLoading === driver.id}
+                      >
+                        {viewLoading === driver.id ? "Loading..." : "Sync"}
+                      </button>
+                      <button
+                        className="table-action-btn view"
+                        onClick={() => handleView(driver)}
+                        disabled={viewLoading === driver.id}
+                      >
+                        {viewLoading === driver.id ? "Loading..." : "View"}
+                      </button>
+                      <button
+                        className="table-action-btn view"
+                        onClick={() => handleHistory(driver)}
+                        disabled={viewLoading === driver.id}
+                      >
+                        {viewLoading === driver.id ? "Loading..." : "History"}
+                      </button>
+                      <button
+                        className="table-action-btn view"
+                        onClick={() => handleEdit(driver)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="table-action-btn view"
+                        onClick={() => handleIntervalClick(driver)}
+                      >
+                        Interval
+                      </button>
+                    </td>
+                    <td>{driver.geotabId}</td>
+                    <td>{driver.email}</td>
+                    <td>{driver.firstName}</td>
+                    <td>{driver.lastName}</td>
+                    <td>{driver.licenseNo}</td>
+                    <td>{driver.phoneNumber}</td>
+                    <td>{driver.lcCheckInterval || 1}</td>
+                    <td>{driver.licenseProvince}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+
         </div>
       </div>
 
