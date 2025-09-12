@@ -22,12 +22,12 @@ const LCCheckUsage = () => {
 
   console.log('Daily Usage Data:', dailyUsageData);
 
-const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
 
-const sessionDataRaw = key ? localStorage.getItem(key) : null;
+  const sessionDataRaw = key ? localStorage.getItem(key) : null;
 
-console.log("Key:", key);
-console.log("Value:", sessionDataRaw);
+  console.log("Key:", key);
+  console.log("Value:", sessionDataRaw);
 
   const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
   const userName = sessionData?.userName || "unknown@user.com";
@@ -189,6 +189,46 @@ console.log("Value:", sessionDataRaw);
 
     fetchDailyUsage();
   }, []);
+
+
+  // Add this helper function to your LCCheckUsage component
+  const generatePaginationRange = (currentPage, totalPages) => {
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+
+    // Always show first page
+    range.push(1);
+
+    // Calculate start and end of middle range
+    const start = Math.max(2, currentPage - delta);
+    const end = Math.min(totalPages - 1, currentPage + delta);
+
+    // Add pages around current page
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    // Always show last page if more than 1 page
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    // Remove duplicates and sort
+    const uniqueRange = [...new Set(range)].sort((a, b) => a - b);
+
+    // Add ellipsis where needed
+    let prev = 0;
+    for (let i of uniqueRange) {
+      if (i - prev > 1) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(i);
+      prev = i;
+    }
+
+    return rangeWithDots;
+  };
 
   // Create fallback chart data when API fails
   const createFallbackChartData = () => {
@@ -432,24 +472,38 @@ console.log("Value:", sessionDataRaw);
                     </div>
                     {totalPages > 1 && (
                       <div className="pagination">
-                        <button 
+                        <button
                           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                           disabled={currentPage === 1}
+                          className="pagination-nav"
                         >
                           Previous
                         </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                          <button
-                            key={page}
-                            onClick={() => setCurrentPage(page)}
-                            className={currentPage === page ? 'active' : ''}
-                          >
-                            {page}
-                          </button>
-                        ))}
-                        <button 
+
+                        {generatePaginationRange(currentPage, totalPages).map((page, index) => {
+                          if (page === '...') {
+                            return (
+                              <span key={`ellipsis-${index}`} className="pagination-ellipsis">
+                                ...
+                              </span>
+                            );
+                          }
+
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => setCurrentPage(page)}
+                              className={currentPage === page ? 'active' : ''}
+                            >
+                              {page}
+                            </button>
+                          );
+                        })}
+
+                        <button
                           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                           disabled={currentPage === totalPages}
+                          className="pagination-nav"
                         >
                           Next
                         </button>
