@@ -1,6 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/prayoshaAddIn.html" },
-    { "source": "/(.*)", "destination": "/prayoshaAddIn.html" }
+  "builds": [
+    { "src": "dist/**/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/prayoshaAddIn.html" }
   ]
 }
