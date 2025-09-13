@@ -70,6 +70,10 @@ const DevicePage = ({ }) => {
 
   const [drivers, setDrivers] = useState([]);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+
   // Fetch all drivers on component mount
   useEffect(() => {
     fetchAllDrivers();
@@ -450,6 +454,49 @@ const DevicePage = ({ }) => {
     }
   };
 
+  // Pagination helper function
+  const generatePaginationRange = (currentPage, totalPages) => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+
+    range.push(1);
+
+    const start = Math.max(2, currentPage - delta);
+    const end = Math.min(totalPages - 1, currentPage + delta);
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+
+    const uniqueRange = [...new Set(range)].sort((a, b) => a - b);
+
+    let prev = 0;
+    for (let i of uniqueRange) {
+      if (i - prev > 1) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(i);
+      prev = i;
+    }
+
+    return rangeWithDots;
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(drivers.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const paginatedDrivers = drivers.slice(startIndex, startIndex + recordsPerPage);
+
+  // Reset to first page when records per page changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [recordsPerPage]);
+
   if (loading) {
     return (
       <div className="spinner-container">
@@ -466,79 +513,139 @@ const DevicePage = ({ }) => {
 
 
         <div className="drivers-table-container">
-          <table className="drivers-table">
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Id</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>License Number</th>
-                <th>Phone Number</th>
-                <th>Interval (Daily)</th>
-                <th>License Province</th>
-              </tr>
-            </thead>
-            <tbody>
-              {drivers.length === 0 ? (
-                <tr>
-                  <td colSpan="9" style={{ textAlign: "center", padding: "12px" }}>
-                    No drivers found
-                  </td>
-                </tr>
-              ) : (
-                drivers.map((driver) => (
-                  <tr key={driver.id}>
-                    <td className="action-buttons">
-                      <button
-                        className="table-action-btn view"
-                        onClick={() => handleSync(driver)}
-                        disabled={viewLoading === driver.id}
-                      >
-                        {viewLoading === driver.id ? "Loading..." : "Sync"}
-                      </button>
-                      <button
-                        className="table-action-btn view"
-                        onClick={() => handleView(driver)}
-                        disabled={viewLoading === driver.id}
-                      >
-                        {viewLoading === driver.id ? "Loading..." : "View"}
-                      </button>
-                      <button
-                        className="table-action-btn view"
-                        onClick={() => handleHistory(driver)}
-                        disabled={viewLoading === driver.id}
-                      >
-                        {viewLoading === driver.id ? "Loading..." : "History"}
-                      </button>
-                      <button
-                        className="table-action-btn view"
-                        onClick={() => handleEdit(driver)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="table-action-btn view"
-                        onClick={() => handleIntervalClick(driver)}
-                      >
-                        Interval
-                      </button>
-                    </td>
-                    <td>{driver.geotabId}</td>
-                    <td>{driver.email}</td>
-                    <td>{driver.firstName}</td>
-                    <td>{driver.lastName}</td>
-                    <td>{driver.licenseNo}</td>
-                    <td>{driver.phoneNumber}</td>
-                    <td>{driver.lcCheckInterval || 1}</td>
-                    <td>{driver.licenseProvince}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <div className="card">
+            <div className="card-header">
+              <div>
+                <label>Records per page:</label>
+                <select value={recordsPerPage} onChange={(e) => setRecordsPerPage(Number(e.target.value))}>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+            </div>
 
+            <div className="card-content">
+              <table className="drivers-table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Id</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>License Number</th>
+                    <th>Phone Number</th>
+                    <th>Interval (Daily)</th>
+                    <th>License Province</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedDrivers.length === 0 ? (
+                    <tr>
+                      <td colSpan="9" style={{ textAlign: "center", padding: "12px" }}>
+                        No drivers found
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedDrivers.map((driver) => (
+                      <tr key={driver.id}>
+                        <td className="action-buttons">
+                          <button
+                            className="table-action-btn view"
+                            onClick={() => handleSync(driver)}
+                            disabled={viewLoading === driver.id}
+                          >
+                            {viewLoading === driver.id ? "Loading..." : "Sync"}
+                          </button>
+                          <button
+                            className="table-action-btn view"
+                            onClick={() => handleView(driver)}
+                            disabled={viewLoading === driver.id}
+                          >
+                            {viewLoading === driver.id ? "Loading..." : "View"}
+                          </button>
+                          <button
+                            className="table-action-btn view"
+                            onClick={() => handleHistory(driver)}
+                            disabled={viewLoading === driver.id}
+                          >
+                            {viewLoading === driver.id ? "Loading..." : "History"}
+                          </button>
+                          <button
+                            className="table-action-btn view"
+                            onClick={() => handleEdit(driver)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="table-action-btn view"
+                            onClick={() => handleIntervalClick(driver)}
+                          >
+                            Interval
+                          </button>
+                        </td>
+                        <td>{driver.geotabId}</td>
+                        <td>{driver.email}</td>
+                        <td>{driver.firstName}</td>
+                        <td>{driver.lastName}</td>
+                        <td>{driver.licenseNo}</td>
+                        <td>{driver.phoneNumber}</td>
+                        <td>{driver.lcCheckInterval || 1}</td>
+                        <td>{driver.licenseProvince}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+              
+              <div className="table-footer">
+                <div className="pagination-info">
+                  Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, drivers.length)} of {drivers.length} drivers
+                </div>
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="pagination-nav"
+                    >
+                      Previous
+                    </button>
+
+                    {generatePaginationRange(currentPage, totalPages).map((page, index) => {
+                      if (page === '...') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="pagination-ellipsis">
+                            ...
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? 'active' : ''}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="pagination-nav"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
