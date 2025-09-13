@@ -44,14 +44,12 @@ module.exports = (env) => {
     entry: {
       bundle: path.resolve(__dirname, 'src/app/index.js'),
     },
-output: {
-  path: path.resolve(__dirname, 'dist'),
-  filename: '[name].js',
-  publicPath: './',
-  clean: true
-}
-
-
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: '[name].js',
+      publicPath: './',
+      clean: true
+    },
     devServer: {
       static: {
         directory: path.resolve(__dirname, 'dist')
@@ -78,7 +76,7 @@ output: {
           test: /\.css$/i,
           use: [
             MiniCssExtractPlugin.loader,
-            "css-loader", 
+            "css-loader",
             "postcss-loader",
           ]
         },
@@ -89,7 +87,7 @@ output: {
             loader: 'babel-loader',
             options: {
               presets: [
-                '@babel/preset-env', 
+                '@babel/preset-env',
                 ["@babel/preset-react", {
                   "runtime": "automatic"
                 }]
