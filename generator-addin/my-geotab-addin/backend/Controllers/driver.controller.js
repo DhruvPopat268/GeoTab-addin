@@ -162,73 +162,74 @@ module.exports.getAllDrivers = async (req, res, next) => {
 // Controller to sync drivers from Geotab
 module.exports.syncDrivers = async (req, res, next) => {
   try {
-    const incomingDrivers = req.body.drivers; // Array of driver objects from Geotab
-    const userName = req.body.userName; // Get userName from request body
-    const database = req.body.database; // Get database from request body
-    
+    const incomingDrivers = req.body.drivers;
+    const { userName, database } = req.body;
+
     if (!Array.isArray(incomingDrivers)) {
-      return res.status(400).json({ message: 'drivers array required' });
+      return res.status(400).json({ message: "drivers array required" });
     }
-
     if (!userName || !database) {
-      return res.status(400).json({ message: 'userName and database are required' });
+      return res
+        .status(400)
+        .json({ message: "userName and database are required" });
     }
 
-    // Get all current drivers from DB for this specific user and database
-    const dbDrivers = await driverModel.find({ userName, database });
-    const dbGeotabIds = dbDrivers.map(d => d.geotabId);
-    const incomingGeotabIds = incomingDrivers.map(d => d.geotabId);
+    // Get current drivers for this user/database
+    const dbDrivers = await driverModel.find({ userName, database }).lean();
+    const dbDriverMap = new Map(dbDrivers.map(d => [d.geotabId, d]));
 
-    // Upsert all incoming drivers
-    const upserted = [];
+    // Build bulk operations
+    const bulkOps = [];
+
     for (const driver of incomingDrivers) {
-      try {
-        // Add userName and database to each driver
-        driver.userName = userName;
-        driver.database = database;
-        
-        // Find existing driver in DB by geotabId
-        const existing = dbDrivers.find(d => d.geotabId === driver.geotabId);
-        
-        // Preserve lcCheckInterval if it exists in DB and is valid
-        if (existing && typeof existing.lcCheckInterval === 'number' && existing.lcCheckInterval > 0) {
-          driver.lcCheckInterval = existing.lcCheckInterval;
-        } else if (!driver.lcCheckInterval || typeof driver.lcCheckInterval !== 'number' || driver.lcCheckInterval <= 0) {
-          // Set default interval if none exists or invalid
-          driver.lcCheckInterval = 1;
+      driver.userName = userName;
+      driver.database = database;
+
+      const existing = dbDriverMap.get(driver.geotabId);
+
+      // Preserve lcCheckInterval if valid in DB
+      if (existing && typeof existing.lcCheckInterval === "number" && existing.lcCheckInterval > 0) {
+        driver.lcCheckInterval = existing.lcCheckInterval;
+      } else if (!driver.lcCheckInterval || typeof driver.lcCheckInterval !== "number" || driver.lcCheckInterval <= 0) {
+        driver.lcCheckInterval = 1;
+      }
+
+      bulkOps.push({
+        updateOne: {
+          filter: { geotabId: driver.geotabId, userName, database },
+          update: { $set: driver },
+          upsert: true
         }
-        
-        const result = await driverModel.upsertDriver(driver);
-        upserted.push(result);
-      } catch (error) {
-        console.error(`Error upserting driver ${driver.geotabId}:`, error);
-        if (error.code === 11000) {
-          console.log(`Duplicate key error for driver ${driver.geotabId} - skipping`);
-        }
+      });
+    }
+
+    // Drivers to delete (not in incoming list)
+    const incomingGeotabIds = new Set(incomingDrivers.map(d => d.geotabId));
+    for (const d of dbDrivers) {
+      if (!incomingGeotabIds.has(d.geotabId)) {
+        bulkOps.push({
+          deleteOne: {
+            filter: { geotabId: d.geotabId, userName, database }
+          }
+        });
       }
     }
 
-    // Delete (or mark inactive) drivers not in incoming list for this user
-    const toDelete = dbDrivers.filter(d => !incomingGeotabIds.includes(d.geotabId));
-    const deleted = [];
-    for (const driver of toDelete) {
-      // Hard delete:
-      await driverModel.deleteOne({ geotabId: driver.geotabId, userName, database });
-      deleted.push(driver);
-      // Or for soft delete, use:
-      // await driverModel.updateOne({ geotabId: driver.geotabId, userName, database }, { $set: { isActive: false } });
-    }
+    // Execute all upserts + deletes in ONE call
+    const result = await driverModel.bulkWrite(bulkOps, { ordered: false });
 
     res.status(200).json({
-      message: 'Drivers synced',
-      upserted: upserted.length,
-      deleted: deleted.length
+      message: "Drivers synced",
+      upserted: result.upsertedCount || 0,
+      modified: result.modifiedCount || 0,
+      deleted: result.deletedCount || 0
     });
   } catch (error) {
-    console.error('Error syncing drivers:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
+    console.error("Error syncing drivers:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 // Update only the interval for a driver
 module.exports.updateDriverInterval = async (req, res, next) => {
