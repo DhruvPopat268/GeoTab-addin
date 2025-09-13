@@ -329,7 +329,7 @@
     background-color: #00467f !important;
     color: white !important;
     padding: 12px 15px;
-    text-align: center;
+    text-align: center !important;;
     position: sticky;
     top: 0;
     font-weight: 600;
