@@ -275,14 +275,46 @@
     display: none;
 }
 
+/* Card Styles */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 0.5rem;
+}
+
+.card-header select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 0;
+}
+
 /* Enhanced Table Styles */
 .drivers-table-container {
     width: 1200px;
     /* margin-top: 2rem; */
     overflow-x: auto;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .drivers-table {
@@ -294,8 +326,8 @@
 }
 
 .drivers-table th {
-    background-color: #00467f;
-    color: white;
+    background-color: #00467f !important;
+    color: white !important;
     padding: 12px 15px;
     text-align: center;
     position: sticky;
@@ -417,6 +449,65 @@
 
 .delete-btn:hover {
     background-color: #cc0000;
+}
+
+/* Table Footer and Pagination */
+.table-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.pagination button {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #f0f0f0;
+    border-color: #999;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    background-color: #00467f;
+    color: white;
+    border-color: #00467f;
+}
+
+.pagination-nav {
+    font-weight: 500;
+}
+
+.pagination-ellipsis {
+    padding: 0.5rem 0.25rem;
+    color: #666;
 }
 
 /* Root and Page Container */
@@ -570,7 +661,6 @@
         padding: 8px 10px;
         font-size: 14px;
         border-right: 1px solid #ddd;
-
     }
 
     .table-action-btn {

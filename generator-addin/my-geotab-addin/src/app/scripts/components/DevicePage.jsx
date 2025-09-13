@@ -8,8 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar.jsx';
 import { toast } from 'react-toastify';
 
-
-
 const DevicePage = ({ }) => {
   const [context, setContext] = useContext(Geotab);
   const { geotabApi, geotabState, logger } = context;
