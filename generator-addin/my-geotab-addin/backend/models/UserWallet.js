@@ -5,7 +5,7 @@ const paymentSchema = new mongoose.Schema({
   paypalId: String,
   amount: Number,
   date: Date
-});
+}, { timestamps: true });
 
 const purchaseSchema = new mongoose.Schema({
   planId: String, // ID or name of the plan purchased
@@ -13,7 +13,7 @@ const purchaseSchema = new mongoose.Schema({
   name: String, // e.g., "Weather API - Pro Plan"
   date: Date,
   credits: Number       // <-- Added credits here
-});
+}, { timestamps: true });
 
 
 // Add currentPlan to track the user's currently active plan
@@ -24,7 +24,7 @@ const currentPlanSchema = new mongoose.Schema({
   date: Date,
   expiryDate: Date,
   credits: Number        // <-- Added credits here
-});
+}, { timestamps: true });
 
 
 const userWalletSchema = new mongoose.Schema({
@@ -36,7 +36,7 @@ const userWalletSchema = new mongoose.Schema({
   credits: { type: Number, default: 0 },
 
   currentPlan: currentPlanSchema  // <-- Newly added
-});
+}, { timestamps: true });
 
 // Create compound unique index for userId + database
 userWalletSchema.index({ userId: 1, database: 1 }, { unique: true });
