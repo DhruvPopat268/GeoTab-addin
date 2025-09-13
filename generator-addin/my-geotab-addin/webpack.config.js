@@ -44,12 +44,13 @@ module.exports = (env) => {
     entry: {
       bundle: path.resolve(__dirname, 'src/app/index.js'),
     },
-    output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: 'main.js',
-      assetModuleFilename: '[name][ext]',
-      clean: true
-    },
+output: {
+  path: path.resolve(__dirname, 'dist'),
+  filename: '[name].js',
+  publicPath: './',
+  clean: true
+}
+
 
     devServer: {
       static: {
