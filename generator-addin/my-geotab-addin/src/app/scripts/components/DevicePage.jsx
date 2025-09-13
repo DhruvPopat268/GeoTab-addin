@@ -78,11 +78,6 @@ const DevicePage = ({ }) => {
 
   }, []);
 
-  useEffect(() => {
-    console.log("original drivers are", originalDrivers);
-    console.log("displayed drivers are", displayedDrivers);
-  }, [originalDrivers]);
-
   const fetchAllDrivers = async () => {
     try {
       setLoading(true);
@@ -134,7 +129,7 @@ const DevicePage = ({ }) => {
   // Add this function after fetchAllDrivers
   const syncDriversToMongo = async (drivers) => {
     if (!drivers || drivers.length === 0) return;
-    
+
     setLoading(true);
     // Map licenseNumber to licenseNo for backend compatibility and include geotabId
     const mappedDrivers = drivers.map(driver => ({
@@ -142,12 +137,12 @@ const DevicePage = ({ }) => {
       licenseNo: driver.licenseNumber,
       geotabId: driver.id, // Include the Geotab ID
     }));
-    
+
     try {
-      const res = await axios.post(`${BASE_URL}/api/driver/sync`, { 
-        drivers: mappedDrivers, 
-        userName, 
-        database 
+      const res = await axios.post(`${BASE_URL}/api/driver/sync`, {
+        drivers: mappedDrivers,
+        userName,
+        database
       });
       if (res.status === 200) {
         toast.success(res.data?.message || 'Drivers synced');
@@ -172,7 +167,6 @@ const DevicePage = ({ }) => {
           userName,
           database
         });
-
         if (res.status === 200) {
           setDrivers(res.data.data || []);
           setError('');
@@ -187,55 +181,53 @@ const DevicePage = ({ }) => {
         }
       }
     }
-
     if (!success) {
       toast.error('Failed to fetch drivers after multiple attempts');
     }
-
     setLoading(false);
   };
 
-  // Add this useEffect after the fetchAllDrivers useEffect
+  // to store in mongo and fetch from mongo when originalDrivers change
   useEffect(() => {
+  (async () => {
     if (originalDrivers.length > 0) {
-      syncDriversToMongo(originalDrivers);
-      fetchDrivers();
+      await syncDriversToMongo(originalDrivers); // wait until sync is done
+      await fetchDrivers(); // then fetch from Mongo
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originalDrivers]);
+  })();
+}, [originalDrivers]);
 
   // Update sendConsentEmails to handle a single driver
-const sendConsentEmails = async (driver) => {
-  const licenseNumber = driver.licenseNumber || driver.licenseNo;
-  const email = driver.Email || driver.email;
-  const firstName = driver.firstName;
-  const lastName = driver.lastName;
+  const sendConsentEmails = async (driver) => {
+    const licenseNumber = driver.licenseNumber || driver.licenseNo;
+    const email = driver.Email || driver.email;
+    const firstName = driver.firstName;
+    const lastName = driver.lastName;
 
-  // Validation check
-  if (!firstName || !lastName || !licenseNumber || !email) {
-    toast.error("First Name, Last Name, License Number, and Email are required");
-    return { success: false };
-  }
+    // Validation check
+    if (!firstName || !lastName || !licenseNumber || !email) {
+      toast.error("First Name, Last Name, License Number, and Email are required");
+      return { success: false };
+    }
 
-  try {
-    const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
-      firstName,
-      lastName,
-      licenceNo: licenseNumber,
-      email
-    });
-    toast.success(res.data?.message || 'Consent email sent');
-    return res.data;
-  } catch (err) {
-    const msg =
-      err.response?.data?.message ||
-      err.message ||
-      'Failed to send consent email';
-    toast.error(msg);
-    return err.response?.data || { success: false };
-  }
-};
-
+    try {
+      const res = await axios.post(`${BASE_URL}/api/DriverConsent/sendEmail`, {
+        firstName,
+        lastName,
+        licenceNo: licenseNumber,
+        email
+      });
+      toast.success(res.data?.message || 'Consent email sent');
+      return res.data;
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to send consent email';
+      toast.error(msg);
+      return err.response?.data || { success: false };
+    }
+  };
 
   const onsubmit = async (data) => {
     const isEditing = Boolean(editingDriver);
@@ -317,17 +309,6 @@ const sendConsentEmails = async (driver) => {
     }
   };
 
-  // const handleEdit = (driver) => {
-  //   setEditingDriver(driver);
-  //   setValue('firstName', driver.firstName);
-  //   setValue('lastName', driver.lastName);
-  //   setValue('employeeNo', driver.employeeNo);
-  //   setValue('phoneNumber', driver.phoneNumber);
-  //   setValue('licenseNumber', driver.licenseNumber);
-  //   setValue('licenseProvince', driver.licenseProvince);
-  //   setShowCreateForm(true);
-  // };
-
   const handleEdit = (driver) => {
     window.location.href = `https://my.geotab.com/${database}/#user,currentTab:user,id:${driver.geotabId}`
   };
@@ -345,7 +326,7 @@ const sendConsentEmails = async (driver) => {
       if (!showDeleteConfirm) return;
 
       const res = await axios.delete(`${BASE_URL}/api/driver/delete`, {
-        data: { email: showDeleteConfirm.email, userName  }
+        data: { email: showDeleteConfirm.email, userName }
       });
 
       if (res.status !== 200) {
@@ -400,9 +381,9 @@ const sendConsentEmails = async (driver) => {
       if (!showSyncConfirm) return;
       setViewLoading(showSyncConfirm.id);
       // Check wallet eligibility
-      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, { 
-        userId: userName, 
-        database 
+      const eligibilityResponse = await axios.post(`${BASE_URL}/api/UserWallet/checksEligibility`, {
+        userId: userName,
+        database
       });
       if (eligibilityResponse.status === 200) {
         const { zeroCredit, planExpired } = eligibilityResponse.data;
