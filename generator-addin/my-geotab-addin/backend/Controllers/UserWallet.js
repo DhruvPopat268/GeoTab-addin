@@ -154,7 +154,7 @@ module.exports.checksEligibility = async (req, res) => {
     if (!wallet) {
       return res.status(200).json({
         success: false,
-        message: 'User wallet not found'
+        message: 'You dont have credits!! purchase a plan first'
       });
     }
 
