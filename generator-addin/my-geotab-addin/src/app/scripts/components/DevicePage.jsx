@@ -515,7 +515,6 @@ const DevicePage = ({ }) => {
 
       <div className="page-container">
 
-
         <div className="drivers-table-container">
           <div className="card">
             <div className="card-header">
