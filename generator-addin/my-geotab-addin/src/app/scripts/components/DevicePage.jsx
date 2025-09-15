@@ -397,6 +397,7 @@ const DevicePage = ({ }) => {
         }
         if(!eligibilityResponse.data.success){
           toast.error(eligibilityResponse.data.message || "You don't have enough credits");
+          return
         }
         // Use fallback for license number
         const licenseNumber = showSyncConfirm.licenseNumber || showSyncConfirm.licenseNo;
