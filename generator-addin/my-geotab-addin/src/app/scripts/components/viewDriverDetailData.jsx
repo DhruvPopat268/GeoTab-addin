@@ -13,12 +13,12 @@ const ViewDriverLicenceSummary = () => {
     const [error, setError] = useState(null);
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
+    const key = Object.keys(localStorage).find(k => k.startsWith("sTokens_"));
 
-const sessionDataRaw = key ? localStorage.getItem(key) : null;
+    const sessionDataRaw = key ? localStorage.getItem(key) : null;
 
-console.log("Key:", key);
-console.log("Value:", sessionDataRaw);
+    console.log("Key:", key);
+    console.log("Value:", sessionDataRaw);
 
     const sessionData = sessionDataRaw ? JSON.parse(sessionDataRaw) : null;
     const userName = sessionData?.userName || "unknown@user.com";
@@ -199,7 +199,7 @@ console.log("Value:", sessionDataRaw);
             } else {
                 // If data is empty or null, simulate 404
                 navigate('/lc-check');
-                toast.error("Driver not found for this licence number");
+                toast.error("Driver data not found ! sync first");
             }
 
         } catch (err) {

@@ -103,7 +103,7 @@ const DriverLicenseTable = () => {
       } else {
         // If data is empty or null, simulate 404
         navigate('/lc-check');
-        toast.error("Driver not found for this licence number");
+        toast.error("Driver data not found ! sync first");
       }
 
     } catch (err) {
