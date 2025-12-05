@@ -304,34 +304,64 @@ module.exports.sendEmail = async (req, res, next) => {
   const toEmail = email;
 
   try {
-    console.log(licenceNo)
-    const driver = await DriverConsent.findOne({
-      'driverDetails.driverLicenceNumber': licenceNo
-    });
-    console.log(driver)
-
-    if (!driver) {
-      // send form email
-      await sendEmail(toEmail, licenceNo);
+    // Validate email before doing anything else
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!toEmail || !emailRegex.test(toEmail)) {
       return res.status(400).json({
         success: false,
-        message: 'License number not found. Consent form sent to driver email.',
+        message: "Invalid email address"
       });
     }
 
-    if (
-      driver.driverDetails.firstName.toLowerCase() === firstName.toLowerCase() &&
-      driver.driverDetails.surname.toLowerCase() === lastName.toLowerCase()
-    ) {
-      return res.json({ success: true, message: 'License and name matched' });
+    console.log(licenceNo);
+    
+    const driver = await DriverConsent.findOne({
+      "driverDetails.driverLicenceNumber": licenceNo
+    });
+
+    console.log(driver);
+
+    // CASE 1: Driver not found → send consent form email
+    if (!driver) {
+      try {
+        await sendEmail(toEmail, licenceNo); // may throw error
+      } catch (err) {
+        console.error("Email sending failed:", err.message);
+        return res.status(400).json({
+          success: false,
+          message: err.message  // e.g. "Invalid email address"
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "License number not found. Consent form sent to driver email."
+      });
+    }
+
+    // CASE 2: Driver exists → check name match
+    const firstMatch =
+      driver.driverDetails.firstName.toLowerCase() === firstName.toLowerCase();
+    const lastMatch =
+      driver.driverDetails.surname.toLowerCase() === lastName.toLowerCase();
+
+    if (firstMatch && lastMatch) {
+      return res.json({
+        success: true,
+        message: "License and name matched"
+      });
     } else {
       return res.status(400).json({
         success: false,
-        message: 'License number exists, but names do not match.',
+        message: "License number exists, but names do not match."
       });
     }
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Server Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error"
+    });
   }
-}
+};
