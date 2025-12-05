@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Star, Zap, Shield, Clock, CreditCard, X } from 'lucide-react';
-import Navbar from './Navbar.jsx';
 
 import axios from 'axios';
 import './componentStyles/LCCheckPlans.css';
@@ -123,7 +122,6 @@ console.log("Value:", sessionDataRaw);
 
   return (
     <div className="lc-main">
-      <Navbar />
 
       <div className="lc-header-section">
         <div className="lc-header-container">

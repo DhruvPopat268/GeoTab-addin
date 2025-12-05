@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Navbar from './Navbar.jsx';
 import './componentStyles/LCCheckUsage.css';
 import { API_URL } from '../../../env.js';
 import axios from 'axios';
@@ -317,7 +316,6 @@ const LCCheckUsage = () => {
 
   return (
     <div className="lc-usage-container">
-      <Navbar />
 
       <div className="content">
 

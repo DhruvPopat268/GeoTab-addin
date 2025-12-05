@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
 import './componentStyles/viewDriverDetailData.css';
 import axios from 'axios';
@@ -278,7 +277,6 @@ const ViewDriverLicenceSummary = () => {
 
     return (
         <>
-            <Navbar />
 
             {/* Download button positioned on the right */}
             <div className='download' style={{

@@ -5,7 +5,6 @@ import './componentStyles/DevicePage.css';
 import axios from 'axios'
 import { BASE_URL } from '../../../env.js';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar.jsx';
 import { toast } from 'react-toastify';
 
 const DevicePage = ({ }) => {
@@ -573,7 +572,6 @@ const DevicePage = ({ }) => {
 
   return (
     <div className="root">
-      <Navbar />
 
       <div className="page-container">
 

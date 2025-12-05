@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Plus, Minus, ArrowUpRight, ArrowDownLeft, CreditCard, CheckCircle
 } from 'lucide-react';
-import Navbar from './Navbar.jsx';
 import './componentStyles/wallet.css';
 import PayPalButton from './PayPalButton.jsx';
 import { BASE_URL } from '../../../env.js';
@@ -121,7 +120,6 @@ const Wallet = () => {
   if (loading) {
     return (
       <div className="wallet">
-        <Navbar />
         <div className="wallet-container">
           <div className="spinner-container">
             <div className="spinner" />
@@ -135,7 +133,6 @@ const Wallet = () => {
   if (error) {
     return (
       <div className="wallet">
-        <Navbar />
         <div className="wallet-container">
           <div className="error">
             <p>{error}</p>
@@ -148,7 +145,6 @@ const Wallet = () => {
 
   return (
     <div className="wallet">
-      <Navbar />
 
       <div className="wallet-container">
         <h1 className="wallet-title">My Wallet</h1>

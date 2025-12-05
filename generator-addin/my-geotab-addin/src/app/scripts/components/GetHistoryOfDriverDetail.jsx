@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, Download, ChevronDown } from 'lucide-react';
 import './componentStyles/GetHistoryOfDriverDetail.css';
-import Navbar from './Navbar.jsx';
 import axios from 'axios';
 import { BASE_URL } from '../../../env.js';
 import { toast } from 'react-toastify';
@@ -407,7 +406,6 @@ const DriverLicenseTable = () => {
   if (error) {
     return (
       <div className="driver-license-container">
-        <Navbar />
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -447,7 +445,6 @@ const DriverLicenseTable = () => {
 
   return (
     <div className="driver-license-container">
-      <Navbar />
       <div className="table-wrapper">
         <div className="table-scroll">
           <table className="driver-table">

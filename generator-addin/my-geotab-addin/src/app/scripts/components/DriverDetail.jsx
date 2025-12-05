@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './Navbar.jsx';
 import { BASE_URL } from '../../../env.js';
 import './componentStyles/DriverDetail.css';
 import { toast } from 'react-toastify';
@@ -325,7 +324,6 @@ const DriverLicenceSummary = () => {
 
     return (
         <>
-            <Navbar />
 
             {/* Download button positioned on the right */}
             <div className='download' style={{
