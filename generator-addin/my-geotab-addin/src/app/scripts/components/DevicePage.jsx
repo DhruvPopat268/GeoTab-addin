@@ -72,6 +72,7 @@ const DevicePage = ({ }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [totalDrivers, setTotalDrivers] = useState(0);
+  const [paginationTokens, setPaginationTokens] = useState({}); // Store fromId for each page
 
   // Fetch drivers when page or recordsPerPage changes
   useEffect(() => {
@@ -121,22 +122,36 @@ const DevicePage = ({ }) => {
         await fetchTotalDriverCount();
       }
 
-      const fromVersion = (page - 1) * limit;
+      // Build API call parameters
+      const apiParams = {
+        typeName: "User",
+        resultsLimit: limit,
+        search: {
+          isDriver: true,
+          orderBy: [{
+            property: "lastAccessDate",
+            direction: "desc"
+          }]
+        }
+      };
+
+      // Add fromId for pagination (skip for first page)
+      if (page > 1 && paginationTokens[page]) {
+        apiParams.fromId = paginationTokens[page];
+      }
       
       await new Promise((resolve, reject) => {
-        geotabApi.call("Get", {
-          typeName: "User",
-          resultsLimit: limit,
-          fromVersion: fromVersion,
-          search: {
-            isDriver: true,
-            orderBy: [{
-              property: "lastAccessDate",
-              direction: "desc"
-            }]
-          }
-        }, function (users) {
+        geotabApi.call("Get", apiParams, function (users) {
           console.log(`Fetched ${users.length} drivers for page ${page}`);
+          
+          // Store the last user's ID as the token for the next page
+          if (users.length === limit && users.length > 0) {
+            const lastUserId = users[users.length - 1].id;
+            setPaginationTokens(prev => ({
+              ...prev,
+              [page + 1]: lastUserId
+            }));
+          }
           
           const transformedDrivers = users.map(driver => ({
             id: driver.id,
@@ -560,6 +575,7 @@ const DevicePage = ({ }) => {
   // Reset to first page when records per page changes
   useEffect(() => {
     setCurrentPage(1);
+    setPaginationTokens({}); // Clear pagination tokens when changing page size
   }, [recordsPerPage]);
 
   if (loading) {
