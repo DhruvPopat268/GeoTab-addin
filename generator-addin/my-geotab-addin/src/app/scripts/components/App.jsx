@@ -12,6 +12,7 @@ import ViewDriverLicenceSummary from './viewDriverDetailData.jsx';
 import GetHistoryOfDriverDetail from './GetHistoryOfDriverDetail.jsx';
 import LCCheckView from './LCCheckView.jsx';
 import MyGeoTabWalletGuide from './userManual.jsx';
+import Navbar from './Navbar.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import './componentStyles/toast.css';
 
@@ -27,7 +28,7 @@ const App = ({ geotabApi, geotabState, appName }) => {
 
       <GeotabContext.Provider value={[context, setContext]}>
         <Router>
-
+          <Navbar />
           <Routes>
 
             <Route path="/" element={<Dashboard />} />

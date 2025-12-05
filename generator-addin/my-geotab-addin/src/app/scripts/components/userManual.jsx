@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from './Navbar.jsx';
 
 
 const steps = [
@@ -59,7 +58,6 @@ const steps = [
 const MyGeoTabWalletGuide = () => {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-            <Navbar />
 
             <h2 style={{ textAlign: 'center', fontSize: '2rem', marginBottom: '2rem' }}>
                 🧾 MyGeoTab Add-In User Guide

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, CreditCard, Zap, TrendingUp, Eye } from 'lucide-react';
-import Navbar from './Navbar.jsx';
 import './componentStyles/dashboard.css';
 import { Link } from 'react-router-dom';
 import { BASE_URL } from '../../../env.js';
@@ -71,7 +70,6 @@ console.log("Value:", sessionDataRaw);
   if (loading) {
     return (
       <div className="dashboard-wrapper">
-        <Navbar />
         <div className="dashboard-container">
           <div className="dashboard-header">
             <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
@@ -90,7 +88,6 @@ console.log("Value:", sessionDataRaw);
   if (error) {
     return (
       <div className="dashboard-wrapper">
-        <Navbar />
         <div className="dashboard-container">
           <div className="dashboard-header">
             <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
@@ -105,7 +102,6 @@ console.log("Value:", sessionDataRaw);
 
   return (
     <div className="dashboard-wrapper">
-      <Navbar />
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case" style={{ fontFamily: "var(--main-font)" }}>
