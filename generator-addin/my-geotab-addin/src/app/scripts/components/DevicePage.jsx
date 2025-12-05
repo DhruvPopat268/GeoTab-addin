@@ -536,10 +536,12 @@ const DevicePage = ({ }) => {
     return rangeWithDots;
   };
 
-  // Pagination logic - use displayedDrivers for Geotab data
-  const totalPages = Math.ceil(displayedDrivers.length / recordsPerPage);
+  // Pagination logic - use totalDrivers for proper pagination
+  const totalPages = Math.ceil(totalDrivers / recordsPerPage);
   const startIndex = (currentPage - 1) * recordsPerPage;
-  const paginatedDrivers = displayedDrivers.slice(startIndex, startIndex + recordsPerPage);
+  const paginatedDrivers = displayedDrivers; // Already paginated from API
+  
+  console.log('Pagination Debug:', { totalDrivers, recordsPerPage, totalPages, currentPage });
 
   // Reset to first page when records per page changes
   useEffect(() => {
@@ -651,10 +653,9 @@ const DevicePage = ({ }) => {
               
               <div className="table-footer">
                 <div className="pagination-info">
-                  Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, displayedDrivers.length)} of {displayedDrivers.length} (Total: {totalDrivers} drivers)
+                  Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, totalDrivers)} of {totalDrivers} drivers
                 </div>
-                {totalPages > 1 && (
-                  <div className="pagination">
+                <div className="pagination">
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
@@ -691,7 +692,6 @@ const DevicePage = ({ }) => {
                       Next
                     </button>
                   </div>
-                )}
               </div>
             </div>
           </div>
