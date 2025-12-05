@@ -496,15 +496,14 @@ const DevicePage = ({ }) => {
     }
     
     try {
-      const totalDays = (intervalMonths * 30) + intervalDays;
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
-        licenseNo: intervalPopup.driver.licenseNo,
-        lcCheckInterval: totalDays,
+        licenseNo: intervalPopup.driver.licenseNo || intervalPopup.driver.licenseNumber,
         intervalMonths,
         intervalDays,
         userName,
         database
       });
+      const totalDays = (intervalMonths * 30) + intervalDays;
       toast.success('Interval updated');
       // Update local state for immediate UI feedback
       setOriginalDrivers((prev) => prev.map(d =>
