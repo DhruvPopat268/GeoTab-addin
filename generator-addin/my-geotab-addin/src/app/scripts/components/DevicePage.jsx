@@ -78,6 +78,34 @@ const DevicePage = ({ }) => {
     fetchDriversPage(currentPage, recordsPerPage);
   }, [currentPage, recordsPerPage]);
 
+  const fetchTotalDriverCount = async () => {
+    let totalCount = 0;
+    let fromVersion = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      await new Promise((resolve, reject) => {
+        geotabApi.call("Get", {
+          typeName: "User",
+          resultsLimit: 5000,
+          fromVersion: fromVersion,
+          search: { isDriver: true }
+        }, function (users) {
+          totalCount += users.length;
+          if (users.length < 5000) {
+            hasMore = false;
+          } else {
+            fromVersion = Math.max(...users.map(u => u.version || 0)) + 1;
+          }
+          resolve();
+        }, reject);
+      });
+    }
+
+    setTotalDrivers(totalCount);
+    return totalCount;
+  };
+
   const fetchDriversPage = async (page = 1, limit = recordsPerPage) => {
     try {
       setLoading(true);
@@ -86,6 +114,11 @@ const DevicePage = ({ }) => {
         console.error("Geotab API not available");
         toast.error("Geotab API not available");
         return;
+      }
+
+      // Get total count on first load
+      if (totalDrivers === 0) {
+        await fetchTotalDriverCount();
       }
 
       const fromVersion = (page - 1) * limit;
@@ -115,7 +148,8 @@ const DevicePage = ({ }) => {
             licenseNumber: driver.licenseNumber || "",
             licenseProvince: driver.licenseProvince || "",
             driverStatus: driver.isActive ? "Active" : "InActive",
-            lcCheckInterval: driver.lcCheckInterval || 1
+            lcCheckInterval: driver.lcCheckInterval || 1,
+            lastAccessDate: driver.lastAccessDate
           }));
 
           setOriginalDrivers(transformedDrivers);
@@ -502,10 +536,10 @@ const DevicePage = ({ }) => {
     return rangeWithDots;
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(drivers.length / recordsPerPage);
+  // Pagination logic - use displayedDrivers for Geotab data
+  const totalPages = Math.ceil(displayedDrivers.length / recordsPerPage);
   const startIndex = (currentPage - 1) * recordsPerPage;
-  const paginatedDrivers = drivers.slice(startIndex, startIndex + recordsPerPage);
+  const paginatedDrivers = displayedDrivers.slice(startIndex, startIndex + recordsPerPage);
 
   // Reset to first page when records per page changes
   useEffect(() => {
@@ -528,7 +562,8 @@ const DevicePage = ({ }) => {
 
         <div className="drivers-table-container">
           <div className="card">
-            <div className="card-header">
+            <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div></div>
               <div>
                 <label>Records per page:</label>
                 <select value={recordsPerPage} onChange={(e) => setRecordsPerPage(Number(e.target.value))}>
@@ -616,7 +651,7 @@ const DevicePage = ({ }) => {
               
               <div className="table-footer">
                 <div className="pagination-info">
-                  Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, drivers.length)} of {drivers.length} drivers
+                  Showing {startIndex + 1}-{Math.min(startIndex + recordsPerPage, displayedDrivers.length)} of {displayedDrivers.length} (Total: {totalDrivers} drivers)
                 </div>
                 {totalPages > 1 && (
                   <div className="pagination">
