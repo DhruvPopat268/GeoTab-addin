@@ -64,7 +64,8 @@ const DevicePage = ({ }) => {
 
   // Add interval update handler
   const [intervalPopup, setIntervalPopup] = useState({ open: false, driver: null });
-  const [intervalValue, setIntervalValue] = useState(1);
+  const [intervalMonths, setIntervalMonths] = useState(0);
+  const [intervalDays, setIntervalDays] = useState(1);
 
   const [drivers, setDrivers] = useState([]);
 
@@ -476,26 +477,41 @@ const DevicePage = ({ }) => {
 
   // Add interval update handler
   const handleIntervalClick = (driver) => {
-    setIntervalValue(driver.lcCheckInterval || 1);
+    // Parse existing interval (assuming it's stored as days)
+    const totalDays = driver.lcCheckInterval || 1;
+    const months = Math.floor(totalDays / 30);
+    const days = totalDays % 30;
+    setIntervalMonths(months);
+    setIntervalDays(days || 1);
     setIntervalPopup({ open: true, driver });
   };
 
   const handleIntervalSubmit = async () => {
     if (!intervalPopup.driver) return;
+    
+    // Validate input
+    if (intervalMonths < 0 || intervalDays < 0 || (intervalMonths === 0 && intervalDays === 0)) {
+      toast.error('Please enter valid months and days');
+      return;
+    }
+    
     try {
+      const totalDays = (intervalMonths * 30) + intervalDays;
       await axios.patch(`${BASE_URL}/api/driver/update-interval`, {
         licenseNo: intervalPopup.driver.licenseNo,
-        lcCheckInterval: intervalValue,
+        lcCheckInterval: totalDays,
+        intervalMonths,
+        intervalDays,
         userName,
         database
       });
       toast.success('Interval updated');
       // Update local state for immediate UI feedback
       setOriginalDrivers((prev) => prev.map(d =>
-        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
+        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: totalDays } : d
       ));
       setDisplayedDrivers((prev) => prev.map(d =>
-        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: intervalValue } : d
+        d.id === intervalPopup.driver.id ? { ...d, lcCheckInterval: totalDays } : d
       ));
       setIntervalPopup({ open: false, driver: null });
     } catch (err) {
@@ -588,8 +604,8 @@ const DevicePage = ({ }) => {
                     <th>Last Name</th>
                     <th>License Number</th>
                     <th>Phone Number</th>
-                    <th>Interval (Daily)</th>
-                    <th>License Province</th>
+                    <th>Interval </th>
+                    <th>Licence Issued In </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -643,7 +659,14 @@ const DevicePage = ({ }) => {
                         <td>{driver.lastName}</td>
                         <td>{driver.licenseNo}</td>
                         <td>{driver.phoneNumber}</td>
-                        <td>{driver.lcCheckInterval || 1}</td>
+                        <td>
+                          {(() => {
+                            const totalDays = driver.lcCheckInterval || 1;
+                            const months = Math.floor(totalDays / 30);
+                            const days = totalDays % 30;
+                            return months > 0 ? `${months}m ${days}d` : `${days}d`;
+                          })()} 
+                        </td>
                         <td>{driver.licenseProvince}</td>
                       </tr>
                     ))
@@ -790,22 +813,35 @@ const DevicePage = ({ }) => {
         <div className="modern-popup-overlay">
           <div className="modern-popup-content">
             <div className="popup-header">
-              <h3>Set Interval for</h3>
+              <h3>Set Interval for {intervalPopup.driver?.firstName} {intervalPopup.driver?.lastName}</h3>
             </div>
 
             <div className="popup-body">
               <div className="form-group">
-                <label htmlFor="interval-select">Interval (minutes):</label>
-                <select
-                  id="interval-select"
-                  value={intervalValue}
-                  onChange={e => setIntervalValue(Number(e.target.value))}
-                  className="modern-select"
-                >
-                  {[...Array(10)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>{i + 1}</option>
-                  ))}
-                </select>
+                <label htmlFor="interval-months">Months:</label>
+                <input
+                  id="interval-months"
+                  type="number"
+                  min="0"
+                  max="12"
+                  value={intervalMonths}
+                  onChange={e => setIntervalMonths(Number(e.target.value))}
+                  className="modern-input"
+                  placeholder="Enter months"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="interval-days">Days:</label>
+                <input
+                  id="interval-days"
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={intervalDays}
+                  onChange={e => setIntervalDays(Number(e.target.value))}
+                  className="modern-input"
+                  placeholder="Enter days"
+                />
               </div>
             </div>
 

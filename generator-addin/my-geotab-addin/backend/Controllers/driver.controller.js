@@ -143,6 +143,8 @@ module.exports.getAllDrivers = async (req, res, next) => {
       fullName: `${driver.firstName} ${driver.lastName}`,
       licenseProvince: driver.licenseProvince,
       lcCheckInterval: driver.lcCheckInterval || 1,
+      intervalMonths: driver.intervalMonths || 0,
+      intervalDays: driver.intervalDays || 1,
       driverStatus: driver.driverStatus || 'Active'
     }));
 
@@ -233,13 +235,19 @@ module.exports.syncDrivers = async (req, res, next) => {
 // Update only the interval for a driver
 module.exports.updateDriverInterval = async (req, res, next) => {
   try {
-    const { licenseNo, lcCheckInterval, userName, database } = req.body;
+    const { licenseNo, lcCheckInterval, intervalMonths, intervalDays, userName, database } = req.body;
     if (!licenseNo || typeof lcCheckInterval !== 'number' || !userName || !database) {
       return res.status(400).json({ message: 'licenseNo, lcCheckInterval (number), userName, and database are required.' });
     }
+    
+    // Prepare update object
+    const updateData = { lcCheckInterval };
+    if (typeof intervalMonths === 'number') updateData.intervalMonths = intervalMonths;
+    if (typeof intervalDays === 'number') updateData.intervalDays = intervalDays;
+    
     const updated = await driverModel.findOneAndUpdate(
       { licenseNo, userName, database },
-      { $set: { lcCheckInterval } },
+      { $set: updateData },
       { new: true }
     );
     if (!updated) {

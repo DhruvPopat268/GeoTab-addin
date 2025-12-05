@@ -27,7 +27,7 @@ const LCCheckPlans = () => {
         ...plan,
         duration: '1 month',
         features: [
-          `${plan.includedCalls.toLocaleString()} License Checks per month`,
+          `${plan.includedCalls.toLocaleString()} Licence Checks per month`,
           'Basic support',
           'Standard response time',
           'Email notifications',
@@ -132,7 +132,7 @@ console.log("Value:", sessionDataRaw);
               className="text-[28px] font-light leading-[36px] not-italic tracking-[0] normal-case"
               style={{ fontFamily: "var(--main-font)" }}
             >
-              License Check API Plans
+              Licence Check API Plans
             </h1>
 
             <p className="lc-main-description">
@@ -168,7 +168,7 @@ console.log("Value:", sessionDataRaw);
                         <span className="lc-price-period">/month</span>
                       </div>
                       <div className="lc-price-details">
-                        <p className="lc-price-per-call">£{pricePerCall} per License Check</p>
+                        <p className="lc-price-per-call">£{pricePerCall} per Licence Check</p>
                         <p className="lc-validity">Valid for {plan.duration}</p>
                       </div>
                     </div>
@@ -177,7 +177,7 @@ console.log("Value:", sessionDataRaw);
                       <div className="lc-api-calls-content">
                         <Zap size={20} className="lc-zap-icon" />
                         <span className="lc-api-calls-text">
-                          {plan.includedCalls.toLocaleString()} License Checks
+                          {plan.includedCalls.toLocaleString()} Licence Checks
                         </span>
                       </div>
                     </div>
@@ -305,7 +305,7 @@ console.log("Value:", sessionDataRaw);
                   <span className="lc-modal-detail-value">£{selectedPlan?.price}/month</span>
                 </div>
                 <div className="lc-modal-detail">
-                  <span className="lc-modal-detail-label">License Checks:</span>
+                  <span className="lc-modal-detail-label">Licence Checks:</span>
                   <span className="lc-modal-detail-value">
                     {selectedPlan?.includedCalls.toLocaleString()} calls
                   </span>

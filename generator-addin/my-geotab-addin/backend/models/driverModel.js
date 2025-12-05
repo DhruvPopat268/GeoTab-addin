@@ -63,7 +63,17 @@ const driverSchema = new mongoose.Schema({
 
   lcCheckInterval: {
     type: Number,
-    default: 1 // in minutes
+    default: 1 // in days (total days calculated from months and days)
+  },
+
+  intervalMonths: {
+    type: Number,
+    default: 0
+  },
+
+  intervalDays: {
+    type: Number,
+    default: 1
   },
 
   lastCheckedAt: {

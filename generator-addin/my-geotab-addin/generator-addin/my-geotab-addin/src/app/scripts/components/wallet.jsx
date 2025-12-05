@@ -225,7 +225,7 @@ const purchases = (walletData?.purchases || []).map(purchase => ({
                 <div className="secure-box">
                   <CheckCircle className="icon-green" size={16} />
                   <span>Secure Payment</span>
-                  <p>Your payment is encrypted and secure via PayPal.</p>
+                  
                 </div>
 
                 <div className="limits">
