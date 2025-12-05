@@ -2,6 +2,12 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (toEmail, licenceNo) => {
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!toEmail || !emailRegex.test(toEmail)) {
+    throw new Error('Invalid email address');
+  }
+
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
