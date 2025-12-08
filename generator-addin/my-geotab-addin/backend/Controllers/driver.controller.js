@@ -119,17 +119,23 @@ module.exports.deleteDriver = async (req, res, next) => {
     }
 }
 
-// Controller to get all drivers
+// Controller to get all drivers with pagination
 module.exports.getAllDrivers = async (req, res, next) => {
   try {
-    const { userName, database } = req.body;
+    const { userName, database, page = 1, limit = 10 } = req.body;
     
     if (!userName || !database) {
       return res.status(400).json({ message: 'userName and database are required' });
     }
 
-    // Get drivers only for the specific user and database
-    const drivers = await driverModel.find({ userName, database });
+    const skip = (page - 1) * limit;
+    const filter = { userName, database };
+
+    // Get total count and paginated drivers
+    const [total, drivers] = await Promise.all([
+      driverModel.countDocuments(filter),
+      driverModel.find(filter).skip(skip).limit(limit)
+    ]);
     
     // Transform the data to match your frontend format
     const formattedDrivers = drivers.map(driver => ({
@@ -150,7 +156,8 @@ module.exports.getAllDrivers = async (req, res, next) => {
 
     return res.status(200).json({ 
       message: "Drivers fetched successfully", 
-      data: formattedDrivers 
+      data: formattedDrivers,
+      total
     });
   } catch (error) {
     console.log(error);

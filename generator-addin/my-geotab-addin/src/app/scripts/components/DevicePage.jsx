@@ -72,137 +72,111 @@ const DevicePage = ({ }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [totalDrivers, setTotalDrivers] = useState(0);
-  const [paginationTokens, setPaginationTokens] = useState({}); // Store fromId for each page
+  const [allDriversFetched, setAllDriversFetched] = useState(false);
 
-  // Fetch drivers when page or recordsPerPage changes
+  // Initial fetch: Get all drivers from Geotab once
   useEffect(() => {
-    fetchDriversPage(currentPage, recordsPerPage);
-  }, [currentPage, recordsPerPage]);
-
-  const fetchTotalDriverCount = async () => {
-    let totalCount = 0;
-    let fromVersion = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-      await new Promise((resolve, reject) => {
-        geotabApi.call("Get", {
-          typeName: "User",
-          resultsLimit: 5000,
-          fromVersion: fromVersion,
-          search: { isDriver: true }
-        }, function (users) {
-          totalCount += users.length;
-          if (users.length < 5000) {
-            hasMore = false;
-          } else {
-            fromVersion = Math.max(...users.map(u => u.version || 0)) + 1;
-          }
-          resolve();
-        }, reject);
-      });
+    if (!allDriversFetched) {
+      fetchAllDriversFromGeotab();
     }
+  }, []);
 
-    setTotalDrivers(totalCount);
-    return totalCount;
-  };
+  // Fetch paginated drivers from database when page changes
+  useEffect(() => {
+    if (allDriversFetched) {
+      fetchDriversFromDatabase(currentPage, recordsPerPage);
+    }
+  }, [currentPage, recordsPerPage, allDriversFetched]);
 
-  const fetchDriversPage = async (page = 1, limit = recordsPerPage) => {
+  const fetchAllDriversFromGeotab = async () => {
     try {
       setLoading(true);
-
       if (!geotabApi) {
-        console.error("Geotab API not available");
         toast.error("Geotab API not available");
         return;
       }
 
-      // Get total count on first load
-      if (totalDrivers === 0) {
-        await fetchTotalDriverCount();
-      }
+      let allDrivers = [];
+      let fromVersion = 0;
+      let hasMore = true;
 
-      // Build API call parameters
-      const apiParams = {
-        typeName: "User",
-        resultsLimit: limit,
-        search: {
-          isDriver: true,
-          orderBy: [{
-            property: "lastAccessDate",
-            direction: "desc"
-          }]
-        }
-      };
-
-      // Add fromId for pagination (skip for first page)
-      if (page > 1 && paginationTokens[page]) {
-        apiParams.fromId = paginationTokens[page];
-      }
-      
-      await new Promise((resolve, reject) => {
-        geotabApi.call("Get", apiParams, function (users) {
-          console.log(`Fetched ${users.length} drivers for page ${page}`);
-          
-          // Store the last user's ID as the token for the next page
-          if (users.length === limit && users.length > 0) {
-            const lastUserId = users[users.length - 1].id;
-            setPaginationTokens(prev => ({
-              ...prev,
-              [page + 1]: lastUserId
+      while (hasMore) {
+        await new Promise((resolve, reject) => {
+          geotabApi.call("Get", {
+            typeName: "User",
+            resultsLimit: 5000,
+            fromVersion: fromVersion,
+            search: { isDriver: true }
+          }, function (users) {
+            const transformed = users.map(driver => ({
+              id: driver.id,
+              Email: driver.name || `${driver.firstName} ${driver.lastName}`,
+              firstName: driver.firstName || "",
+              lastName: driver.lastName || "",
+              employeeNo: driver.employeeNo || "",
+              phoneNumber: driver.phoneNumber || "",
+              licenseNumber: driver.licenseNumber || "",
+              licenseProvince: driver.licenseProvince || "",
+              driverStatus: driver.isActive ? "Active" : "InActive",
+              lcCheckInterval: driver.lcCheckInterval || 1,
+              lastAccessDate: driver.lastAccessDate
             }));
-          }
-          
-          const transformedDrivers = users.map(driver => ({
-            id: driver.id,
-            Email: driver.name || `${driver.firstName} ${driver.lastName}`,
-            firstName: driver.firstName || "",
-            lastName: driver.lastName || "",
-            employeeNo: driver.employeeNo || "",
-            phoneNumber: driver.phoneNumber || "",
-            licenseNumber: driver.licenseNumber || "",
-            licenseProvince: driver.licenseProvince || "",
-            driverStatus: driver.isActive ? "Active" : "InActive",
-            lcCheckInterval: driver.lcCheckInterval || 1,
-            lastAccessDate: driver.lastAccessDate
-          }));
-
-          setOriginalDrivers(transformedDrivers);
-          setDisplayedDrivers(transformedDrivers);
-          setLoading(false);
-          resolve();
-        }, function (error) {
-          console.error("Error fetching drivers from Geotab:", error);
-          toast.error(`Error fetching drivers: ${error.message}`);
-          setLoading(false);
-          reject(error);
+            
+            allDrivers = [...allDrivers, ...transformed];
+            
+            if (users.length < 5000) {
+              hasMore = false;
+            } else {
+              fromVersion = Math.max(...users.map(u => u.version || 0)) + 1;
+            }
+            resolve();
+          }, reject);
         });
-      });
+      }
 
+      setTotalDrivers(allDrivers.length);
+      await syncDriversToMongo(allDrivers.map(d => ({ ...d, licenseNo: d.licenseNumber, geotabId: d.id })));
+      setAllDriversFetched(true);
     } catch (error) {
-      console.error("Error fetching drivers:", error);
-      toast.error(`Error fetching drivers: ${error.message}`);
+      console.error("Error fetching drivers from Geotab:", error);
+      toast.error(`Error: ${error.message}`);
       setLoading(false);
     }
   };
 
-  const fetchAllDrivers = () => fetchDriversPage(currentPage, recordsPerPage);
+  const fetchDriversFromDatabase = async (page = 1, limit = recordsPerPage) => {
+    try {
+      setLoading(true);
+      const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
+        userName,
+        database,
+        page,
+        limit
+      });
+      
+      if (res.status === 200) {
+        const { data, total } = res.data;
+        setDrivers(data || []);
+        setDisplayedDrivers(data || []);
+        if (total) setTotalDrivers(total);
+      }
+    } catch (err) {
+      console.error('Error fetching drivers:', err);
+      toast.error(err.response?.data?.message || 'Failed to fetch drivers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllDrivers = () => fetchDriversFromDatabase(currentPage, recordsPerPage);
 
   // Add this function after fetchAllDrivers
   const syncDriversToMongo = async (drivers) => {
     if (!drivers || drivers.length === 0) return;
 
-    setLoading(true);
-    // Map licenseNumber to licenseNo for backend compatibility and include geotabId
-    const mappedDrivers = drivers.map(driver => ({
-      ...driver,
-      licenseNo: driver.licenseNumber,
-      geotabId: driver.id, // Include the Geotab ID
-    }));
-
     try {
       const res = await axios.post(`${BASE_URL}/api/driver/sync`, {
-        drivers: mappedDrivers,
+        drivers,
         userName,
         database
       });
@@ -210,54 +184,11 @@ const DevicePage = ({ }) => {
         toast.success(res.data?.message || 'Drivers synced');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to sync drivers';
-      toast.error(msg);
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || 'Failed to sync drivers');
     }
   };
 
-  const fetchDrivers = async () => {
-    setLoading(true);
-    let success = false;
-    let retryCount = 0;
-    const maxRetries = 5;
 
-    while (!success && retryCount < maxRetries) {
-      try {
-        const res = await axios.post(`${BASE_URL}/api/driver/getAllDrivers`, {
-          userName,
-          database
-        });
-        if (res.status === 200) {
-          setDrivers(res.data.data || []);
-          setError('');
-          success = true;
-        }
-      } catch (err) {
-        console.error('Error fetching drivers:', err);
-        setError(err.response?.data?.message || 'Failed to fetch drivers');
-        retryCount++;
-        if (retryCount < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
-    }
-    if (!success) {
-      toast.error('Failed to fetch drivers after multiple attempts');
-    }
-    setLoading(false);
-  };
-
-  // to store in mongo and fetch from mongo when originalDrivers change
-  useEffect(() => {
-  (async () => {
-    if (originalDrivers.length > 0) {
-      await syncDriversToMongo(originalDrivers); // wait until sync is done
-      await fetchDrivers(); // then fetch from Mongo
-    }
-  })();
-}, [originalDrivers]);
 
   // Update sendConsentEmails to handle a single driver
   const sendConsentEmails = async (driver) => {
@@ -575,7 +506,6 @@ const DevicePage = ({ }) => {
   // Reset to first page when records per page changes
   useEffect(() => {
     setCurrentPage(1);
-    setPaginationTokens({}); // Clear pagination tokens when changing page size
   }, [recordsPerPage]);
 
   if (loading) {
