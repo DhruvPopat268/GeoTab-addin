@@ -26,7 +26,8 @@ app.use(cors({
     "https://geotab-addin-frontend.onrender.com",
     "https://mygeotab-addin-frontend.onrender.com/PTCAddIn.html",
     "https://c4u-online.co.uk/add-api/get-driver-details.php",
-    "https://geotab-addin-backend-hlji.onrender.com"
+    "https://geotab-addin-backend-hlji.onrender.com",
+    "https://geotabaddin.c4u-online.co.uk"
   ],  // Allow MyGeotab domain to access your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],  // Allowed methods
   allowedHeaders: ['Content-Type'],  // Allowed headers
