@@ -69,9 +69,9 @@ module.exports = {
       chunkFilename: "styles.css"
     }),
     new HtmlWebpackPlugin({
-      title: 'prayoshaAddIn',
+      title: 'PTCAddIn',
       filename: 'index.html',
-      template: 'src/app/prayoshaAddIn.html',
+      template: 'src/app/PTCAddIn.html',
       inject: 'body'
     }),
     new HtmlWebpackPlugin({  // Also generate a test.html

@@ -122,8 +122,8 @@ module.exports = (env) => {
       }),
       new HtmlWebpackPlugin({
         title: 'prayoshaAddIn',
-        filename: `prayoshaAddIn.html`,
-        template: 'src/app/prayoshaAddIn.html',
+        filename: `PTCAddIn.html`,
+        template: 'src/app/PTCAddIn.html',
         inject: 'body'
       }),
       new CopyWebpackPlugin({

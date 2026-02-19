@@ -71,7 +71,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'prayoshaAddIn',
       filename: 'index.html',
-      template: 'src/app/prayoshaAddIn.html',
+      template: 'src/app/PTCAddIn.html',
       inject: 'body'
     }),
     new HtmlWebpackPlugin({  // Also generate a test.html

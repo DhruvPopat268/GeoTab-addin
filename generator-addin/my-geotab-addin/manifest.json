@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "items": [
         {
-            "url": "https://mygeotab-addin-frontend.onrender.com/prayoshaAddIn.html",
+            "url": "https://mygeotab-addin-frontend.onrender.com/PTCAddIn.html",
             "path": "ActivityLink/",
             "menuName": {
                 "en": "Prayosha Drivers"

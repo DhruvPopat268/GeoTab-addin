@@ -120,9 +120,9 @@ module.exports = (env) => {
         chunkFilename: "styles.css"
       }),
       new HtmlWebpackPlugin({
-        title: 'prayoshaAddIn',
-        filename: `prayoshaAddIn.html`,
-        template: 'src/app/prayoshaAddIn.html',
+        title: 'PTCAddIn',
+        filename: `PTCAddIn.html`,
+        template: 'src/app/PTCAddIn.html',
         inject: 'body'
       }),
       new CopyWebpackPlugin({
